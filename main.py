@@ -20,7 +20,7 @@ if __name__ == "__main__":
     app = QApplication([])
     app.setStyle("Fusion")
     widget = MainWindow()
-    widget.showFullScreen()
+    widget.showMaximized()
     app.setWindowIcon(QIcon(resource_path("resources/keyIc.ico")))
 
     sys.exit(app.exec()) 

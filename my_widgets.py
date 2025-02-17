@@ -36,7 +36,7 @@ class KeyTextEdit(QTextEdit):
         self.setReadOnly(True)
         self.setText(text)
         # self.text_display.setFixedHeight(150)
-        self.setFont(QtGui.QFont("Arial", 35, 400))
+        self.setFont(QtGui.QFont("Consolas", 35, 500))
         self.setAlignment(QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.cursorForPosition(QtCore.QPoint(0, 0))
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
