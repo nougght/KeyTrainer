@@ -1,4 +1,6 @@
 venv/
+new_venv/
+.venv/
 build/
 dist/
 __pycache__
