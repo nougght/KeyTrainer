@@ -22,5 +22,5 @@ if __name__ == "__main__":
     widget = MainWindow()
     widget.showMaximized()
     app.setWindowIcon(QIcon(resource_path("resources/keyIc.ico")))
-
+    widget.text_display.setFocus()
     sys.exit(app.exec()) 
