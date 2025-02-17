@@ -16,12 +16,6 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-
-'''
-python -m venv new_venv
-source new_venv/bin/activate
-pip install -r requirements.txt
-'''
 if __name__ == "__main__":
     app = QApplication([])
     app.setStyle("Fusion")
