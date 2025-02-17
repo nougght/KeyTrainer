@@ -1,7 +1,55 @@
-from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout,QTextEdit
+from PySide6.QtWidgets import QDialog, QLabel, QComboBox, QTextEdit, QVBoxLayout, QPushButton
 from PySide6.QtCore import Qt
 from PySide6 import QtCore, QtGui, QtWidgets
 from my_data import KeyTrainerData
+import time
+
+with open("dark.qss", "r") as f:
+    dark_stylesheet = f.read()
+
+with open("style.qss", "r") as f:
+    light_stylesheet = f.read()
+
+class StarterDialog(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Запуск программы")
+        self.resize(350, 300)
+        with open("theme.txt", "r") as f:
+            self.is_dark_theme = ("Dark" if f.read() == "Dark" else "Light")
+        self.setStyleSheet(dark_stylesheet if self.is_dark_theme else light_stylesheet)
+        self.vlayout = QVBoxLayout(self)
+
+        self.profile_box = QComboBox()
+        self.profile_box.addItem("Профиль 1")
+        self.vlayout.addWidget(self.profile_box)
+
+        self.accept_but = QPushButton("Войти")
+        self.accept_but.clicked.connect(self.on_accept)
+        self.vlayout.addWidget(self.accept_but, alignment=Qt.AlignmentFlag.AlignHCenter)
+
+        self.theme_switch = QPushButton("Поменять тему")
+        self.theme_switch.clicked.connect(self.on_theme_switch)
+        self.vlayout.addWidget(self.theme_switch, alignment=Qt.AlignmentFlag.AlignLeft)
+
+
+
+    @QtCore.Slot()
+    def on_accept(self):
+        time.sleep(0.3)
+        self.accept()
+
+    @QtCore.Slot()
+    def on_theme_switch(self):
+        self.is_dark_theme = not self.is_dark_theme
+        with open("theme.txt", "w") as f:
+            if self.is_dark_theme is False:
+                f.write("Dark")
+                self.setStyleSheet(dark_stylesheet)
+            else:
+                f.write("Light")
+                self.setStyleSheet(light_stylesheet)
+
 
 class KeyWidget(QLabel):
     def __init__(self, text, parent=None):

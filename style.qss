@@ -1,3 +1,7 @@
+StarterDialog {
+    background: #b9abd8;
+}
+
 KeyWidget {
     border-radius: 4px;
     font-size: 25px;
@@ -29,3 +33,6 @@ QPushButton#exitButton:hover {
 QPushButton#exitButton:pressed {
     background:rgb(131, 32, 32);
 }
+
+
+

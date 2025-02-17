@@ -27,7 +27,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # self.setWindowIcon(QtGui.QIcon("resources/keyIc (2).ico"))
         with open(resource_path("style.qss"), "r") as f:
-            self.setStyleSheet(f.read())
+            self.light_style = f.read()
+        with open(resource_path("dark.qss"), "r") as f:
+            self.dark_style = f.read()
+        
+
+        with open("theme.txt", "r") as f:
+            self.theme = f.read()
+        
+        if self.theme == "Dark":
+            self.setStyleSheet(self.dark_style)
+
         self.setWindowTitle("Key Trainer")
         self.central_widget = QtWidgets.QWidget()
         self.setCentralWidget(self.central_widget)
