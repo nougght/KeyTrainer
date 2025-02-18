@@ -1,5 +1,14 @@
+
+QWidget {
+        background-color: #ffffff;
+        color: #000000;
+        font-size: 25px;
+        /* border: none; */
+    }
+
 StarterDialog {
     background: #b9abd8;
+    font-size: 25px;
 }
 
 KeyWidget {
@@ -13,6 +22,21 @@ KeyWidget {
 KeyTextEdit {
     background: #bdb5f7;
     border: 5px solid #9480eb;
+    font-size: 35px;
+}
+
+
+QPushButton {
+    background-color: #dcdbdb;
+    color: #000000;
+    padding: 5px;
+    border: 2px solid transparent;
+    border-radius: 3px;
+}
+
+QPushButton:hover {
+    border: 2px solid #878787;
+
 }
 
 QPushButton#exitButton {

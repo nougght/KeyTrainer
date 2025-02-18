@@ -18,7 +18,6 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
@@ -27,16 +26,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # self.setWindowIcon(QtGui.QIcon("resources/keyIc (2).ico"))
         with open(resource_path("style.qss"), "r") as f:
-            self.light_style = f.read()
+            self.light_stylesheet = f.read()
         with open(resource_path("dark.qss"), "r") as f:
-            self.dark_style = f.read()
-        
+            self.dark_stylesheet = f.read()
 
-        with open("theme.txt", "r") as f:
-            self.theme = f.read()
-        
-        if self.theme == "Dark":
-            self.setStyleSheet(self.dark_style)
+        with open(resource_path("theme.txt"), "r") as f:
+            self.is_dark_theme = True if f.read() == "Dark" else False
+
+        if self.is_dark_theme:
+            self.setStyleSheet(self.dark_stylesheet)
 
         self.setWindowTitle("Key Trainer")
         self.central_widget = QtWidgets.QWidget()
@@ -49,6 +47,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.close_butt.setObjectName("exitButton")
         self.close_butt.clicked.connect(self.on_exit_released)
         self.central_layout.addWidget(self.close_butt, 0, 1, QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignTop)
+
+        self.theme_switch = QtWidgets.QPushButton("Поменять тему")
+        self.theme_switch.clicked.connect(self.on_theme_switch)
+        self.central_layout.addWidget(self.theme_switch, 7, 0, QtCore.Qt.AlignmentFlag.AlignLeft)
 
         self.toolbar = QtWidgets.QToolBar()
         self.action1 = QtWidgets.QWidgetAction(self.toolbar)
@@ -78,7 +80,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.central_layout.addItem(self.vert_spacer_1, 0, 0, 1, 2)
         self.central_layout.addItem(self.vert_spacer_2, 2, 0, 1, 2)
-        self.central_layout.addItem(self.vert_spacer_3, 7, 0, 1, 2)
+        self.central_layout.addItem(self.vert_spacer_3, 8, 0, 1, 2)
         print(self.central_layout.rowCount())
         print(self.central_layout.columnCount())
         print(self.central_layout.itemAt(0))
@@ -120,3 +122,15 @@ class MainWindow(QtWidgets.QMainWindow):
     @QtCore.Slot()
     def on_hard_released(self):
         self.text_display.setText(self.data.hard_text)
+
+    @QtCore.Slot()
+    def on_theme_switch(self):
+        self.is_dark_theme = not self.is_dark_theme
+        print(self.is_dark_theme)
+        with open(resource_path("theme.txt"), "w") as f:
+            if self.is_dark_theme is True:
+                f.write("Dark")
+                self.setStyleSheet(self.dark_stylesheet)
+            else:
+                f.write("Light")
+                self.setStyleSheet(self.light_stylesheet)

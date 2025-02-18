@@ -2,12 +2,26 @@ from PySide6.QtWidgets import QDialog, QLabel, QComboBox, QTextEdit, QVBoxLayout
 from PySide6.QtCore import Qt
 from PySide6 import QtCore, QtGui, QtWidgets
 from my_data import KeyTrainerData
-import time
+import time, os, sys
 
-with open("dark.qss", "r") as f:
+
+def resource_path(relative_path):
+    """Get the absolute path to the resource, works for dev and for PyInstaller"""
+    if hasattr(sys, "_MEIPASS"):
+        # Если приложение запущено из собранного exe
+        base_path = sys._MEIPASS
+    else:
+        # Если приложение запущено из исходного кода
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+
+
+with open(resource_path("dark.qss"), "r") as f:
     dark_stylesheet = f.read()
 
-with open("style.qss", "r") as f:
+with open(resource_path("style.qss"), "r") as f:
     light_stylesheet = f.read()
 
 class StarterDialog(QDialog):
@@ -15,8 +29,8 @@ class StarterDialog(QDialog):
         super().__init__()
         self.setWindowTitle("Запуск программы")
         self.resize(350, 300)
-        with open("theme.txt", "r") as f:
-            self.is_dark_theme = ("Dark" if f.read() == "Dark" else "Light")
+        with open(resource_path("theme.txt"), "r") as f:
+            self.is_dark_theme = True if f.read() == "Dark" else False
         self.setStyleSheet(dark_stylesheet if self.is_dark_theme else light_stylesheet)
         self.vlayout = QVBoxLayout(self)
 
@@ -32,8 +46,6 @@ class StarterDialog(QDialog):
         self.theme_switch.clicked.connect(self.on_theme_switch)
         self.vlayout.addWidget(self.theme_switch, alignment=Qt.AlignmentFlag.AlignLeft)
 
-
-
     @QtCore.Slot()
     def on_accept(self):
         time.sleep(0.3)
@@ -42,8 +54,9 @@ class StarterDialog(QDialog):
     @QtCore.Slot()
     def on_theme_switch(self):
         self.is_dark_theme = not self.is_dark_theme
-        with open("theme.txt", "w") as f:
-            if self.is_dark_theme is False:
+        print(self.is_dark_theme)
+        with open(resource_path("theme.txt"), "w") as f:
+            if self.is_dark_theme is True:
                 f.write("Dark")
                 self.setStyleSheet(dark_stylesheet)
             else:
