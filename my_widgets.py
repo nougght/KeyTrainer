@@ -81,7 +81,7 @@ class KeyTextEdit(QTextEdit):
     key_press_release = QtCore.Signal(str, bool)
     finished = QtCore.Signal()
 
-    def __init__(self, text):
+    def __init__(self, text = ''):
         super().__init__()
 
         # Инициализация формата подчёркивания

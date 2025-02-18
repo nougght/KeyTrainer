@@ -2,6 +2,8 @@ from PySide6 import QtWidgets, QtCore, QtGui, QtSvg
 from my_widgets import KeyWidget, KeyTextEdit
 from my_data import KeyTrainerData
 
+import random as rd
+
 import sys
 import os
 
@@ -69,7 +71,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action3.triggered.connect(self.on_hard_released)
 
         self.addToolBar(QtCore.Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
-        self.text_display = KeyTextEdit(self.data.easy_text)
+        self.text_display = KeyTextEdit()
         self.text_display.key_press_release.connect(self.on_key_switch)
         self.text_display.finished.connect(self.on_finished)
 
@@ -96,6 +98,9 @@ class MainWindow(QtWidgets.QMainWindow):
         keys = self.central_widget.findChildren(KeyWidget)
         print(len(keys))
 
+        self.action1.trigger()
+        
+
     def on_key_switch(self, ch, isPress):
         wid = self.findChildren(KeyWidget, ch.lower())
         wid[0].set_active(isPress)
@@ -113,15 +118,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @QtCore.Slot()
     def on_easy_released(self):
-        self.text_display.setText(self.data.easy_text)
+        self.text_display.setText(self.data.easy_text[rd.randint(0, len(self.data.easy_text) - 1)])
 
     @QtCore.Slot()
     def on_mid_released(self):
-        self.text_display.setText(self.data.mid_text)
+        self.text_display.setText(self.data.mid_text[rd.randint(0, len(self.data.mid_text) - 1)])
 
     @QtCore.Slot()
     def on_hard_released(self):
-        self.text_display.setText(self.data.hard_text)
+        self.text_display.setText(self.data.hard_text[rd.randint(0, len(self.data.hard_text) - 1)])
 
     @QtCore.Slot()
     def on_theme_switch(self):

@@ -1,5 +1,7 @@
 # KeyTrainer
 
+### type fast don't waste time
+
 python -m venv new_venv\
 source new_venv/bin/activate\
 pip install -r requirements.txt\
