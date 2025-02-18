@@ -18,6 +18,16 @@ with open(resource_path("light.qss"), "r") as f:
 with open(resource_path("dark.qss"), "r") as f:
     dark_stylesheet = f.read()
 
+with open(resource_path("theme.txt"), "r") as f:
+    theme = f.read()
+
+def switch_theme():
+    global theme
+    theme = "Light" if theme == "Dark" else "Dark"
+    with open(resource_path("theme.txt"), "w") as f:
+        f.write(theme)
+    print(theme)
+
 class KeyTrainerData:
     def __init__(self):
         self.keys_en = [
@@ -25,6 +35,7 @@ class KeyTrainerData:
             ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
             ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
             ["z", "x", "c", "v", "b", "n", "m"],
+            [" "]
         ]
         self.easy_text = ["Farmer Jack realized that big yellow quilts were expensive.",
         "The quick brown fox jumps over the lazy dog"]

@@ -21,6 +21,7 @@ QLineEdit {
     border: 1px solid #555555;
     padding: 5px;
 }
+
 QMenuBar {
     background-color: #2d2d2d;
     color: #ffffff;
@@ -30,13 +31,13 @@ QMenuBar::item:selected {
 }
 
 KeyWidget{
-    background: #2E3440;
-    color: #ECEFF4;
-    border: 1px solid #4C566A;
+    background: #090f1b;
+    color: #88C0D0;
+    border: 2px solid #88C0D0;
 }
 
 KeyTextEdit{
-    background: #615d80;
+    background: transparent /*#615d80-->*/;
     border: 3px solid #9480eb;
 }
 

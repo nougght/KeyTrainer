@@ -10,11 +10,8 @@ class StarterDialog(QDialog):
         super().__init__()
         self.setWindowTitle("Запуск программы")
         self.resize(350, 300)
-
-        with open(dt.resource_path("theme.txt"), "r") as f:
-            self.is_dark_theme = True if f.read() == "Dark" else False
         
-        self.setStyleSheet(dt.dark_stylesheet if self.is_dark_theme else dt.light_stylesheet)
+        self.setStyleSheet(dt.dark_stylesheet if dt.theme == "Dark" else dt.light_stylesheet)
         self.vlayout = QVBoxLayout(self)
 
         self.profile_box = QComboBox()
@@ -36,32 +33,57 @@ class StarterDialog(QDialog):
 
     @QtCore.Slot()
     def on_theme_switch(self):
-        self.is_dark_theme = not self.is_dark_theme
-        print(self.is_dark_theme)
-        with open(dt.resource_path("theme.txt"), "w") as f:
-            if self.is_dark_theme is True:
-                f.write("Dark")
-                self.setStyleSheet(dt.dark_stylesheet)
-            else:
-                f.write("Light")
-                self.setStyleSheet(dt.light_stylesheet)
+        dt.switch_theme()
+        if dt.theme == "Dark":
+            self.setStyleSheet(dt.dark_stylesheet)
+        else:
+            self.setStyleSheet(dt.light_stylesheet)
 
 
 class KeyWidget(QLabel):
+    light = ["background: #88C0D0; color: #090f1b; border: 2px solid #090f1b;","background: #090f1b; border: 2px solid #88C0D0; color: #88C0D0;"]
+    dark = [light[1], light[0]]
     def __init__(self, text, parent=None):
         super().__init__(text, parent)
         self.setAlignment(Qt.AlignCenter)
-        self.setFixedSize(50, 50)
+        self.setFont(QtGui.QFont("consolas", 50, 500))
 
+
+        
     def set_active(self, active):
         style = (
-            "background: #090f1b; border: 2px solid #88C0D0; " if active else "background: #2E3440; color: #ECEFF4; border: 1px solid #4C566A;"
+            self.light[active]
+            if dt.theme == "Light"
+            else self.dark[active]
         )
-        self.setStyleSheet(f"QLabel  {{ {style} }}")
+        print(style, active, self.dark[0])
+        self.setStyleSheet(f"KeyWidget  {{ {style} }}")
+    
+    @QtCore.Slot()
+    def on_theme_switch(self, th_st):
+        self.setStyleSheet(f"KeyWidget  {{ {th_st[0]} }}")
+
+
+class KeyProgressDisplay(QLabel):
+    def __init__(self, total = 0):
+        self.total = total
+        self.progress = 0
+        super().__init__(f"{self.progress}/{self.total} ({self.progress / self.total:.1%})")
+
+    def reset(self, new_total = 0):
+        self.total = new_total
+        self.progress = 0
+        self.setText(f"{self.progress}/{self.total} ({self.progress / self.total:.1%})")
+
+    @QtCore.Slot()
+    def on_inc_progress(self):
+        self.progress += 1
+        self.setText(f"{self.progress}/{self.total} ({self.progress / self.total:.1%})")
 
 
 class KeyTextEdit(QTextEdit):
     key_press_release = QtCore.Signal(str, bool)
+    textSizeChanged = QtCore.Signal(int)
     finished = QtCore.Signal()
 
     def __init__(self, text = ''):
@@ -72,10 +94,10 @@ class KeyTextEdit(QTextEdit):
         self.underline_format.setUnderlineStyle(
             QtGui.QTextCharFormat.UnderlineStyle.SingleUnderline
         )
-        self.underline_format.setUnderlineColor(QtGui.QColor("#0d2b96"))
+        self.underline_format.setUnderlineColor(QtGui.QColor("#9480eb"))
 
         self.passed_format = QtGui.QTextCharFormat()
-        self.passed_format.setBackground(QtGui.QColor("#36ee77"))
+        self.passed_format.setBackground(QtGui.QColor("#279346"))
 
         self.setReadOnly(True)
         self.setText(text)
@@ -101,7 +123,6 @@ class KeyTextEdit(QTextEdit):
         self.setTextCursor(cursor)
 
     def setText(self, text):
-
         cursor = self.textCursor()
         cursor.setCharFormat(QtGui.QTextCharFormat())
         self.setTextCursor(cursor)
@@ -113,12 +134,12 @@ class KeyTextEdit(QTextEdit):
         cursor.mergeCharFormat(self.underline_format)
         cursor.movePosition(QtGui.QTextCursor.MoveOperation.Left)
         self.setTextCursor(cursor)
+        self.textSizeChanged.emit(len(text))
 
     def keyPressEvent(self, event):
         ch = event.text()
 
-        if event.key() != QtCore.Qt.Key.Key_Space:
-            self.key_press_release.emit(ch, True)
+        self.key_press_release.emit(ch, True)
 
         cursor = self.textCursor()
         print(cursor.position())
@@ -164,12 +185,9 @@ class KeyTextEdit(QTextEdit):
 
     def keyReleaseEvent(self, event):
         ch = event.text()
-        if event.key() == QtCore.Qt.Key.Key_Space:
-            return None
-        else:
-            self.key_press_release.emit(ch, False)
+        self.key_press_release.emit(ch, False)
 
-        return super().keyPressEvent(event)
+        return super().keyPressEvent(event) if event.key() != QtCore.Qt.Key.Key_Space else None
 
     def mousePressEvent(self, e):
         pass

@@ -29,13 +29,13 @@ QMenuBar::item:selected {
 }
 
 KeyWidget{
-    background: #2E3440;
-    color: #ECEFF4;
-    border: 1px solid #4C566A;
+    background: #88C0D0 !important;
+    color: #090f1b !important;
+    border: 2px solid #090f1b !important;
 }
 
 KeyTextEdit{
-    background: #bdb5f7;
+    background: transparent/* #8781b5 */ ;
     border: 3px solid #9480eb;
 }
 

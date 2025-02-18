@@ -1,11 +1,15 @@
 from PySide6 import QtWidgets, QtCore, QtGui, QtSvg
-from my_widgets import KeyWidget, KeyTextEdit
+from my_widgets import KeyWidget, KeyTextEdit, KeyProgressDisplay
 import my_data as dt
 
+import time
 import random as rd
 
 
 class MainWindow(QtWidgets.QMainWindow):
+
+    key_theme_switch = QtCore.Signal(list)
+
     def __init__(self):
         super().__init__()
         self.data = dt.KeyTrainerData()
@@ -13,10 +17,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # self.setWindowIcon(QtGui.QIcon("resources/keyIc (2).ico"))
 
-        with open(dt.resource_path("theme.txt"), "r") as f:
-            self.is_dark_theme = True if f.read() == "Dark" else False
-
-        self.setStyleSheet(dt.dark_stylesheet if self.is_dark_theme else dt.light_stylesheet)
+        self.setStyleSheet(dt.dark_stylesheet if dt.theme == "Dark" else dt.light_stylesheet)
 
         self.setWindowTitle("Key Trainer")
         self.central_widget = QtWidgets.QWidget()
@@ -32,7 +33,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.theme_switch = QtWidgets.QPushButton("Поменять тему")
         self.theme_switch.clicked.connect(self.on_theme_switch)
-        self.central_layout.addWidget(self.theme_switch, 7, 0, QtCore.Qt.AlignmentFlag.AlignLeft)
+        self.central_layout.addWidget(self.theme_switch, 10, 0, QtCore.Qt.AlignmentFlag.AlignLeft)
 
         self.toolbar = QtWidgets.QToolBar()
         self.action1 = QtWidgets.QWidgetAction(self.toolbar)
@@ -49,20 +50,29 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action3.setText("Hard")
         self.toolbar.addAction(self.action3)
         self.action3.triggered.connect(self.on_hard_released)
-
         self.addToolBar(QtCore.Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
+
         self.text_display = KeyTextEdit()
         self.text_display.key_press_release.connect(self.on_key_switch)
         self.text_display.finished.connect(self.on_finished)
 
-        self.central_layout.addWidget(self.text_display, 1, 0, 1, 2)
+
+        self.char_pos_label = KeyProgressDisplay(1)
+        self.central_layout.addWidget(self.char_pos_label, 1, 0)
+
+        self.text_display.textSizeChanged.connect(self.char_pos_label.reset)
+        self.text_display.cursorPositionChanged.connect(self.char_pos_label.on_inc_progress)
+        
+        self.action1.trigger()
+
+        self.central_layout.addWidget(self.text_display, 2, 0, 1, 2)
         self.vert_spacer_1 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.vert_spacer_2 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.vert_spacer_3 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
 
         self.central_layout.addItem(self.vert_spacer_1, 0, 0, 1, 2)
-        self.central_layout.addItem(self.vert_spacer_2, 2, 0, 1, 2)
-        self.central_layout.addItem(self.vert_spacer_3, 8, 0, 1, 2)
+        self.central_layout.addItem(self.vert_spacer_2, 3, 0, 1, 2)
+        self.central_layout.addItem(self.vert_spacer_3, 9, 0, 1, 2)
         print(self.central_layout.rowCount())
         print(self.central_layout.columnCount())
         print(self.central_layout.itemAt(0))
@@ -72,20 +82,26 @@ class MainWindow(QtWidgets.QMainWindow):
             for k in self.data.keys_en[i]:
                 key = KeyWidget(k.upper())
                 key.setObjectName(k)
-                keys_layout.addWidget(key,alignment=QtCore.Qt.AlignmentFlag.AlignLeft)
-            self.central_layout.addLayout(keys_layout, i + 3, 0, 1, 2, alignment=QtCore.Qt.AlignmentFlag.AlignHCenter)
-
+                self.key_theme_switch.connect(key.on_theme_switch)
+                keys_layout.addWidget(key,alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
+            self.central_layout.addLayout(keys_layout, i + 4, 0, 1, 2, alignment=QtCore.Qt.AlignmentFlag.AlignHCenter)
+        keys_layout = QtWidgets.QHBoxLayout()
+        key = KeyWidget(self.data.keys_en[4][0])
+        key.setObjectName("space")
+        keys_layout.addWidget(key, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.central_layout.addLayout(keys_layout, 8, 0, 1, 2)
         keys = self.central_widget.findChildren(KeyWidget)
         print(len(keys))
 
-        self.action1.trigger()
-
     def on_key_switch(self, ch, isPress):
+        if ch == ' ':
+            ch = 'space'
         wid = self.findChildren(KeyWidget, ch.lower())
+        print(len(wid))
         wid[0].set_active(isPress)
 
     def on_finished(self):
-        print("kfdlkajlksdj")
+        self.char_pos_label.on_inc_progress()
         finish = QtWidgets.QMessageBox(parent = self, text = "Perfect!")
         finish.resize(100,100)
         finish.exec()
@@ -109,12 +125,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @QtCore.Slot()
     def on_theme_switch(self):
-        self.is_dark_theme = not self.is_dark_theme
-        print(self.is_dark_theme)
-        with open(dt.resource_path("theme.txt"), "w") as f:
-            if self.is_dark_theme is True:
-                f.write("Dark")
-                self.setStyleSheet(dt.dark_stylesheet)
-            else:
-                f.write("Light")
-                self.setStyleSheet(dt.light_stylesheet)
+        dt.switch_theme()
+        if dt.theme == "Dark":
+            self.setStyleSheet(dt.dark_stylesheet)
+            self.key_theme_switch.emit(KeyWidget.dark)
+        else:
+            self.setStyleSheet(dt.light_stylesheet)
+            self.key_theme_switch.emit(KeyWidget.light)
+        self.text_display.setFocus()

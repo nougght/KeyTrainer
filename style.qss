@@ -4,20 +4,25 @@ QWidget {
 }
 
 KeyWidget {
+    padding: 10px 20px 10px 20px;
     border-radius: 4px;
-    font-size: 25px;
-    background: #2E3440;
-    color:   #ECEFF4;
-    border: 1px solid #4C566A;
+    margin: 3px;
+}
+KeyWidget#space {
+    padding: 10px 100px;
 }
 
 KeyTextEdit {
-    font-size: 35px;
+    font-size: 40px;
 }
 
+KeyProgressDisplay{
+    font: 500 35px monospace
+}
 
 QPushButton {
     padding: 5px;
+    border-radius: 5px;
     border: 2px solid transparent;
     text-align: center;
 }
