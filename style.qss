@@ -1,13 +1,5 @@
 
 QWidget {
-        background-color: #ffffff;
-        color: #000000;
-        font-size: 25px;
-        /* border: none; */
-    }
-
-StarterDialog {
-    background: #b9abd8;
     font-size: 25px;
 }
 
@@ -20,43 +12,36 @@ KeyWidget {
 }
 
 KeyTextEdit {
-    background: #bdb5f7;
-    border: 5px solid #9480eb;
     font-size: 35px;
 }
 
 
 QPushButton {
-    background-color: #dcdbdb;
-    color: #000000;
     padding: 5px;
     border: 2px solid transparent;
-    border-radius: 3px;
+    text-align: center;
 }
 
 QPushButton:hover {
-    border: 2px solid #878787;
-
+    border: 2px solid #606060;
 }
 
 QPushButton#exitButton {
     border-radius: 5px;
-    border: 2px solid #431111;
+    border: 2px solid #270a0a;
     font-size: 30px;
     font-weight: 600;
-    background: #e44040;
-    color: #131313;
     text-align: center;
-    padding: 5px ;
+    padding: 5px;
     margin: 3px 5px 3px 5px;
 }
+
 QPushButton#exitButton:hover {
-    border: 4px solid #431111;
+    border: 4px solid #270a0a;
     padding: 3px;
 }
-QPushButton#exitButton:pressed {
-    background:rgb(131, 32, 32);
-}
+
+
 
 
 

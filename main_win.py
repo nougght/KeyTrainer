@@ -1,42 +1,22 @@
 from PySide6 import QtWidgets, QtCore, QtGui, QtSvg
 from my_widgets import KeyWidget, KeyTextEdit
-from my_data import KeyTrainerData
+import my_data as dt
 
 import random as rd
-
-import sys
-import os
-
-
-def resource_path(relative_path):
-    """Get the absolute path to the resource, works for dev and for PyInstaller"""
-    if hasattr(sys, "_MEIPASS"):
-        # Если приложение запущено из собранного exe
-        base_path = sys._MEIPASS
-    else:
-        # Если приложение запущено из исходного кода
-        base_path = os.path.abspath(".")
-
-    return os.path.join(base_path, relative_path)
 
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
-        self.data = KeyTrainerData()
+        self.data = dt.KeyTrainerData()
         self.resize(700,500)
 
         # self.setWindowIcon(QtGui.QIcon("resources/keyIc (2).ico"))
-        with open(resource_path("style.qss"), "r") as f:
-            self.light_stylesheet = f.read()
-        with open(resource_path("dark.qss"), "r") as f:
-            self.dark_stylesheet = f.read()
 
-        with open(resource_path("theme.txt"), "r") as f:
+        with open(dt.resource_path("theme.txt"), "r") as f:
             self.is_dark_theme = True if f.read() == "Dark" else False
 
-        if self.is_dark_theme:
-            self.setStyleSheet(self.dark_stylesheet)
+        self.setStyleSheet(dt.dark_stylesheet if self.is_dark_theme else dt.light_stylesheet)
 
         self.setWindowTitle("Key Trainer")
         self.central_widget = QtWidgets.QWidget()
@@ -44,7 +24,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.central_layout = QtWidgets.QGridLayout()
         self.central_widget.setLayout(self.central_layout)
 
-        self.close_butt = QtWidgets.QPushButton("Exit")
+        self.close_butt = QtWidgets.QPushButton("exit")
         self.close_butt.setFlat(True)
         self.close_butt.setObjectName("exitButton")
         self.close_butt.clicked.connect(self.on_exit_released)
@@ -99,7 +79,6 @@ class MainWindow(QtWidgets.QMainWindow):
         print(len(keys))
 
         self.action1.trigger()
-        
 
     def on_key_switch(self, ch, isPress):
         wid = self.findChildren(KeyWidget, ch.lower())
@@ -132,10 +111,10 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_theme_switch(self):
         self.is_dark_theme = not self.is_dark_theme
         print(self.is_dark_theme)
-        with open(resource_path("theme.txt"), "w") as f:
+        with open(dt.resource_path("theme.txt"), "w") as f:
             if self.is_dark_theme is True:
                 f.write("Dark")
-                self.setStyleSheet(self.dark_stylesheet)
+                self.setStyleSheet(dt.dark_stylesheet)
             else:
                 f.write("Light")
-                self.setStyleSheet(self.light_stylesheet)
+                self.setStyleSheet(dt.light_stylesheet)

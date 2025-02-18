@@ -1,18 +1,17 @@
 
 QWidget {
-        background-color: #2d2d2d;
-        color: #ffffff;
-        /* border: none; */
-    }
+    background-color: #e1e1e1;
+    color: #000000;
+}
 
 
 QPushButton {
-    background-color: #3a3a3a;
-    color: #ffffff;
+    background-color: #b4b4b4;
+    color: #000000;
 }
 
 QPushButton:hover {
-    background-color: #4a4a4a;
+    background-color: #b0b0b0;
 }
 
 QLineEdit {
@@ -36,16 +35,15 @@ KeyWidget{
 }
 
 KeyTextEdit{
-    background: #615d80;
+    background: #bdb5f7;
     border: 3px solid #9480eb;
 }
 
-
 QPushButton#exitButton {
-    background: #501717;
-    color: #f0f0f0;
+    background: #a72727;
+    color: #131313;
 }
 
 QPushButton#exitButton:pressed {
-    background:#ff4a1111;
+    background:#ffe72b2b;
 }

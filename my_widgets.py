@@ -1,37 +1,20 @@
 from PySide6.QtWidgets import QDialog, QLabel, QComboBox, QTextEdit, QVBoxLayout, QPushButton
 from PySide6.QtCore import Qt
 from PySide6 import QtCore, QtGui, QtWidgets
-from my_data import KeyTrainerData
+import my_data as dt
 import time, os, sys
 
-
-def resource_path(relative_path):
-    """Get the absolute path to the resource, works for dev and for PyInstaller"""
-    if hasattr(sys, "_MEIPASS"):
-        # Если приложение запущено из собранного exe
-        base_path = sys._MEIPASS
-    else:
-        # Если приложение запущено из исходного кода
-        base_path = os.path.abspath(".")
-
-    return os.path.join(base_path, relative_path)
-
-
-
-with open(resource_path("dark.qss"), "r") as f:
-    dark_stylesheet = f.read()
-
-with open(resource_path("style.qss"), "r") as f:
-    light_stylesheet = f.read()
 
 class StarterDialog(QDialog):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Запуск программы")
         self.resize(350, 300)
-        with open(resource_path("theme.txt"), "r") as f:
+
+        with open(dt.resource_path("theme.txt"), "r") as f:
             self.is_dark_theme = True if f.read() == "Dark" else False
-        self.setStyleSheet(dark_stylesheet if self.is_dark_theme else light_stylesheet)
+        
+        self.setStyleSheet(dt.dark_stylesheet if self.is_dark_theme else dt.light_stylesheet)
         self.vlayout = QVBoxLayout(self)
 
         self.profile_box = QComboBox()
@@ -55,13 +38,13 @@ class StarterDialog(QDialog):
     def on_theme_switch(self):
         self.is_dark_theme = not self.is_dark_theme
         print(self.is_dark_theme)
-        with open(resource_path("theme.txt"), "w") as f:
+        with open(dt.resource_path("theme.txt"), "w") as f:
             if self.is_dark_theme is True:
                 f.write("Dark")
-                self.setStyleSheet(dark_stylesheet)
+                self.setStyleSheet(dt.dark_stylesheet)
             else:
                 f.write("Light")
-                self.setStyleSheet(light_stylesheet)
+                self.setStyleSheet(dt.light_stylesheet)
 
 
 class KeyWidget(QLabel):
@@ -103,11 +86,11 @@ class KeyTextEdit(QTextEdit):
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
-        # self.setFrameStyle(
-        #     QtWidgets.QFrame.Box| QtWidgets.QFrame.Plain
-        # )
+        self.setFrameStyle(
+            QtWidgets.QFrame.Box| QtWidgets.QFrame.Plain
+        )
         # Прямоугольник без тени
-        self.setFrameStyle(QtWidgets.QFrame.Panel | QtWidgets.QFrame.Raised)  # Панель с объёмной тенью
+        # self.setFrameStyle(QtWidgets.QFrame.Panel | QtWidgets.QFrame.Raised)  # Панель с объёмной тенью
 
         cursor = self.textCursor()
 
