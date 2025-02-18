@@ -35,7 +35,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.theme_switch.clicked.connect(self.on_theme_switch)
         self.central_layout.addWidget(self.theme_switch, 10, 0, QtCore.Qt.AlignmentFlag.AlignLeft)
 
+
         self.toolbar = QtWidgets.QToolBar()
+        self.tb_spacer1 = QtWidgets.QWidget()
+        self.tb_spacer1.setSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred,QtWidgets.QSizePolicy.Policy.MinimumExpanding,)
+        self.toolbar.addWidget(self.tb_spacer1)
         self.action1 = QtWidgets.QWidgetAction(self.toolbar)
         self.action1.setText("Easy")
         self.toolbar.addAction(self.action1)
@@ -50,19 +54,26 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action3.setText("Hard")
         self.toolbar.addAction(self.action3)
         self.action3.triggered.connect(self.on_hard_released)
+
+        self.tb_spacer2 = QtWidgets.QWidget()
+        self.tb_spacer2.setSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.toolbar.addWidget(self.tb_spacer2)
+        self.tb_spacer3 = QtWidgets.QWidget()
+        self.tb_spacer3.setSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.toolbar.addWidget(self.tb_spacer3)
+
         self.addToolBar(QtCore.Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
 
         self.text_display = KeyTextEdit()
         self.text_display.key_press_release.connect(self.on_key_switch)
         self.text_display.finished.connect(self.on_finished)
 
-
         self.char_pos_label = KeyProgressDisplay(1)
         self.central_layout.addWidget(self.char_pos_label, 1, 0)
 
         self.text_display.textSizeChanged.connect(self.char_pos_label.reset)
         self.text_display.cursorPositionChanged.connect(self.char_pos_label.on_inc_progress)
-        
+        self.text_display.typo.connect(self.char_pos_label.on_typo)
         self.action1.trigger()
 
         self.central_layout.addWidget(self.text_display, 2, 0, 1, 2)
@@ -88,6 +99,7 @@ class MainWindow(QtWidgets.QMainWindow):
         keys_layout = QtWidgets.QHBoxLayout()
         key = KeyWidget(self.data.keys_en[4][0])
         key.setObjectName("space")
+        self.key_theme_switch.connect(key.on_theme_switch)
         keys_layout.addWidget(key, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
         self.central_layout.addLayout(keys_layout, 8, 0, 1, 2)
         keys = self.central_widget.findChildren(KeyWidget)

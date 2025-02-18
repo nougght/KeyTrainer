@@ -3,6 +3,7 @@ QWidget {
     font-size: 25px;
 }
 
+
 KeyWidget {
     padding: 10px 20px 10px 20px;
     border-radius: 4px;

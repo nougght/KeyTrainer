@@ -17,6 +17,10 @@ class StarterDialog(QDialog):
         self.profile_box = QComboBox()
         self.profile_box.addItem("Профиль 1")
         self.vlayout.addWidget(self.profile_box)
+        self.profile_box.addItem("Профиль 2")
+        self.vlayout.addWidget(self.profile_box)
+        self.profile_box.addItem("Профиль 3")
+        self.vlayout.addWidget(self.profile_box)
 
         self.accept_but = QPushButton("Войти")
         self.accept_but.clicked.connect(self.on_accept)
@@ -68,23 +72,37 @@ class KeyProgressDisplay(QLabel):
     def __init__(self, total = 0):
         self.total = total
         self.progress = 0
-        super().__init__(f"{self.progress}/{self.total} ({self.progress / self.total:.1%})")
+        self.typos = 0
+        super().__init__(f"{self.progress}/{self.total} ({self.progress / self.total:.1%})\t Ошибок: {self.typos}")
 
     def reset(self, new_total = 0):
         self.total = new_total
         self.progress = 0
-        self.setText(f"{self.progress}/{self.total} ({self.progress / self.total:.1%})")
+        self.typos = 0
+        self.setText(
+            f"{self.progress}/{self.total} ({self.progress / self.total:.1%})\t Ошибок: {self.typos}"
+        )
 
     @QtCore.Slot()
     def on_inc_progress(self):
         self.progress += 1
-        self.setText(f"{self.progress}/{self.total} ({self.progress / self.total:.1%})")
+        self.setText(
+            f"{self.progress}/{self.total} ({self.progress / self.total:.1%})\t Ошибок: {self.typos}"
+        )
+
+    @QtCore.Slot()
+    def on_typo(self):
+        self.typos += 1
+        self.setText(
+            f"{self.progress}/{self.total} ({self.progress / self.total:.1%})\t Ошибок: {self.typos}"
+        )
 
 
 class KeyTextEdit(QTextEdit):
     key_press_release = QtCore.Signal(str, bool)
     textSizeChanged = QtCore.Signal(int)
     finished = QtCore.Signal()
+    typo = QtCore.Signal()
 
     def __init__(self, text = ''):
         super().__init__()
@@ -144,13 +162,12 @@ class KeyTextEdit(QTextEdit):
         cursor = self.textCursor()
         print(cursor.position())
         print(ch.lower())
-        if event.key() == QtCore.Qt.Key.Key_Enter:
+        if event.key() == QtCore.Qt.Key.Key_Enter or event.key() == QtCore.Qt.Key.Key_Shift:
             pass
         else:
             print(len(self.toPlainText()), cursor.position())
 
             if event.text() == self.toPlainText()[cursor.position()]:
-
                 print("perfect")
 
                 cursor.movePosition(
@@ -172,6 +189,8 @@ class KeyTextEdit(QTextEdit):
                 self.setTextCursor(cursor)
 
                 print()
+            else:
+                self.typo.emit()
 
         return super().keyPressEvent(event) if event.key() != Qt.Key.Key_Space else None
 

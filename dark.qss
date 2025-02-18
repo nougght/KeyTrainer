@@ -22,13 +22,13 @@ QLineEdit {
     padding: 5px;
 }
 
-QMenuBar {
+/* QToolBar {
     background-color: #2d2d2d;
     color: #ffffff;
 }
-QMenuBar::item:selected {
+QToolBar::item:selected {
     background-color: #4a4a4a;
-}
+} */
 
 KeyWidget{
     background: #090f1b;
