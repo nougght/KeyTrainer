@@ -7,7 +7,7 @@ QWidget {
 KeyWidget {
     padding: 10px 20px 10px 20px;
     border-radius: 4px;
-    margin: 3px;
+    margin:2px;
 }
 KeyWidget#space {
     padding: 10px 100px;

@@ -115,7 +115,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_finished(self):
         self.char_pos_label.on_inc_progress()
         finish = QtWidgets.QMessageBox(parent = self, text = "Perfect!")
-        finish.resize(100,100)
+        finish.resize(200,200)
         finish.exec()
 
     @QtCore.Slot()
