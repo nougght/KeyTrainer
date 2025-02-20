@@ -1,7 +1,8 @@
 from PySide6.QtWidgets import QDialog, QLabel, QComboBox, QTextEdit, QVBoxLayout, QPushButton
 from PySide6.QtCore import Qt
 from PySide6 import QtCore, QtGui, QtWidgets
-import my_data as dt
+import control.data_control as dt
+from control.settings_control import SettingControl
 import time, os, sys
 
 
@@ -10,7 +11,10 @@ class StarterDialog(QDialog):
         super().__init__()
         self.setWindowTitle("Запуск программы")
         self.resize(350, 300)
-        
+
+        self.settings_control = SettingControl()
+        self.settings_control.theme_changed.connect(self.theme_switch)
+
         self.setStyleSheet(dt.dark_stylesheet if dt.theme == "Dark" else dt.light_stylesheet)
         self.vlayout = QVBoxLayout(self)
 
@@ -27,7 +31,7 @@ class StarterDialog(QDialog):
         self.vlayout.addWidget(self.accept_but, alignment=Qt.AlignmentFlag.AlignHCenter)
 
         self.theme_switch = QPushButton("Поменять тему")
-        self.theme_switch.clicked.connect(self.on_theme_switch)
+        self.theme_switch.clicked.connect(self.settings_control.on_theme_change)
         self.vlayout.addWidget(self.theme_switch, alignment=Qt.AlignmentFlag.AlignLeft)
 
     @QtCore.Slot()
@@ -35,10 +39,8 @@ class StarterDialog(QDialog):
         time.sleep(0.3)
         self.accept()
 
-    @QtCore.Slot()
-    def on_theme_switch(self):
-        dt.switch_theme()
-        if dt.theme == "Dark":
+    def theme_switch(self, theme):
+        if theme == "dark":
             self.setStyleSheet(dt.dark_stylesheet)
         else:
             self.setStyleSheet(dt.light_stylesheet)

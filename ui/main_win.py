@@ -1,20 +1,22 @@
 from PySide6 import QtWidgets, QtCore, QtGui, QtSvg
-from my_widgets import KeyWidget, KeyTextEdit, KeyProgressDisplay
-import my_data as dt
+from ui.my_widgets import KeyWidget, KeyTextEdit, KeyProgressDisplay
+import control.data_control as dt
+from control.settings_control import SettingControl
 
 import time
 import random as rd
 
 
 class MainWindow(QtWidgets.QMainWindow):
-
     key_theme_switch = QtCore.Signal(list)
 
     def __init__(self):
         super().__init__()
         self.data = dt.KeyTrainerData()
         self.resize(700,500)
-
+        
+        self.settings_control = SettingControl()
+        self.settings_control.theme_changed.connect(self.theme_switch)
         # self.setWindowIcon(QtGui.QIcon("resources/keyIc (2).ico"))
 
         self.setStyleSheet(dt.dark_stylesheet if dt.theme == "Dark" else dt.light_stylesheet)
@@ -31,8 +33,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.close_butt.clicked.connect(self.on_exit_released)
         self.central_layout.addWidget(self.close_butt, 0, 1, QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignTop)
 
-        self.theme_switch = QtWidgets.QPushButton("Поменять тему")
-        self.theme_switch.clicked.connect(self.on_theme_switch)
+        self.theme_switch_butt = QtWidgets.QPushButton("Поменять тему")
+        self.theme_switch_butt.clicked.connect(self.settings_control.on_theme_change)
         self.central_layout.addWidget(self.theme_switch, 10, 0, QtCore.Qt.AlignmentFlag.AlignLeft)
 
 
@@ -135,10 +137,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_hard_released(self):
         self.text_display.setText(self.data.hard_text[rd.randint(0, len(self.data.hard_text) - 1)])
 
-    @QtCore.Slot()
-    def on_theme_switch(self):
-        dt.switch_theme()
-        if dt.theme == "Dark":
+
+    def theme_switch(self, theme):
+        if theme == "Dark":
             self.setStyleSheet(dt.dark_stylesheet)
             self.key_theme_switch.emit(KeyWidget.dark)
         else:
