@@ -1,10 +1,10 @@
 from PySide6.QtWidgets import QApplication, QStyleFactory, QDialog
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import Qt
-from my_widgets import StarterDialog
-from main_win import MainWindow
+from ui.my_widgets import StarterDialog
+from ui.main_win import MainWindow
 import sys
-import my_data  as dt
+import control.data_control  as dt
 
 
 
@@ -13,7 +13,7 @@ if __name__ == "__main__":
     app = QApplication()
     app.setStyle("Fusion")
 
-    with open(dt.resource_path("style.qss"), "r") as f:
+    with open(dt.resource_path("styles/style.qss"), "r") as f:
         app.setStyleSheet(f.read())
     login_dialog = StarterDialog()
     if login_dialog.exec() == QDialog.Accepted:
