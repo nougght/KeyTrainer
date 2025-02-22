@@ -15,11 +15,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.data = dt.KeyTrainerData()
         self.resize(700,500)
         
-        self.settings_control = SettingControl()
-        self.settings_control.theme_changed.connect(self.theme_switch)
+       
         # self.setWindowIcon(QtGui.QIcon("resources/keyIc (2).ico"))
 
-        self.setStyleSheet(dt.dark_stylesheet if dt.theme == "Dark" else dt.light_stylesheet)
+        
 
         self.setWindowTitle("Key Trainer")
         self.central_widget = QtWidgets.QWidget()
@@ -33,9 +32,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.close_butt.clicked.connect(self.on_exit_released)
         self.central_layout.addWidget(self.close_butt, 0, 1, QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignTop)
 
-        self.theme_switch_butt = QtWidgets.QPushButton("Поменять тему")
-        self.theme_switch_butt.clicked.connect(self.settings_control.on_theme_change)
-        self.central_layout.addWidget(self.theme_switch, 10, 0, QtCore.Qt.AlignmentFlag.AlignLeft)
+        self.theme_switch_button = QtWidgets.QPushButton("Поменять тему")
+        self.central_layout.addWidget(self.theme_switch_button, 10, 0, QtCore.Qt.AlignmentFlag.AlignLeft)
 
 
         self.toolbar = QtWidgets.QToolBar()

@@ -16,17 +16,9 @@ if __name__ == "__main__":
     with open(dt.resource_path("styles/style.qss"), "r") as f:
         app.setStyleSheet(f.read())
     
-    main_control = mainControl()
-    
-    sys.exit(app.exec())
-
-    
-    login_dialog = StarterDialog()
-    if login_dialog.exec() == QDialog.Accepted:
-        widget = MainWindow()
-        widget.showFullScreen()
         app.setWindowIcon(QIcon(dt.resource_path("resources/keyIc.ico")))
-
-
-        widget.text_display.setFocus()
         
+    main_control = mainControl()
+    sys.exit(app.exec())
+    print(1)
+

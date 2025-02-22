@@ -12,10 +12,8 @@ class StarterDialog(QDialog):
         self.setWindowTitle("Запуск программы")
         self.resize(350, 300)
 
-        self.settings_control = SettingControl()
-        self.settings_control.theme_changed.connect(self.theme_switch)
+        self.selected_profile = None
 
-        self.setStyleSheet(dt.dark_stylesheet if dt.theme == "Dark" else dt.light_stylesheet)
         self.vlayout = QVBoxLayout(self)
 
         self.profile_box = QComboBox()
@@ -27,13 +25,19 @@ class StarterDialog(QDialog):
         self.vlayout.addWidget(self.profile_box)
 
         self.accept_but = QPushButton("Войти")
-        self.accept_but.clicked.connect(self.on_accept)
+        self.accept_but.clicked.connect(self.accept)
         self.vlayout.addWidget(self.accept_but, alignment=Qt.AlignmentFlag.AlignHCenter)
 
-        self.theme_switch = QPushButton("Поменять тему")
-        self.theme_switch.clicked.connect(self.settings_control.on_theme_change)
-        self.vlayout.addWidget(self.theme_switch, alignment=Qt.AlignmentFlag.AlignLeft)
+        self.theme_switch_button = QPushButton("Поменять тему")
+        self.vlayout.addWidget(self.theme_switch_button, alignment=Qt.AlignmentFlag.AlignLeft)
 
+    def accept(self):
+        self.selected_profile = None
+        return super().accept()
+    
+    def get_selected_profile(self):
+        return self.selected_profile
+    
     @QtCore.Slot()
     def on_accept(self):
         time.sleep(0.3)
