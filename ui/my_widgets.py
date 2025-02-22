@@ -51,15 +51,15 @@ class KeyWidget(QLabel):
     dark = [light[1], light[0]]
     def __init__(self, text, parent=None):
         super().__init__(text, parent)
-        self.setAlignment(Qt.AlignCenter)
+        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setFont(QtGui.QFont("consolas", 50, 500))
 
 
         
-    def set_active(self, active):
+    def set_active(self, active, theme):
         style = (
             self.light[active]
-            if dt.theme == "Light"
+            if theme == "light"
             else self.dark[active]
         )
         print(style, active, self.dark[0])

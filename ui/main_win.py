@@ -114,6 +114,7 @@ class MainWindow(QtWidgets.QMainWindow):
         print(len(wid))
         wid[0].set_active(isPress)
 
+    @QtCore.Slot()
     def on_finished(self):
         self.char_pos_label.on_inc_progress()
         finish = QtWidgets.QMessageBox(parent = self, text = "Perfect!")
@@ -137,7 +138,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_hard_released(self):
         self.text_display.setText(self.data.hard_text[rd.randint(0, len(self.data.hard_text) - 1)])
 
-
+    
     def theme_switch(self, theme):
         if theme == "Dark":
             self.setStyleSheet(dt.dark_stylesheet)
