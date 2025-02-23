@@ -5,9 +5,9 @@ class TypingControl(QObject):
     def __init__(self, text_list_model, word_list_model, main_window):
         super().__init__()
         self.text_list_model = text_list_model
-        self.text_list_model.load_from_json("Data/texts.json")
+        self.text_list_model.load_from_json("data/texts.json")
         self.word_list_model = word_list_model
-        self.word_list_model.load_from_json("Data/words.json")
+        self.word_list_model.load_from_json("data/words.json")
 
         self.mod = 'words'
         self.difficulty = 'easy'
