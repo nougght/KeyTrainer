@@ -32,6 +32,10 @@ class WordList:
     def get_random_word(self, language):
         return self.languages[language][random.randint(0, len(self.languages[language]))]
 
+    def gen_text(self, language, length):
+        words = self.languages[language]
+        return ' '.join(random.choices(words, k=length))
+
 
 # # Пример загрузки
 word_collection = WordList()

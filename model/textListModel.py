@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 import json
+import random
 
 @dataclass
 class Text:
@@ -22,8 +23,12 @@ class TextList:
         self.texts = [text for text in self.texts if text.id != text_id]
 
     def filter_by_lang_diff(self, language: str, difficulty: str):
-        return [text for text in self.en_texts if text.language == language and text.difficulty == difficulty]
+        return [text for text in self.texts if text.language == language and text.difficulty == difficulty]
 
+    def get_random_text(self, language: str, difficulty: str):
+        texts = self.filter_by_lang_diff(language, difficulty)
+        return texts[random.randint(0, len(texts) - 1)].content
+    
     # def find_by_id(self, text_id: int) -> Text:
     #     return next((text for text in self.en_texts if text.id == text_id), None)
 

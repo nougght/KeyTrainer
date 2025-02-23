@@ -28,7 +28,7 @@ class settingsModel:
         return self.def_stylesheet
 
     def get_theme_style(self):
-        return self.light_stylesheet if self.get_theme() == "light" else "dark"
+        return self.light_stylesheet if self.get_theme() == "light" else self.dark_stylesheet
     
     def switch_theme(self):
         self.settings.setValue("theme", "dark" if self.get_theme() == "light" else "light")

@@ -15,15 +15,19 @@ class SettingControl(QtCore.QObject):
         super().__init__()
         self.model = settings_model
 
+
         start_window.setStyleSheet(self.model.get_theme_style())
         main_window.setStyleSheet(self.model.get_theme_style())
         start_window.theme_switch_button.clicked.connect(self.on_theme_change)
         main_window.theme_switch_button.clicked.connect(self.on_theme_change)
-        self.theme_changed.connect(start_window.setStyleSheet)
         self.theme_changed.connect(main_window.setStyleSheet)
+        self.theme_changed.connect(start_window.setStyleSheet)
+        self.theme_changed.connect(main_window.on_key_theme_switch)
+        
 
     def on_theme_change(self):
         self.model.switch_theme()
+        print(self.model.get_theme())
         self.theme_changed.emit(self.model.get_theme_style())
 
     def set_def_style(self, wid: QWidget):

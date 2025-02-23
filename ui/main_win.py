@@ -8,17 +8,16 @@ import random as rd
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    key_theme_switch = QtCore.Signal(list)
-
+    key_theme_switch = QtCore.Signal()
+    difficulty_change = QtCore.Signal(str)
+    language_change = QtCore.Signal(str)
+    mod_change = QtCore.Signal(str)
     def __init__(self):
         super().__init__()
         self.data = dt.KeyTrainerData()
         self.resize(700,500)
-        
-       
-        # self.setWindowIcon(QtGui.QIcon("resources/keyIc (2).ico"))
 
-        
+        # self.setWindowIcon(QtGui.QIcon("resources/keyIc (2).ico"))
 
         self.setWindowTitle("Key Trainer")
         self.central_widget = QtWidgets.QWidget()
@@ -35,11 +34,28 @@ class MainWindow(QtWidgets.QMainWindow):
         self.theme_switch_button = QtWidgets.QPushButton("Поменять тему")
         self.central_layout.addWidget(self.theme_switch_button, 10, 0, QtCore.Qt.AlignmentFlag.AlignLeft)
 
-
         self.toolbar = QtWidgets.QToolBar()
         self.tb_spacer1 = QtWidgets.QWidget()
         self.tb_spacer1.setSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred,QtWidgets.QSizePolicy.Policy.MinimumExpanding,)
         self.toolbar.addWidget(self.tb_spacer1)
+
+        self.words_action = QtWidgets.QWidgetAction(self.toolbar)
+        self.words_action.setText("Words")
+        self.toolbar.addAction(self.words_action)
+        self.words_action.triggered.connect(self.on_words_released)
+
+        self.text_action = QtWidgets.QWidgetAction(self.toolbar)
+        self.text_action.setText("Text")
+        self.toolbar.addAction(self.text_action)
+        self.text_action.triggered.connect(self.on_text_released)
+
+        self.tb_spacer3 = QtWidgets.QWidget()
+        self.tb_spacer3.setSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Preferred,
+            QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+        )
+        self.toolbar.addWidget(self.tb_spacer3)
+
         self.action1 = QtWidgets.QWidgetAction(self.toolbar)
         self.action1.setText("Easy")
         self.toolbar.addAction(self.action1)
@@ -74,7 +90,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.text_display.textSizeChanged.connect(self.char_pos_label.reset)
         self.text_display.cursorPositionChanged.connect(self.char_pos_label.on_inc_progress)
         self.text_display.typo.connect(self.char_pos_label.on_typo)
-        self.action1.trigger()
+
 
         self.central_layout.addWidget(self.text_display, 2, 0, 1, 2)
         self.vert_spacer_1 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
@@ -108,10 +124,14 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_key_switch(self, ch, isPress):
         if ch == ' ':
             ch = 'space'
-        wid = self.findChildren(KeyWidget, ch.lower())
+        wid = self.central_widget.findChildren(KeyWidget, ch.lower())
         print(len(wid))
         wid[0].set_active(isPress)
 
+    def setStyleSheet(self, styleSheet):
+        print("yoooooo")
+        super().setStyleSheet(styleSheet)
+        print(styleSheet)
     @QtCore.Slot()
     def on_finished(self):
         self.char_pos_label.on_inc_progress()
@@ -125,23 +145,26 @@ class MainWindow(QtWidgets.QMainWindow):
         self.close()
 
     @QtCore.Slot()
+    def on_words_released(self):
+        self.mod_change.emit("words")
+
+    @QtCore.Slot()
+    def on_text_released(self):
+        self.mod_change.emit("text")
+
+
+    @QtCore.Slot()
     def on_easy_released(self):
-        self.text_display.setText(self.data.easy_text[rd.randint(0, len(self.data.easy_text) - 1)])
+        self.difficulty_change.emit("easy")
 
     @QtCore.Slot()
     def on_mid_released(self):
-        self.text_display.setText(self.data.mid_text[rd.randint(0, len(self.data.mid_text) - 1)])
+        self.difficulty_change.emit("normal")
 
     @QtCore.Slot()
     def on_hard_released(self):
-        self.text_display.setText(self.data.hard_text[rd.randint(0, len(self.data.hard_text) - 1)])
+        self.difficulty_change.emit("hard")
 
-    
-    def theme_switch(self, theme):
-        if theme == "Dark":
-            self.setStyleSheet(dt.dark_stylesheet)
-            self.key_theme_switch.emit(KeyWidget.dark)
-        else:
-            self.setStyleSheet(dt.light_stylesheet)
-            self.key_theme_switch.emit(KeyWidget.light)
+    def on_key_theme_switch(self, style):
+        self.key_theme_switch.emit()
         self.text_display.setFocus()

@@ -43,35 +43,26 @@ class StarterDialog(QDialog):
         time.sleep(0.3)
         self.accept()
 
-    def theme_switch(self, theme):
-        if theme == "dark":
-            self.setStyleSheet(dt.dark_stylesheet)
-        else:
-            self.setStyleSheet(dt.light_stylesheet)
-
 
 class KeyWidget(QLabel):
-    light = ["background: #88C0D0; color: #090f1b; border: 2px solid #090f1b;","background: #090f1b; border: 2px solid #88C0D0; color: #88C0D0;"]
-    dark = [light[1], light[0]]
+    theme = [
+        "background: #88C0D0; color: #090f1b; border: 2px solid #090f1b;",
+        "background: #090f1b; border: 2px solid #88C0D0; color: #88C0D0;",
+    ]
+    style = ["background: #88C0D0; color: #090f1b; border: 2px solid #090f1b;","background: #090f1b; border: 2px solid #88C0D0; color: #88C0D0;"]
+    # dark = [light[1], light[0]]
     def __init__(self, text, parent=None):
         super().__init__(text, parent)
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setFont(QtGui.QFont("consolas", 50, 500))
 
+    def set_active(self, active):
+        self.setStyleSheet(f"KeyWidget  {{ {self.style[active]} }}")
 
-        
-    def set_active(self, active, theme):
-        style = (
-            self.light[active]
-            if theme == "light"
-            else self.dark[active]
-        )
-        print(style, active, self.dark[0])
-        self.setStyleSheet(f"KeyWidget  {{ {style} }}")
-    
     @QtCore.Slot()
-    def on_theme_switch(self, th_st):
-        self.setStyleSheet(f"KeyWidget  {{ {th_st[0]} }}")
+    def on_theme_switch(self):
+        self.style = [self.style[1], self.style[0]]
+        self.setStyleSheet(f"KeyWidget  {{ {self.style[0]} }}")
 
 
 class KeyProgressDisplay(QLabel):
@@ -105,12 +96,12 @@ class KeyProgressDisplay(QLabel):
 
 
 class KeyTextEdit(QTextEdit):
-    key_press_release = QtCore.Signal(str, bool)
+    key_press_release = QtCore.Signal(str, bool )
     textSizeChanged = QtCore.Signal(int)
     finished = QtCore.Signal()
     typo = QtCore.Signal()
 
-    def __init__(self, text = ''):
+    def __init__(self):
         super().__init__()
 
         # Инициализация формата подчёркивания
@@ -124,7 +115,6 @@ class KeyTextEdit(QTextEdit):
         self.passed_format.setBackground(QtGui.QColor("#279346"))
 
         self.setReadOnly(True)
-        self.setText(text)
         # self.text_display.setFixedHeight(150)
         self.setFont(QtGui.QFont("Consolas", 35, 500))
         self.setAlignment(QtCore.Qt.AlignmentFlag.AlignVCenter)

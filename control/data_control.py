@@ -13,10 +13,10 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
-with open(resource_path("styles/light.qss"), "r") as f:
-    light_stylesheet = f.read()
-with open(resource_path("styles/dark.qss"), "r") as f:
-    dark_stylesheet = f.read()
+# with open(resource_path("styles/light.qss"), "r") as f:
+#     light_stylesheet = f.read()
+# with open(resource_path("styles/dark.qss"), "r") as f:
+#     dark_stylesheet = f.read()
 
 
 

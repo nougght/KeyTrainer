@@ -30,7 +30,6 @@ class mainControl(QObject):
         if self.start_window.exec() == QDialog.Accepted:
             self.main_window.showFullScreen()
             self.main_window.text_display.setFocus()
-            self.setting_control.theme_changed.connect(self.main_window.theme_switch)
 
     def start_new_session(self, profile_name):
         self.profile_controller.load_profile(profile_name)
