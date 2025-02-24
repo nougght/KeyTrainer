@@ -39,6 +39,23 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tb_spacer1.setSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred,QtWidgets.QSizePolicy.Policy.MinimumExpanding,)
         self.toolbar.addWidget(self.tb_spacer1)
 
+        self.rus_action = QtWidgets.QWidgetAction(self.toolbar)
+        self.rus_action.setText("Russian")
+        self.toolbar.addAction(self.rus_action)
+        self.rus_action.triggered.connect(self.on_rus_released)
+
+        self.eng_action = QtWidgets.QWidgetAction(self.toolbar)
+        self.eng_action.setText("English")
+        self.toolbar.addAction(self.eng_action)
+        self.eng_action.triggered.connect(self.on_eng_released)
+
+        self.tb_spacer4 = QtWidgets.QWidget()
+        self.tb_spacer4.setSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Preferred,
+            QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+        )
+        self.toolbar.addWidget(self.tb_spacer4)
+
         self.words_action = QtWidgets.QWidgetAction(self.toolbar)
         self.words_action.setText("Words")
         self.toolbar.addAction(self.words_action)
@@ -90,7 +107,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.text_display.textSizeChanged.connect(self.char_pos_label.reset)
         self.text_display.cursorPositionChanged.connect(self.char_pos_label.on_inc_progress)
         self.text_display.typo.connect(self.char_pos_label.on_typo)
-
 
         self.central_layout.addWidget(self.text_display, 2, 0, 1, 2)
         self.vert_spacer_1 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
@@ -145,13 +161,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.close()
 
     @QtCore.Slot()
+    def on_rus_released(self):
+        self.language_change.emit("russian")
+
+    @QtCore.Slot()
+    def on_eng_released(self):
+        self.language_change.emit("english")
+
+    @QtCore.Slot()
     def on_words_released(self):
         self.mod_change.emit("words")
 
     @QtCore.Slot()
     def on_text_released(self):
         self.mod_change.emit("text")
-
 
     @QtCore.Slot()
     def on_easy_released(self):

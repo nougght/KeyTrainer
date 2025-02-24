@@ -4,6 +4,13 @@ QWidget {
     color: #000000;
 }
 
+QToolBar {
+    background: #cecece;
+}
+
+QToolBar > QWidget {
+    background: #cecece;
+}
 
 QPushButton {
     background-color: #b4b4b4;
