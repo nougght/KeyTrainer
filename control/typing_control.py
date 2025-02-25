@@ -1,13 +1,15 @@
 from PySide6.QtCore import QObject
 from PySide6.QtCore import Signal
+import sys, os
+
 class TypingControl(QObject):
     text_changed = Signal(str)
     def __init__(self, text_list_model, word_list_model, main_window):
         super().__init__()
         self.text_list_model = text_list_model
-        self.text_list_model.load_from_json("data/texts.json")
+        self.text_list_model.load_from_json(self.resource_path("data/texts.json"))
         self.word_list_model = word_list_model
-        self.word_list_model.load_from_json("data/words.json")
+        self.word_list_model.load_from_json(self.resource_path("data/words.json"))
 
         self.mod = 'words'
         self.difficulty = 'easy'
@@ -26,7 +28,6 @@ class TypingControl(QObject):
             text = self.word_list_model.gen_text(self.language, length)
         self.text_changed.emit(text)
 
-
     def on_language_change(self, language="english"):
         self.language = language
         self.change_text()
@@ -35,8 +36,17 @@ class TypingControl(QObject):
         self.mod = mod
         self.change_text()
 
-
     def on_difficulty_change(self, difficulty="easy"):
         self.difficulty = difficulty
         self.change_text()
 
+    def resource_path(self, relative_path):
+        """Get the absolute path to the resource, works for dev and for PyInstaller"""
+        if hasattr(sys, "_MEIPASS"):
+            # Если приложение запущено из собранного exe
+            base_path = sys._MEIPASS
+        else:
+            # Если приложение запущено из исходного кода
+            base_path = os.path.abspath(".")
+
+        return os.path.join(base_path, relative_path)

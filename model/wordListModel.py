@@ -38,9 +38,9 @@ class WordList:
 
 
 # # Пример загрузки
-word_collection = WordList()
-word_collection.load_from_json("./data/words.json")
-print(word_collection.get_random_word("russian"))
+# word_collection = WordList()
+# word_collection.load_from_json("./data/words.json")
+# print(word_collection.get_random_word("russian"))
 # for language, lst in word_collection.languages.items():
 #     print(language)
 #     for word in lst:
