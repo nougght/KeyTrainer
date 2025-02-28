@@ -3,9 +3,12 @@ from PySide6.QtCore import Signal
 import sys, os
 
 class TypingControl(QObject):
+    toolbt_activate = Signal(str, bool)
+
     text_changed = Signal(str)
     def __init__(self, text_list_model, word_list_model, main_window):
         super().__init__()
+        self.toolbt_activate.connect(main_window.toolbutton_activate)
         self.text_list_model = text_list_model
         self.text_list_model.load_from_json(self.resource_path("data/texts.json"))
         self.word_list_model = word_list_model
@@ -13,7 +16,11 @@ class TypingControl(QObject):
 
         self.mod = 'words'
         self.difficulty = 'easy'
-        self.language = 'english'
+        self.language = "english"
+        self.toolbt_activate.emit(self.mod, True)
+        self.toolbt_activate.emit(self.difficulty, True)
+        self.toolbt_activate.emit(self.language, True)
+
         main_window.language_change.connect(self.on_language_change)
         main_window.mod_change.connect(self.on_mod_change)
         main_window.difficulty_change.connect(self.on_difficulty_change)
@@ -29,16 +36,25 @@ class TypingControl(QObject):
         self.text_changed.emit(text)
 
     def on_language_change(self, language="english"):
-        self.language = language
-        self.change_text()
+        if self.language != language:
+            self.toolbt_activate.emit(self.language, False)
+            self.toolbt_activate.emit(language, True)
+            self.language = language
+            self.change_text()
 
     def on_mod_change(self, mod="words"):
-        self.mod = mod
-        self.change_text()
+        if self.mod != mod:
+            self.toolbt_activate.emit(self.mod, False)
+            self.toolbt_activate.emit(mod, True)
+            self.mod = mod
+            self.change_text()
 
     def on_difficulty_change(self, difficulty="easy"):
-        self.difficulty = difficulty
-        self.change_text()
+        if self.difficulty != difficulty:
+            self.toolbt_activate.emit(self.difficulty, False)
+            self.toolbt_activate.emit(difficulty, True)
+            self.difficulty = difficulty
+            self.change_text()
 
     def resource_path(self, relative_path):
         """Get the absolute path to the resource, works for dev and for PyInstaller"""

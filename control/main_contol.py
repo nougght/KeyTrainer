@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QDialog
 from model import settingsModel, statisticsModel, ProfilesList, WordList, TextList
 
 from ui.main_win import MainWindow
-from ui.my_widgets import StarterDialog
+from ui.my_widgets import StarterDialog, KeyWidget
 from control import TypingControl, SettingControl
 
 class mainControl(QObject):
@@ -18,12 +18,16 @@ class mainControl(QObject):
         self.start_window = StarterDialog()
         # self.statistics_view = StatisticsView()
 
-
         self.typing_control = TypingControl(self.text_list_model, self.word_list_model, self.main_window)
         self.setting_control = SettingControl(self.settings_model, self.main_window, self.start_window)
         # self.statistics_control = StatisticsController(self.statistics_model, self.statistics_view)
         # self.profile_controller = ProfileController(self.profile_model, self.start_window_view)
 
+        KeyWidget.style[0], KeyWidget.style[1] = (
+            (KeyWidget.style[1], KeyWidget.style[0])
+            if self.settings_model.get_theme() == "dark"
+            else (KeyWidget.style[0], KeyWidget.style[1])
+        )
         self.show_starter_window()
 
     def show_starter_window(self):

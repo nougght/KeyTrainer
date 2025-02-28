@@ -9,16 +9,16 @@ QToolBar {
     background: #3f3f3f;
 }
 
-QToolBar > QWidget {
-    background: #3f3f3f;
+QToolBar > QWidget#spacer {
+    background: transparent;
 }
 
-QPushButton {
-    background-color: #3a3a3a;
+QPushButton, QToolButton {
+    background-color: #363636;
     color: #ffffff;
 }
 
-QPushButton:hover {
+QPushButton:hover, QToolButton:hover {
     background-color: #4a4a4a;
 }
 

@@ -45,13 +45,9 @@ class StarterDialog(QDialog):
 
 
 class KeyWidget(QLabel):
-    theme = [
-        "background: #88C0D0; color: #090f1b; border: 2px solid #090f1b;",
-        "background: #090f1b; border: 2px solid #88C0D0; color: #88C0D0;",
-    ]
-    style = ["background: #88C0D0; color: #090f1b; border: 2px solid #090f1b;","background: #090f1b; border: 2px solid #88C0D0; color: #88C0D0;"]
-    # dark = [light[1], light[0]]
-    def __init__(self, text, parent=None):
+    style = ["background: #88C0D0; color: #090f1b; border: 2px solid #090f1b;",
+             "background: #090f1b; border: 2px solid #88C0D0; color: #88C0D0;"]
+    def __init__(self, text, parent=None, isdark=False):
         super().__init__(text, parent)
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setFont(QtGui.QFont("consolas", 50, 500))
@@ -115,16 +111,18 @@ class KeyTextEdit(QTextEdit):
         self.passed_format.setBackground(QtGui.QColor("#279346"))
 
         self.setReadOnly(True)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         # self.text_display.setFixedHeight(150)
+        # self.setFixedHeight(200)
         self.setFont(QtGui.QFont("Consolas", 35, 500))
         self.setAlignment(QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.cursorForPosition(QtCore.QPoint(0, 0))
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
-        self.setFrameStyle(
-            QtWidgets.QFrame.Box| QtWidgets.QFrame.Plain
-        )
+        # self.setFrameStyle(
+        #     QtWidgets.QFrame.Box| QtWidgets.QFrame.Plain
+        # )
         # Прямоугольник без тени
         # self.setFrameStyle(QtWidgets.QFrame.Panel | QtWidgets.QFrame.Raised)  # Панель с объёмной тенью
 
@@ -150,6 +148,10 @@ class KeyTextEdit(QTextEdit):
         self.setTextCursor(cursor)
         self.textSizeChanged.emit(len(text))
 
+    def get_progress(self):
+        cursor = self.textCursor()
+        return int(cursor.position() / len(self.toPlainText()) * 100)
+    
     def keyPressEvent(self, event):
         ch = event.text()
 

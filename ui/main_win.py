@@ -36,7 +36,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.toolbar = QtWidgets.QToolBar()
         self.tb_spacer1 = QtWidgets.QWidget()
-        self.tb_spacer1.setSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred,QtWidgets.QSizePolicy.Policy.MinimumExpanding,)
+
+        self.tb_spacer1.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,QtWidgets.QSizePolicy.Policy.MinimumExpanding,)
         self.toolbar.addWidget(self.tb_spacer1)
 
         self.rus_action = QtWidgets.QWidgetAction(self.toolbar)
@@ -49,12 +50,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.toolbar.addAction(self.eng_action)
         self.eng_action.triggered.connect(self.on_eng_released)
 
-        self.tb_spacer4 = QtWidgets.QWidget()
-        self.tb_spacer4.setSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Preferred,
+        self.tb_spacer2 = QtWidgets.QWidget()
+        self.tb_spacer2.setSizePolicy(
+            QtWidgets.QSizePolicy.Policy.MinimumExpanding,
             QtWidgets.QSizePolicy.Policy.MinimumExpanding,
         )
-        self.toolbar.addWidget(self.tb_spacer4)
+        self.toolbar.addWidget(self.tb_spacer2)
 
         self.words_action = QtWidgets.QWidgetAction(self.toolbar)
         self.words_action.setText("Words")
@@ -68,7 +69,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.tb_spacer3 = QtWidgets.QWidget()
         self.tb_spacer3.setSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Preferred,
+            QtWidgets.QSizePolicy.Policy.MinimumExpanding,
             QtWidgets.QSizePolicy.Policy.MinimumExpanding,
         )
         self.toolbar.addWidget(self.tb_spacer3)
@@ -79,7 +80,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action1.triggered.connect(self.on_easy_released)
 
         self.action2 = QtWidgets.QWidgetAction(self.toolbar)
-        self.action2.setText("Middle")
+        self.action2.setText("Normal")
         self.toolbar.addAction(self.action2)
         self.action2.triggered.connect(self.on_mid_released)
 
@@ -88,29 +89,45 @@ class MainWindow(QtWidgets.QMainWindow):
         self.toolbar.addAction(self.action3)
         self.action3.triggered.connect(self.on_hard_released)
 
-        self.tb_spacer2 = QtWidgets.QWidget()
-        self.tb_spacer2.setSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
-        self.toolbar.addWidget(self.tb_spacer2)
-        self.tb_spacer3 = QtWidgets.QWidget()
-        self.tb_spacer3.setSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
-        self.toolbar.addWidget(self.tb_spacer3)
+        self.tb_spacer4 = QtWidgets.QWidget()
+        self.tb_spacer4.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.toolbar.addWidget(self.tb_spacer4)
+        self.tb_spacer5 = QtWidgets.QWidget()
+        self.tb_spacer5.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Expanding)
+        # self.toolbar.addWidget(self.tb_spacer5)
 
+        self.tb_spacer1.setObjectName("spacer")
+        self.tb_spacer2.setObjectName("spacer")
+        self.tb_spacer3.setObjectName("spacer")
+        self.tb_spacer4.setObjectName("spacer")
+        self.tb_spacer5.setObjectName("spacer")
+        btns = self.toolbar.findChildren(QtWidgets.QToolButton)
+        for bt in btns:
+            bt.setObjectName(bt.text().lower())
+        self.toolbar.setStyleSheet("QToolButton { width: 170%; margin: 5px 10px}")
         self.addToolBar(QtCore.Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
+        self.progress_bar = QtWidgets.QProgressBar(minimum=0, maximum=100)
+        self.central_layout.addWidget(self.progress_bar, 1, 1, QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.progress_bar.setSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.MinimumExpanding)
+        # self.progress_bar.setTextVisible(False)
 
         self.text_display = KeyTextEdit()
         self.text_display.key_press_release.connect(self.on_key_switch)
         self.text_display.finished.connect(self.on_finished)
 
+        self.text_display.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Expanding)
+
         self.char_pos_label = KeyProgressDisplay(1)
-        self.central_layout.addWidget(self.char_pos_label, 1, 0)
+        self.central_layout.addWidget(self.char_pos_label, 1, 0, QtCore.Qt.AlignmentFlag.AlignCenter)
 
         self.text_display.textSizeChanged.connect(self.char_pos_label.reset)
         self.text_display.cursorPositionChanged.connect(self.char_pos_label.on_inc_progress)
+        self.text_display.cursorPositionChanged.connect(lambda : self.progress_bar.setValue(self.text_display.get_progress()))
         self.text_display.typo.connect(self.char_pos_label.on_typo)
 
         self.central_layout.addWidget(self.text_display, 2, 0, 1, 2)
         self.vert_spacer_1 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
-        self.vert_spacer_2 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.vert_spacer_2 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
         self.vert_spacer_3 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
 
         self.central_layout.addItem(self.vert_spacer_1, 0, 0, 1, 2)
@@ -187,6 +204,16 @@ class MainWindow(QtWidgets.QMainWindow):
     @QtCore.Slot()
     def on_hard_released(self):
         self.difficulty_change.emit("hard")
+
+    @QtCore.Slot()
+    def toolbutton_activate(self, name, isactive):
+        tb = self.toolbar.findChild(QtWidgets.QToolButton, name)
+        if isactive:
+            tb.setStyleSheet("border: 5px solid #707070; font: 700 45px;")
+        else:
+            tb.setStyleSheet(
+                "QToolbutton { border: 2px solid transparent;} QToolButton:hover{ border: 2px solid #707070;}"
+            )
 
     def on_key_theme_switch(self, style):
         self.key_theme_switch.emit()

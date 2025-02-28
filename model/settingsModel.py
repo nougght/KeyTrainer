@@ -5,8 +5,9 @@ import os, sys
 class settingsModel:
     def __init__(self):
         self.settings = QSettings("pyKey", "KeyTrainer")
-        self.settings.setValue("icon_path", "resources/keyIc.ico")
-        
+        self.settings.setValue("icon_path", "data/keyIc.ico")
+        if self.settings.value("theme") == None:
+            self.settings.setValue("theme", "light")
         print(self.settings.allKeys())
 
         self.icon = QIcon(self.resource_path(self.settings.value("icon_path")))

@@ -4,20 +4,31 @@ QWidget {
     color: #000000;
 }
 
+QProgressBar {
+    margin: 0px 10px 0px;
+    text-align: center;
+}
+QProgressBar::chunk {
+    background-color:#9480eb;
+}
+
+
+
 QToolBar {
     background: #cecece;
 }
 
-QToolBar > QWidget {
-    background: #cecece;
+QToolBar > QWidget#spacer {
+    background: transparent;
 }
 
-QPushButton {
+
+QPushButton, QToolButton {
     background-color: #b4b4b4;
     color: #000000;
 }
 
-QPushButton:hover {
+QPushButton:hover, QToolButton:hover {
     background-color: #b0b0b0;
 }
 

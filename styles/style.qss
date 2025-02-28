@@ -3,36 +3,44 @@ QWidget {
     font-size: 25px;
 }
 
+QToolBar{
+    padding: 10px;
+}
 QToolButton {
     font-size: 45px;
 }
+
+
+
 
 KeyWidget {
     padding: 10px 20px 10px 20px;
     border-radius: 4px;
     margin:2px;
 }
+
 KeyWidget#space {
     padding: 10px 100px;
 }
 
 KeyTextEdit {
     font-size: 40px;
+    margin: 15px;
 }
 
 KeyProgressDisplay{
-    font: 500 35px monospace
+    font: 500 35px monospace;
 }
 
-QPushButton {
+QPushButton, QToolButton {
     padding: 5px;
     border-radius: 5px;
     border: 2px solid transparent;
     text-align: center;
 }
 
-QPushButton:hover {
-    border: 2px solid #606060;
+QPushButton:hover, QToolButton:hover {
+    border: 2px solid #707070;
 }
 
 QPushButton#exitButton {
