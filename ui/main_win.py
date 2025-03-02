@@ -34,6 +34,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.theme_switch_button = QtWidgets.QPushButton("Поменять тему")
         self.central_layout.addWidget(self.theme_switch_button, 10, 0, QtCore.Qt.AlignmentFlag.AlignLeft)
 
+        self.reset_button = QtWidgets.QPushButton("⟳")
+        self.reset_button.setObjectName("reset")
+        self.central_layout.addWidget(self.reset_button, 10, 1, QtCore.Qt.AlignmentFlag.AlignRight)
+
         self.toolbar = QtWidgets.QToolBar()
         self.tb_spacer1 = QtWidgets.QWidget()
 
@@ -153,6 +157,11 @@ class MainWindow(QtWidgets.QMainWindow):
         keys = self.central_widget.findChildren(KeyWidget)
         print(len(keys))
 
+        self.finish = QtWidgets.QMessageBox()
+        button_box = self.finish.findChild(QtWidgets.QDialogButtonBox)
+        if button_box:
+            button_box.setCenterButtons(True)
+
     def on_key_switch(self, ch, isPress):
         if ch == ' ':
             ch = 'space'
@@ -166,13 +175,14 @@ class MainWindow(QtWidgets.QMainWindow):
         print(styleSheet)
 
     @QtCore.Slot()
-    def on_stats_display(self, speed):
+    def on_stats_display(self, speed, typing_time):
         self.char_pos_label.on_inc_progress()
         self.progress_bar.setValue(100)
-        finish = QtWidgets.QMessageBox(parent = self, text = f'CPM - {speed:.2f}')
+        self.finish.setText(f'CPM - {speed:.2f} chars per minute\nTime - {typing_time:.2f} seconds')
         # speed_lb = QtWidgets.QLabel(f'CPM - {speed}', finish)
-        finish.resize(500, 500)
-        finish.exec()
+        self.finish.resize(500, 500)
+        time.sleep(0.5)
+        self.finish.exec()
 
     @QtCore.Slot()
     def on_exit_released(self):

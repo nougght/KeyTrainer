@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-import json
+import json, typing
 
 
 @dataclass
@@ -11,7 +11,7 @@ class Profile:
 
 @dataclass
 class ProfilesList:
-    profiles: list[Profile] = field(default_factory=list)
+    profiles: typing.List[Profile] = field(default_factory=list)
 
     def add_profile(self, profile: Profile):
         self.profiles.append(profile)

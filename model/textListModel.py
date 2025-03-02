@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
-import json
-import random
+import json, random, typing
 
 @dataclass
 class Text:
@@ -14,7 +13,7 @@ class Text:
 # Модель для списка текстов
 @dataclass
 class TextList:
-    texts: list[Text] = field(default_factory=list)
+    texts: typing.List[Text] = field(default_factory=list)
 
     def add_text(self, text: Text):
         self.texts.append(text)

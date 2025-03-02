@@ -57,6 +57,10 @@ KeyTextEdit{
     border: 3px solid #9480eb;
 }
 
+QPushButton#reset{
+    background: transparent;
+}
+
 QPushButton#exitButton {
     background: #a72727;
     color: #131313;

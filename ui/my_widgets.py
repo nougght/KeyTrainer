@@ -92,7 +92,7 @@ class KeyProgressDisplay(QLabel):
 
 
 class KeyTextEdit(QTextEdit):
-    key_press_release = QtCore.Signal(str, bool )
+    key_press_release = QtCore.Signal(str, bool)
     textSizeChanged = QtCore.Signal(int)
     typing_start = QtCore.Signal()
     finished = QtCore.Signal()
@@ -100,7 +100,6 @@ class KeyTextEdit(QTextEdit):
 
     def __init__(self):
         super().__init__()
-
         # Инициализация формата подчёркивания
         self.underline_format = QtGui.QTextCharFormat()
         self.underline_format.setUnderlineStyle(
@@ -127,14 +126,6 @@ class KeyTextEdit(QTextEdit):
         # Прямоугольник без тени
         # self.setFrameStyle(QtWidgets.QFrame.Panel | QtWidgets.QFrame.Raised)  # Панель с объёмной тенью
 
-        cursor = self.textCursor()
-
-        # Выделить текущий символ
-        cursor.movePosition(QtGui.QTextCursor.MoveOperation.Right, QtGui.QTextCursor.MoveMode.KeepAnchor)
-        cursor.mergeCharFormat(self.underline_format)
-        cursor.movePosition(QtGui.QTextCursor.MoveOperation.Left)
-        self.setTextCursor(cursor)
-
     def setText(self, text):
         cursor = self.textCursor()
         cursor.setCharFormat(QtGui.QTextCharFormat())
@@ -148,14 +139,17 @@ class KeyTextEdit(QTextEdit):
         cursor.movePosition(QtGui.QTextCursor.MoveOperation.Left)
         self.setTextCursor(cursor)
         self.textSizeChanged.emit(len(text))
+        print(self.textCursor().position(), ' position cursor')
 
     def get_progress(self):
+        print(self.textCursor().position(), " position cursor")
         cursor = self.textCursor()
         return int(cursor.position() / len(self.toPlainText()) * 100)
-    
+
     def keyPressEvent(self, event):
         ch = event.text()
 
+        print(self.textCursor().position(), " position cursor")
         self.key_press_release.emit(ch, True)
 
         cursor = self.textCursor()
@@ -181,14 +175,15 @@ class KeyTextEdit(QTextEdit):
                 if len(self.toPlainText()) - 1 == cursor.position():
                     self.keyReleaseEvent(event)
                     self.finished.emit()
-                cursor.movePosition(QtGui.QTextCursor.MoveOperation.Right)
-                cursor.movePosition(
-                    QtGui.QTextCursor.MoveOperation.Right,
-                    QtGui.QTextCursor.MoveMode.KeepAnchor,
-                )
-                cursor.mergeCharFormat(self.underline_format)
-                cursor.movePosition(QtGui.QTextCursor.MoveOperation.Left)
-                self.setTextCursor(cursor)
+                else:
+                    cursor.movePosition(QtGui.QTextCursor.MoveOperation.Right)
+                    cursor.movePosition(
+                        QtGui.QTextCursor.MoveOperation.Right,
+                        QtGui.QTextCursor.MoveMode.KeepAnchor,
+                    )
+                    cursor.mergeCharFormat(self.underline_format)
+                    cursor.movePosition(QtGui.QTextCursor.MoveOperation.Left)
+                    self.setTextCursor(cursor)
 
                 print()
             else:

@@ -49,6 +49,10 @@ KeyTextEdit{
 }
 
 
+QPushButton#reset{
+    background: transparent;
+}
+
 QPushButton#exitButton {
     background: #501717;
     color: #f0f0f0;

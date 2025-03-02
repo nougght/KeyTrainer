@@ -4,7 +4,7 @@ import os, sys
 
 class settingsModel:
     def __init__(self):
-        self.settings = QSettings("pyKey", "KeyT")
+        self.settings = QSettings("pyKey", "Key")
         self.settings.setValue("icon_path", "data/keyIc.ico")
         if self.settings.value("theme") == None:
             self.settings.setValue("theme", "light")

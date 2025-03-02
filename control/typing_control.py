@@ -3,7 +3,7 @@ import time, sys, os
 
 class TypingControl(QObject):
     toolbt_activate = Signal(str, bool)
-    typing_stats = Signal(float)
+    typing_stats = Signal(float, float)
     text_changed = Signal(str)
     def __init__(self, text_list_model, word_list_model, main_window):
         super().__init__()
@@ -22,14 +22,16 @@ class TypingControl(QObject):
         self.toolbt_activate.emit(self.difficulty, True)
         self.toolbt_activate.emit(self.language, True)
 
+        main_window.finish.accepted.connect(self.change_text)
+        main_window.reset_button.clicked.connect(self.change_text)
         main_window.language_change.connect(self.on_language_change)
         main_window.mod_change.connect(self.on_mod_change)
         main_window.difficulty_change.connect(self.on_difficulty_change)
         self.text_changed.connect(main_window.text_display.setText)
-        main_window.on_mid_released()
         main_window.text_display.typing_start.connect(self.on_typing_start)
         main_window.text_display.finished.connect(self.on_typing_finished)
         self.typing_stats.connect(main_window.on_stats_display)
+        self.change_text()
 
     def change_text(self):
         if self.mod == "text":
@@ -46,8 +48,9 @@ class TypingControl(QObject):
 
     def on_typing_finished(self):
         self.finish_time = time.time()
-        self.typing_stats.emit(len(self.text) / (self.finish_time - self.start_time) * 60)
-    
+        typing_time = self.finish_time = self.start_time
+        self.typing_stats.emit(len(self.text) / typing_time * 60, typing_time)
+        
     def on_language_change(self, language="english"):
         if self.language != language:
             self.toolbt_activate.emit(self.language, False)

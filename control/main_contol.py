@@ -5,6 +5,7 @@ from model import settingsModel, statisticsModel, ProfilesList, WordList, TextLi
 from ui.main_win import MainWindow
 from ui.my_widgets import StarterDialog, KeyWidget
 from control import TypingControl, SettingControl
+import sys
 
 class mainControl(QObject):
     def __init__(self):
@@ -34,6 +35,9 @@ class mainControl(QObject):
         if self.start_window.exec() == QDialog.Accepted:
             self.main_window.showFullScreen()
             self.main_window.text_display.setFocus()
+        else:
+            sys.exit()
+            
 
     def start_new_session(self, profile_name):
         self.profile_controller.load_profile(profile_name)
