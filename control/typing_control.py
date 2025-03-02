@@ -1,13 +1,14 @@
-from PySide6.QtCore import QObject
-from PySide6.QtCore import Signal
-import sys, os
+from PySide6.QtCore import QObject, Signal, QTimer
+import time, sys, os
 
 class TypingControl(QObject):
     toolbt_activate = Signal(str, bool)
-
+    typing_stats = Signal(float)
     text_changed = Signal(str)
     def __init__(self, text_list_model, word_list_model, main_window):
         super().__init__()
+        self.timer = QTimer(self)
+        
         self.toolbt_activate.connect(main_window.toolbutton_activate)
         self.text_list_model = text_list_model
         self.text_list_model.load_from_json(self.resource_path("data/texts.json"))
@@ -26,15 +27,27 @@ class TypingControl(QObject):
         main_window.difficulty_change.connect(self.on_difficulty_change)
         self.text_changed.connect(main_window.text_display.setText)
         main_window.on_mid_released()
+        main_window.text_display.typing_start.connect(self.on_typing_start)
+        main_window.text_display.finished.connect(self.on_typing_finished)
+        self.typing_stats.connect(main_window.on_stats_display)
 
     def change_text(self):
         if self.mod == "text":
-            text = self.text_list_model.get_random_text(self.language, self.difficulty)
+            self.text = self.text_list_model.get_random_text(self.language, self.difficulty)
         else:
             length = 20 if self.difficulty == 'easy' else 40 if self.difficulty == 'normal' else 60
-            text = self.word_list_model.gen_text(self.language, length)
-        self.text_changed.emit(text)
+            self.text = self.word_list_model.gen_text(self.language, length)
+        self.text_changed.emit(self.text)
+    
+    def on_typing_start(self):
+        self.start_time = time.time()
 
+        print(self.start_time)
+
+    def on_typing_finished(self):
+        self.finish_time = time.time()
+        self.typing_stats.emit(len(self.text) / (self.finish_time - self.start_time) * 60)
+    
     def on_language_change(self, language="english"):
         if self.language != language:
             self.toolbt_activate.emit(self.language, False)

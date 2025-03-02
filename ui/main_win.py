@@ -113,7 +113,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.text_display = KeyTextEdit()
         self.text_display.key_press_release.connect(self.on_key_switch)
-        self.text_display.finished.connect(self.on_finished)
 
         self.text_display.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Expanding)
 
@@ -165,11 +164,14 @@ class MainWindow(QtWidgets.QMainWindow):
         print("yoooooo")
         super().setStyleSheet(styleSheet)
         print(styleSheet)
+
     @QtCore.Slot()
-    def on_finished(self):
+    def on_stats_display(self, speed):
         self.char_pos_label.on_inc_progress()
-        finish = QtWidgets.QMessageBox(parent = self, text = "Perfect!")
-        finish.resize(200,200)
+        self.progress_bar.setValue(100)
+        finish = QtWidgets.QMessageBox(parent = self, text = f'CPM - {speed:.2f}')
+        # speed_lb = QtWidgets.QLabel(f'CPM - {speed}', finish)
+        finish.resize(500, 500)
         finish.exec()
 
     @QtCore.Slot()

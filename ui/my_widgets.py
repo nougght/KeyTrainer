@@ -94,6 +94,7 @@ class KeyProgressDisplay(QLabel):
 class KeyTextEdit(QTextEdit):
     key_press_release = QtCore.Signal(str, bool )
     textSizeChanged = QtCore.Signal(int)
+    typing_start = QtCore.Signal()
     finished = QtCore.Signal()
     typo = QtCore.Signal()
 
@@ -158,7 +159,10 @@ class KeyTextEdit(QTextEdit):
         self.key_press_release.emit(ch, True)
 
         cursor = self.textCursor()
-        print(cursor.position())
+        if cursor.position() == 0:
+            self.typing_start.emit()
+
+        print(cursor.position(), 'pos')
         print(ch.lower())
         if event.key() == QtCore.Qt.Key.Key_Enter or event.key() == QtCore.Qt.Key.Key_Shift:
             pass
