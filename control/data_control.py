@@ -30,14 +30,9 @@ def switch_theme():
 class KeyTrainerData:
     def __init__(self):
         self.keys_en = [
-            ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
-            ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
-            ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
-            ["z", "x", "c", "v", "b", "n", "m"],
+            ["~","1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "+", "backspace"],
+            ["tab", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\"],
+            ["caps","a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "enter"],
+            ["shift","z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "shift"],
             [" "]
         ]
-        self.easy_text = ["Farmer Jack realized that big yellow quilts were expensive."]
-        self.mid_text = []
-        self.hard_text = ["She's got eyes of the bluest skies As if they thought of rain I'd hate to look into those eyes and see an ounce of pain Her hair reminds me of a warm, safe place Where, as a child, I'd hide And pray for the thunder and the rain to quietly pass me by",
-        "They decided to plant a tree in the backyard to celebrate the start of spring. Your name isn't you. That is also just a letter code that identifies you. If you're one of those people who hates staying home on the weekend, check out the local bowling alley. "]
-        self.text_position = 0

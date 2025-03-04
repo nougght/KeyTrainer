@@ -1,5 +1,5 @@
 from PySide6 import QtWidgets, QtCore, QtGui, QtSvg
-from ui.my_widgets import KeyWidget, KeyTextEdit, KeyProgressDisplay
+from ui.my_widgets import KeyWidget, KeyTextEdit, KeyProgressDisplay, KeyboardWidget
 import control.data_control as dt
 from control.settings_control import SettingControl
 
@@ -140,23 +140,11 @@ class MainWindow(QtWidgets.QMainWindow):
         print(self.central_layout.columnCount())
         print(self.central_layout.itemAt(0))
 
-        for i in range(4):
-            keys_layout = QtWidgets.QHBoxLayout()
-            for k in self.data.keys_en[i]:
-                key = KeyWidget(k.upper())
-                key.setObjectName(k)
-                self.key_theme_switch.connect(key.on_theme_switch)
-                keys_layout.addWidget(key,alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
-            self.central_layout.addLayout(keys_layout, i + 4, 0, 1, 2, alignment=QtCore.Qt.AlignmentFlag.AlignHCenter)
-        keys_layout = QtWidgets.QHBoxLayout()
-        key = KeyWidget(self.data.keys_en[4][0])
-        key.setObjectName("space")
-        self.key_theme_switch.connect(key.on_theme_switch)
-        keys_layout.addWidget(key, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.central_layout.addLayout(keys_layout, 8, 0, 1, 2)
-        keys = self.central_widget.findChildren(KeyWidget)
-        print(len(keys))
 
+        self.keyboard_widget = KeyboardWidget("russian")
+        self.central_layout.addWidget(self.keyboard_widget, 4, 0, 1, 2, alignment = QtCore.Qt.AlignmentFlag.AlignCenter)
+        
+        
         self.finish = QtWidgets.QMessageBox()
         button_box = self.finish.findChild(QtWidgets.QDialogButtonBox)
         if button_box:

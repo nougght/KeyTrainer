@@ -48,7 +48,7 @@ class TypingControl(QObject):
 
     def on_typing_finished(self):
         self.finish_time = time.time()
-        typing_time = self.finish_time = self.start_time
+        typing_time = self.finish_time - self.start_time
         self.typing_stats.emit(len(self.text) / typing_time * 60, typing_time)
         
     def on_language_change(self, language="english"):

@@ -17,5 +17,5 @@ if __name__ == "__main__":
         
     main_control = mainControl()
     sys.exit(app.exec())
-    print(1)
+
 

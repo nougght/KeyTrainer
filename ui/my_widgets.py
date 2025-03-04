@@ -60,6 +60,60 @@ class KeyWidget(QLabel):
         self.style = [self.style[1], self.style[0]]
         self.setStyleSheet(f"KeyWidget  {{ {self.style[0]} }}")
 
+class KeyboardWidget(QtWidgets.QWidget):
+    keys_en = [
+        ["~","1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "+", "backspace"],
+        ["tab", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\"],
+        ["caps","a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "enter"],
+        ["shift1","z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "shift2"],
+        [" "]]
+
+    keys_ru = [
+        ["ё","1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "+", "backspace"],
+        ["tab", "й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з", "х", "ъ", "\\"],
+        ["caps","ф", "ы", "в", "а", "п", "р", "о", "л", "д", "ж", "э", "enter"],
+        ["shift1","я", "ч", "с", "м", "и", "т", "ь", "б", "ю", ".", "shift2"],
+        [" "]]
+
+    def __init__(self, lang):
+        super().__init__()
+        self.vert_layout = QtWidgets.QVBoxLayout(self)
+        self.keys = self.keys_en if lang == "english" else self.keys_ru
+        for i in range(len(self.keys) - 1):
+            keys_layout = QtWidgets.QHBoxLayout()
+            for k in self.keys[i]:
+                key = KeyWidget(k.upper())
+                key.setObjectName(k)
+                # self.key_theme_switch.connect(key.on_theme_switch)
+                keys_layout.addWidget(
+                    key, alignment=QtCore.Qt.AlignmentFlag.AlignCenter
+                )
+            self.vert_layout.addLayout(
+                keys_layout
+            )
+        keys_layout = QtWidgets.QHBoxLayout()
+        key = KeyWidget(self.keys[4][0])
+        key.setObjectName("space")
+        # self.key_theme_switch.connect(key.on_theme_switch)
+        keys_layout.addWidget(key, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.vert_layout.addLayout(keys_layout)
+        # keys = self.central_widget.findChildren(KeyWidget)
+        # print(len(keys))
+        self.setMinimumSize(500, 300)
+        self.key_lang_change()
+
+    def key_lang_change(self):
+        if self.keys == self.keys_en:
+            self.keys = self.keys_ru
+        else:
+            self.keys = self.keys_en
+
+        lts = self.vert_layout.findChildren(QtWidgets.QHBoxLayout)
+        for i in range(len(self.keys)):
+            for j in range(len(self.keys[i])):
+                lts[i].itemAt(j).widget().setText(self.keys[i][j])
+                lts[i].itemAt(j).widget().setObjectName(self.keys[i][j])
+
 
 class KeyProgressDisplay(QLabel):
     def __init__(self, total = 0):
