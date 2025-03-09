@@ -1,6 +1,5 @@
 from PySide6 import QtWidgets, QtCore, QtGui, QtSvg
 from ui.my_widgets import KeyWidget, KeyTextEdit, KeyProgressDisplay, KeyboardWidget
-import control.data_control as dt
 from control.settings_control import SettingControl
 
 import time
@@ -14,7 +13,6 @@ class MainWindow(QtWidgets.QMainWindow):
     mod_change = QtCore.Signal(str)
     def __init__(self):
         super().__init__()
-        self.data = dt.KeyTrainerData()
         self.resize(700,500)
 
         # self.setWindowIcon(QtGui.QIcon("resources/keyIc (2).ico"))
@@ -116,7 +114,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.progress_bar.setTextVisible(False)
 
         self.text_display = KeyTextEdit()
-        self.text_display.key_press_release.connect(self.on_key_switch)
 
         self.text_display.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Expanding)
 
@@ -140,27 +137,23 @@ class MainWindow(QtWidgets.QMainWindow):
         print(self.central_layout.columnCount())
         print(self.central_layout.itemAt(0))
 
-
-        self.keyboard_widget = KeyboardWidget("russian")
+        self.keyboard_widget = KeyboardWidget("english")
+        self.key_theme_switch.connect(self.keyboard_widget.on_key_theme_switch)
         self.central_layout.addWidget(self.keyboard_widget, 4, 0, 1, 2, alignment = QtCore.Qt.AlignmentFlag.AlignCenter)
-        
-        
+
+        self.text_display.key_press_release.connect(self.keyboard_widget.on_key_switch)
+
         self.finish = QtWidgets.QMessageBox()
         button_box = self.finish.findChild(QtWidgets.QDialogButtonBox)
         if button_box:
             button_box.setCenterButtons(True)
 
-    def on_key_switch(self, ch, isPress):
-        if ch == ' ':
-            ch = 'space'
-        wid = self.central_widget.findChildren(KeyWidget, ch.lower())
-        print(len(wid))
-        wid[0].set_active(isPress)
+
 
     def setStyleSheet(self, styleSheet):
         print("yoooooo")
         super().setStyleSheet(styleSheet)
-        print(styleSheet)
+        # print(styleSheet)
 
     @QtCore.Slot()
     def on_stats_display(self, speed, typing_time):

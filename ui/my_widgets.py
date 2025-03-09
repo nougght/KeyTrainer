@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import QDialog, QLabel, QComboBox, QTextEdit, QVBoxLayout, QPushButton
 from PySide6.QtCore import Qt
 from PySide6 import QtCore, QtGui, QtWidgets
-import control.data_control as dt
 from control.settings_control import SettingControl
 import time, os, sys
 
@@ -55,35 +54,163 @@ class KeyWidget(QLabel):
     def set_active(self, active):
         self.setStyleSheet(f"KeyWidget  {{ {self.style[active]} }}")
 
-    @QtCore.Slot()
-    def on_theme_switch(self):
+    def theme_switch(self):
         self.style = [self.style[1], self.style[0]]
         self.setStyleSheet(f"KeyWidget  {{ {self.style[0]} }}")
 
+
 class KeyboardWidget(QtWidgets.QWidget):
     keys_en = [
-        ["~","1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "+", "backspace"],
-        ["tab", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\"],
-        ["caps","a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "enter"],
-        ["shift1","z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "shift2"],
-        [" "]]
-
+        [
+            {"name": "key_`", "def": "`", "shift": "~"},
+            {"name": "key_1", "def": "1", "shift": "!"},
+            {"name": "key_2", "def": "2", "shift": "@"},
+            {"name": "key_3", "def": "3", "shift": "#"},
+            {"name": "key_4", "def": "4", "shift": "$"},
+            {"name": "key_5", "def": "5", "shift": "%"},
+            {"name": "key_6", "def": "6", "shift": "^"},
+            {"name": "key_7", "def": "7", "shift": "&"},
+            {"name": "key_8", "def": "8", "shift": "*"},
+            {"name": "key_9", "def": "9", "shift": "("},
+            {"name": "key_0", "def": "0", "shift": ")"},
+            {"name": "key_-", "def": "-", "shift": "_"},
+            {"name": "key_=", "def": "=", "shift": "+"},
+            {"name": "key_BACKSPACE", "def": "BACKSPACE", "shift": "BACKSPACE"},
+        ],
+        [
+            {"name": "key_TAB", "def": "TAB", "shift": "TAB"},
+            {"name": "key_q", "def": "q", "shift": "Q"},
+            {"name": "key_w", "def": "w", "shift": "W"},
+            {"name": "key_e", "def": "e", "shift": "E"},
+            {"name": "key_r", "def": "r", "shift": "R"},
+            {"name": "key_t", "def": "t", "shift": "T"},
+            {"name": "key_y", "def": "y", "shift": "Y"},
+            {"name": "key_u", "def": "u", "shift": "U"},
+            {"name": "key_i", "def": "i", "shift": "I"},
+            {"name": "key_o", "def": "o", "shift": "O"},
+            {"name": "key_p", "def": "p", "shift": "P"},
+            {"name": "key_[", "def": "[", "shift": "{"},
+            {"name": "key_]", "def": "]", "shift": "}"},
+            {"name": "key_\\", "def": "\\", "shift": "|"},
+        ],
+        [
+            {"name": "key_CAPS", "def": "CAPS", "shift": "CAPS"},
+            {"name": "key_a", "def": "a", "shift": "A"},
+            {"name": "key_s", "def": "s", "shift": "S"},
+            {"name": "key_d", "def": "d", "shift": "D"},
+            {"name": "key_f", "def": "f", "shift": "F"},
+            {"name": "key_g", "def": "g", "shift": "G"},
+            {"name": "key_h", "def": "h", "shift": "H"},
+            {"name": "key_j", "def": "j", "shift": "J"},
+            {"name": "key_k", "def": "k", "shift": "K"},
+            {"name": "key_l", "def": "l", "shift": "L"},
+            {"name": "key_;", "def": ";", "shift": ":"},
+            {"name": "key_'", "def": "'", "shift": '"'},
+            {"name": "key_ENTER", "def": "ENTER", "shift": "ENTER"},
+        ],
+        [
+            {"name": "key_SHIFT", "def": "SHIFT", "shift": "SHIFT"},
+            {"name": "key_z", "def": "z", "shift": "Z"},
+            {"name": "key_x", "def": "x", "shift": "X"},
+            {"name": "key_c", "def": "c", "shift": "C"},
+            {"name": "key_v", "def": "v", "shift": "V"},
+            {"name": "key_b", "def": "b", "shift": "B"},
+            {"name": "key_n", "def": "n", "shift": "N"},
+            {"name": "key_m", "def": "m", "shift": "M"},
+            {"name": "key_,", "def": ",", "shift": "<"},
+            {"name": "key_.", "def": ".", "shift": ">"},
+            {"name": "key_/", "def": "/", "shift": "?"},
+            {"name": "key_SHIFT", "def": "SHIFT", "shift": "SHIFT"},
+        ],
+        [
+            {"name": "key_CTRL", "def": "CTRL", "shift": "CTRL"},
+            {"name": "key_ALT", "def": "ALT", "shift": "ALT"},
+            {"name": "key_ ", "def": " ", "shift": " "},
+            {"name": "key_ALT", "def": "ALT", "shift": "ALT"},
+            {"name": "key_CTRL", "def": "CTRL", "shift": "CTRL"},
+        ],
+    ]
     keys_ru = [
-        ["ё","1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "+", "backspace"],
-        ["tab", "й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з", "х", "ъ", "\\"],
-        ["caps","ф", "ы", "в", "а", "п", "р", "о", "л", "д", "ж", "э", "enter"],
-        ["shift1","я", "ч", "с", "м", "и", "т", "ь", "б", "ю", ".", "shift2"],
-        [" "]]
+        [
+            {"name": "key_ё", "def": "ё", "shift": "Ё"},
+            {"name": "key_1", "def": "1", "shift": "1"},
+            {"name": "key_2", "def": "2", "shift": "2"},
+            {"name": "key_3", "def": "3", "shift": "3"},
+            {"name": "key_4", "def": "4", "shift": "4"},
+            {"name": "key_5", "def": "5", "shift": "5"},
+            {"name": "key_6", "def": "6", "shift": "6"},
+            {"name": "key_7", "def": "7", "shift": "7"},
+            {"name": "key_8", "def": "8", "shift": "8"},
+            {"name": "key_9", "def": "9", "shift": "9"},
+            {"name": "key_0", "def": "0", "shift": "0"},
+            {"name": "key_-", "def": "-", "shift": "-"},
+            {"name": "key_+", "def": "+", "shift": "+"},
+            {"name": "key_BACKSPACE", "def": "BACKSPACE", "shift": "BACKSPACE"},
+        ],
+        [
+            {"name": "key_TAB", "def": "TAB", "shift": "TAB"},
+            {"name": "key_й", "def": "й", "shift": "Й"},
+            {"name": "key_ц", "def": "ц", "shift": "Ц"},
+            {"name": "key_у", "def": "у", "shift": "У"},
+            {"name": "key_к", "def": "к", "shift": "К"},
+            {"name": "key_е", "def": "е", "shift": "Е"},
+            {"name": "key_н", "def": "н", "shift": "Н"},
+            {"name": "key_г", "def": "г", "shift": "Г"},
+            {"name": "key_ш", "def": "ш", "shift": "Ш"},
+            {"name": "key_щ", "def": "щ", "shift": "Щ"},
+            {"name": "key_з", "def": "з", "shift": "З"},
+            {"name": "key_х", "def": "х", "shift": "Х"},
+            {"name": "key_ъ", "def": "ъ", "shift": "Ъ"},
+            {"name": "key_\\", "def": "\\", "shift": "\\"},
+        ],
+        [
+            {"name": "key_CAPS", "def": "CAPS", "shift": "CAPS"},
+            {"name": "key_ф", "def": "ф", "shift": "Ф"},
+            {"name": "key_ы", "def": "ы", "shift": "Ы"},
+            {"name": "key_в", "def": "в", "shift": "В"},
+            {"name": "key_а", "def": "а", "shift": "А"},
+            {"name": "key_п", "def": "п", "shift": "П"},
+            {"name": "key_р", "def": "р", "shift": "Р"},
+            {"name": "key_о", "def": "о", "shift": "О"},
+            {"name": "key_л", "def": "л", "shift": "Л"},
+            {"name": "key_д", "def": "д", "shift": "Д"},
+            {"name": "key_ж", "def": "ж", "shift": "Ж"},
+            {"name": "key_э", "def": "э", "shift": "Э"},
+            {"name": "key_ENTER", "def": "ENTER", "shift": "ENTER"},
+        ],
+        [
+            {"name": "key_SHIFT1", "def": "SHIFT", "shift": "SHIFT"},
+            {"name": "key_я", "def": "я", "shift": "Я"},
+            {"name": "key_ч", "def": "ч", "shift": "Ч"},
+            {"name": "key_с", "def": "с", "shift": "С"},
+            {"name": "key_м", "def": "м", "shift": "М"},
+            {"name": "key_и", "def": "и", "shift": "И"},
+            {"name": "key_т", "def": "т", "shift": "Т"},
+            {"name": "key_ь", "def": "ь", "shift": "Ь"},
+            {"name": "key_б", "def": "б", "shift": "Б"},
+            {"name": "key_ю", "def": "ю", "shift": "Ю"},
+            {"name": "key_.", "def": ".", "shift": "."},
+            {"name": "key_SHIFT2", "def": "SHIFT", "shift": "SHIFT"},
+        ],
+        [
+            {"name": "key_CTRL1", "def": "CTRL", "shift": "CTRL"},
+            {"name": "key_ALT1", "def": "ALT", "shift": "ALT"},
+            {"name": "key_SPACE", "def": " ", "shift": " "},
+            {"name": "key_ALT1", "def": "ALT", "shift": "ALT"},
+            {"name": "key_CTRL2", "def": "CTRL", "shift": "CTRL"},
+        ],
+    ]
 
     def __init__(self, lang):
         super().__init__()
         self.vert_layout = QtWidgets.QVBoxLayout(self)
-        self.keys = self.keys_en if lang == "english" else self.keys_ru
-        for i in range(len(self.keys) - 1):
+        self.language = lang
+        self.keys = self.keys_en if self.language == "english" else self.keys_ru
+        for i in range(len(self.keys)):
             keys_layout = QtWidgets.QHBoxLayout()
             for k in self.keys[i]:
-                key = KeyWidget(k.upper())
-                key.setObjectName(k)
+                key = KeyWidget(k['def'])
+                key.setObjectName(k['name'])
                 # self.key_theme_switch.connect(key.on_theme_switch)
                 keys_layout.addWidget(
                     key, alignment=QtCore.Qt.AlignmentFlag.AlignCenter
@@ -91,28 +218,43 @@ class KeyboardWidget(QtWidgets.QWidget):
             self.vert_layout.addLayout(
                 keys_layout
             )
-        keys_layout = QtWidgets.QHBoxLayout()
-        key = KeyWidget(self.keys[4][0])
-        key.setObjectName("space")
+        # keys_layout = QtWidgets.QHBoxLayout()
+        # key = KeyWidget(self.keys[4][0])
+        # key.setObjectName("space")
         # self.key_theme_switch.connect(key.on_theme_switch)
-        keys_layout.addWidget(key, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.vert_layout.addLayout(keys_layout)
+        # keys_layout.addWidget(key, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
+        # self.vert_layout.addLayout(keys_layout)
         # keys = self.central_widget.findChildren(KeyWidget)
         # print(len(keys))
         self.setMinimumSize(500, 300)
-        self.key_lang_change()
+        # self.key_lang_change()
 
     def key_lang_change(self):
         if self.keys == self.keys_en:
             self.keys = self.keys_ru
         else:
             self.keys = self.keys_en
+        
 
         lts = self.vert_layout.findChildren(QtWidgets.QHBoxLayout)
         for i in range(len(self.keys)):
             for j in range(len(self.keys[i])):
-                lts[i].itemAt(j).widget().setText(self.keys[i][j])
-                lts[i].itemAt(j).widget().setObjectName(self.keys[i][j])
+                lts[i].itemAt(j).widget().setText(self.keys[i][j]["def"])
+                lts[i].itemAt(j).widget().setObjectName(self.keys[i][j]["name"])
+    
+    def on_key_theme_switch(self):
+        lts = self.findChildren(QtWidgets.QHBoxLayout)
+        for i in range(len(self.keys)):
+            for j in range(len(self.keys[i])):
+                lts[i].itemAt(j).widget().theme_switch()
+    
+    def on_key_switch(self, event, isPress):
+        if ch == ' ':
+            ch = 'space'
+        wid = self.findChildren(KeyWidget, 'key_' + ch.lower())
+        print(len(wid))
+        wid[0].set_active(isPress)
+
 
 
 class KeyProgressDisplay(QLabel):
@@ -147,6 +289,8 @@ class KeyProgressDisplay(QLabel):
 
 class KeyTextEdit(QTextEdit):
     key_press_release = QtCore.Signal(str, bool)
+    key_pressed = QtCore.Signal(str)
+    key_released = QtCore.Signal(str)
     textSizeChanged = QtCore.Signal(int)
     typing_start = QtCore.Signal()
     finished = QtCore.Signal()
@@ -201,10 +345,10 @@ class KeyTextEdit(QTextEdit):
         return int(cursor.position() / len(self.toPlainText()) * 100)
 
     def keyPressEvent(self, event):
-        ch = event.text()
 
+        ch = event.text()
         print(self.textCursor().position(), " position cursor")
-        self.key_press_release.emit(ch, True)
+        self.key_press_release.emit(event, True)
 
         cursor = self.textCursor()
         if cursor.position() == 0:

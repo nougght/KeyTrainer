@@ -3,6 +3,7 @@ import time, sys, os
 
 class TypingControl(QObject):
     toolbt_activate = Signal(str, bool)
+    keyboard_lang_change = Signal()
     typing_stats = Signal(float, float)
     text_changed = Signal(str)
     def __init__(self, text_list_model, word_list_model, main_window):
@@ -31,6 +32,7 @@ class TypingControl(QObject):
         main_window.text_display.typing_start.connect(self.on_typing_start)
         main_window.text_display.finished.connect(self.on_typing_finished)
         self.typing_stats.connect(main_window.on_stats_display)
+        self.keyboard_lang_change.connect(main_window.keyboard_widget.key_lang_change)
         self.change_text()
 
     def change_text(self):
@@ -55,6 +57,7 @@ class TypingControl(QObject):
         if self.language != language:
             self.toolbt_activate.emit(self.language, False)
             self.toolbt_activate.emit(language, True)
+            self.keyboard_lang_change.emit()
             self.language = language
             self.change_text()
 

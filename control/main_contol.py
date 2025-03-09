@@ -29,11 +29,10 @@ class mainControl(QObject):
             if self.settings_model.get_theme() == "dark"
             else (KeyWidget.style[0], KeyWidget.style[1])
         )
-        self.show_starter_window()
 
     def show_starter_window(self):
         if self.start_window.exec() == QDialog.Accepted:
-            self.main_window.showFullScreen()
+            self.main_window.showMaximized()
             self.main_window.text_display.setFocus()
         else:
             sys.exit()
