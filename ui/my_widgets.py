@@ -48,8 +48,12 @@ class KeyWidget(QLabel):
              "background: #090f1b; border: 2px solid #88C0D0; color: #88C0D0;"]
     def __init__(self, text, parent=None, isdark=False):
         super().__init__(text, parent)
+        self.setMinimumSize(60, 60)  # Минимальный размер клавиши
+        self.setSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Expanding,  # Растягивается по горизонтали
+            QtWidgets.QSizePolicy.Policy.Expanding,  # Растягивается по вертикали
+        )
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.setFont(QtGui.QFont("consolas", 50, 500))
 
     def set_active(self, active):
         self.setStyleSheet(f"KeyWidget  {{ {self.style[active]} }}")
@@ -203,18 +207,31 @@ class KeyboardWidget(QtWidgets.QWidget):
 
     def __init__(self, lang):
         super().__init__()
+        self.setSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Expanding,  # Растягивается по горизонтали
+            QtWidgets.QSizePolicy.Policy.Expanding,  # Растягивается по вертикали
+        )
         self.vert_layout = QtWidgets.QVBoxLayout(self)
         self.language = lang
         self.keys = self.keys_en if self.language == "english" else self.keys_ru
         for i in range(len(self.keys)):
             keys_layout = QtWidgets.QHBoxLayout()
+            keys_layout.setSpacing(5)
             for k in self.keys[i]:
                 key = KeyWidget(k['def'])
+                print(key.sizePolicy().horizontalPolicy().name)
                 key.setObjectName(k['name'])
+                if (k['def'] in ['CTRL', 'SHIFT', 'ALT', 'CAPS', 'ENTER', 'TAB']):
+                    keys_layout.addWidget(
+                        key,  stretch=2
+                    )
+                elif (k['def'] in [' ', 'BACKSPACE']):
+                    keys_layout.addWidget(key, stretch=4)
                 # self.key_theme_switch.connect(key.on_theme_switch)
-                keys_layout.addWidget(
-                    key, alignment=QtCore.Qt.AlignmentFlag.AlignCenter
-                )
+                else:
+                    keys_layout.addWidget(
+                        key,  stretch=1
+                    )
             self.vert_layout.addLayout(
                 keys_layout
             )
@@ -234,27 +251,25 @@ class KeyboardWidget(QtWidgets.QWidget):
             self.keys = self.keys_ru
         else:
             self.keys = self.keys_en
-        
 
         lts = self.vert_layout.findChildren(QtWidgets.QHBoxLayout)
         for i in range(len(self.keys)):
             for j in range(len(self.keys[i])):
                 lts[i].itemAt(j).widget().setText(self.keys[i][j]["def"])
                 lts[i].itemAt(j).widget().setObjectName(self.keys[i][j]["name"])
-    
+
     def on_key_theme_switch(self):
         lts = self.findChildren(QtWidgets.QHBoxLayout)
         for i in range(len(self.keys)):
             for j in range(len(self.keys[i])):
                 lts[i].itemAt(j).widget().theme_switch()
-    
+
     def on_key_switch(self, event, isPress):
         if ch == ' ':
             ch = 'space'
         wid = self.findChildren(KeyWidget, 'key_' + ch.lower())
         print(len(wid))
         wid[0].set_active(isPress)
-
 
 
 class KeyProgressDisplay(QLabel):

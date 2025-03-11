@@ -15,6 +15,11 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__()
         self.resize(700,500)
 
+        self.setSizePolicy(
+            QtWidgets.QSizePolicy.Expanding,  # Растягивается по горизонтали
+            QtWidgets.QSizePolicy.Expanding,  # Растягивается по вертикали
+        )
+        
         # self.setWindowIcon(QtGui.QIcon("resources/keyIc (2).ico"))
 
         self.setWindowTitle("Key Trainer")
@@ -138,6 +143,7 @@ class MainWindow(QtWidgets.QMainWindow):
         print(self.central_layout.itemAt(0))
 
         self.keyboard_widget = KeyboardWidget("english")
+        print(self.keyboard_widget.size().height(), self.keyboard_widget.size().width())
         self.key_theme_switch.connect(self.keyboard_widget.on_key_theme_switch)
         self.central_layout.addWidget(self.keyboard_widget, 4, 0, 1, 2, alignment = QtCore.Qt.AlignmentFlag.AlignCenter)
 
@@ -147,8 +153,6 @@ class MainWindow(QtWidgets.QMainWindow):
         button_box = self.finish.findChild(QtWidgets.QDialogButtonBox)
         if button_box:
             button_box.setCenterButtons(True)
-
-
 
     def setStyleSheet(self, styleSheet):
         print("yoooooo")
