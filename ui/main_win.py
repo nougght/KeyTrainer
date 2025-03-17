@@ -147,7 +147,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.key_theme_switch.connect(self.keyboard_widget.on_key_theme_switch)
         self.central_layout.addWidget(self.keyboard_widget, 4, 0, 1, 2, alignment = QtCore.Qt.AlignmentFlag.AlignCenter)
 
-        self.text_display.key_press_release.connect(self.keyboard_widget.on_key_switch)
 
         self.finish = QtWidgets.QMessageBox()
         button_box = self.finish.findChild(QtWidgets.QDialogButtonBox)

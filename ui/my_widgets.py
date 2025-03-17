@@ -264,10 +264,14 @@ class KeyboardWidget(QtWidgets.QWidget):
             for j in range(len(self.keys[i])):
                 lts[i].itemAt(j).widget().theme_switch()
 
-    def on_key_switch(self, event, isPress):
-        if ch == ' ':
-            ch = 'space'
-        wid = self.findChildren(KeyWidget, 'key_' + ch.lower())
+    def key_switch(self, name, isPress):
+        wid = self.findChild(KeyWidget, name)
+        wid.set_active(isPress)
+
+    def on_key_switch(self, ch, isPress):
+        if ch == " ":
+            ch = "space"
+        wid = self.findChildren(KeyWidget, "key_" + ch.lower())
         print(len(wid))
         wid[0].set_active(isPress)
 
@@ -303,7 +307,6 @@ class KeyProgressDisplay(QLabel):
 
 
 class KeyTextEdit(QTextEdit):
-    key_press_release = QtCore.Signal(str, bool)
     key_pressed = QtCore.Signal(str)
     key_released = QtCore.Signal(str)
     textSizeChanged = QtCore.Signal(int)
@@ -359,11 +362,30 @@ class KeyTextEdit(QTextEdit):
         cursor = self.textCursor()
         return int(cursor.position() / len(self.toPlainText()) * 100)
 
+    def keyName(self, event):
+        if event.key() == QtCore.Qt.Key.Key_Space:
+            key_name = "key_SPACE"
+        elif event.key() == QtCore.Qt.Key.Key_Return:
+            key_name = "key_ENTER"
+        elif event.key() == QtCore.Qt.Key.Key_Alt:
+            key_name = "key_ALT"
+        elif event.key() == QtCore.Qt.Key.Key_Shift:
+            key_name = "key_SHIFT"
+        elif event.key() == QtCore.Qt.Key.Key_Backspace:
+            key_name = "key_BACKSPACE"
+        elif event.key() == QtCore.Qt.Key.Key_Control:
+            key_name = "key_CTRL"
+        elif event.key() == QtCore.Qt.Key.Key_CapsLock:
+            key_name = "key_CAPS"
+        else:
+            key_name = "key_" + event.text().lower()
+        return key_name
+
     def keyPressEvent(self, event):
+        self.key_pressed.emit(self.keyName(event))
 
         ch = event.text()
         print(self.textCursor().position(), " position cursor")
-        self.key_press_release.emit(event, True)
 
         cursor = self.textCursor()
         if cursor.position() == 0:
@@ -371,6 +393,8 @@ class KeyTextEdit(QTextEdit):
 
         print(cursor.position(), 'pos')
         print(ch.lower())
+        if event.key() == QtCore.Qt.Key.Key_G:
+            print('gggggggggggggggggggggg')
         if event.key() == QtCore.Qt.Key.Key_Enter or event.key() == QtCore.Qt.Key.Key_Shift:
             pass
         else:
@@ -413,8 +437,9 @@ class KeyTextEdit(QTextEdit):
         # self.text_display.setCursorPosition(self.text_display.cursorPosition() + 1)
 
     def keyReleaseEvent(self, event):
+        print(type(event))
+        self.key_released.emit(self.keyName(event))
         ch = event.text()
-        self.key_press_release.emit(ch, False)
 
         return super().keyPressEvent(event) if event.key() != QtCore.Qt.Key.Key_Space else None
 

@@ -15,5 +15,5 @@ if __name__ == "__main__":
     app.setWindowIcon(main_control.setting_control.get_icon())
     main_control.show_starter_window()
     sys.exit(app.exec())
-
+8
 
