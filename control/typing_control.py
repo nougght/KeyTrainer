@@ -6,11 +6,14 @@ class TypingControl(QObject):
     keyboard_lang_change = Signal()
     typing_stats = Signal(float, float)
     text_changed = Signal(str)
-    visual_key_switch = Signal(str, bool)
+    correctPress = Signal(str)
+    typo = Signal(str)
+    release = Signal(str)
     def __init__(self, text_list_model, word_list_model, main_window):
         super().__init__()
         self.timer = QTimer(self)
         self.text = ''
+        self.position = 0
 
         self.toolbt_activate.connect(main_window.toolbutton_activate)
         self.text_list_model = text_list_model
@@ -35,7 +38,16 @@ class TypingControl(QObject):
         main_window.text_display.finished.connect(self.on_typing_finished)
         main_window.text_display.key_pressed.connect(self.on_key_press)
         main_window.text_display.key_released.connect(self.on_key_release)
-        self.visual_key_switch.connect(main_window.keyboard_widget.key_switch)
+        self.correctPress.connect(main_window.text_display.toNextChar)
+        self.correctPress.connect(lambda key: main_window.keyboard_widget.key_switch(key, True))
+        self.typo.connect(main_window.keyboard_widget.key_uncorrect)
+        self.typo.connect(main_window.char_pos_label.on_typo)
+        
+        self.correctPress.connect(main_window.char_pos_label.on_inc_progress)
+        self.text_changed.connect(lambda text: main_window.char_pos_label.reset(len(text)))
+        self.text_changed.connect(lambda : main_window.progress_bar.setValue(self.position))
+        self.correctPress.connect(lambda : main_window.progress_bar.setValue(self.position))
+        self.release.connect(lambda key: main_window.keyboard_widget.key_switch(key, False))
 
         self.typing_stats.connect(main_window.on_stats_display)
         self.keyboard_lang_change.connect(main_window.keyboard_widget.key_lang_change)
@@ -47,13 +59,19 @@ class TypingControl(QObject):
         else:
             length = 20 if self.difficulty == 'easy' else 40 if self.difficulty == 'normal' else 60
             self.text = self.word_list_model.gen_text(self.language, length)
+        self.position = 0
         self.text_changed.emit(self.text)
 
     def on_key_press(self, key_name):
-        self.visual_key_switch.emit(key_name, True)
+        key = key_name.split('_')[1]
+        if len(key) == 1 and self.text[self.position].lower() == key or key == 'SPACE' and self.text[self.position] == ' ':
+            self.correctPress.emit(key_name)
+            self.position += 1
+        elif key not in ['SHIFT', 'CAPS']:
+            self.typo.emit(key_name)
 
     def on_key_release(self, key_name):
-        self.visual_key_switch.emit(key_name, False)
+        self.release.emit(key_name)
 
     def on_typing_start(self):
         self.start_time = time.time()

@@ -125,10 +125,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.char_pos_label = KeyProgressDisplay(1)
         self.central_layout.addWidget(self.char_pos_label, 1, 0, QtCore.Qt.AlignmentFlag.AlignCenter)
 
-        self.text_display.textSizeChanged.connect(self.char_pos_label.reset)
-        self.text_display.cursorPositionChanged.connect(self.char_pos_label.on_inc_progress)
-        self.text_display.cursorPositionChanged.connect(lambda : self.progress_bar.setValue(self.text_display.get_progress()))
-        self.text_display.typo.connect(self.char_pos_label.on_typo)
 
         self.central_layout.addWidget(self.text_display, 2, 0, 1, 2)
         self.vert_spacer_1 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)

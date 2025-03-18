@@ -46,6 +46,7 @@ class StarterDialog(QDialog):
 class KeyWidget(QLabel):
     style = ["background: #88C0D0; color: #090f1b; border: 2px solid #090f1b;",
              "background: #090f1b; border: 2px solid #88C0D0; color: #88C0D0;"]
+    
     def __init__(self, text, parent=None, isdark=False):
         super().__init__(text, parent)
         self.setMinimumSize(60, 60)  # Минимальный размер клавиши
@@ -62,6 +63,8 @@ class KeyWidget(QLabel):
         self.style = [self.style[1], self.style[0]]
         self.setStyleSheet(f"KeyWidget  {{ {self.style[0]} }}")
 
+    def set_uncorrect(self):
+        self.setStyleSheet("background: red;")
 
 class KeyboardWidget(QtWidgets.QWidget):
     keys_en = [
@@ -267,13 +270,10 @@ class KeyboardWidget(QtWidgets.QWidget):
     def key_switch(self, name, isPress):
         wid = self.findChild(KeyWidget, name)
         wid.set_active(isPress)
-
-    def on_key_switch(self, ch, isPress):
-        if ch == " ":
-            ch = "space"
-        wid = self.findChildren(KeyWidget, "key_" + ch.lower())
-        print(len(wid))
-        wid[0].set_active(isPress)
+    
+    def key_uncorrect(self, name):
+        wid = self.findChild(KeyWidget, name)
+        wid.set_uncorrect()
 
 
 class KeyProgressDisplay(QLabel):
@@ -312,7 +312,6 @@ class KeyTextEdit(QTextEdit):
     textSizeChanged = QtCore.Signal(int)
     typing_start = QtCore.Signal()
     finished = QtCore.Signal()
-    typo = QtCore.Signal()
 
     def __init__(self):
         super().__init__()
@@ -387,46 +386,34 @@ class KeyTextEdit(QTextEdit):
         ch = event.text()
         print(self.textCursor().position(), " position cursor")
 
+        return super().keyPressEvent(event) if event.key() != Qt.Key.Key_Space else None
+    
+    def toNextChar(self):
         cursor = self.textCursor()
         if cursor.position() == 0:
             self.typing_start.emit()
 
-        print(cursor.position(), 'pos')
-        print(ch.lower())
-        if event.key() == QtCore.Qt.Key.Key_G:
-            print('gggggggggggggggggggggg')
-        if event.key() == QtCore.Qt.Key.Key_Enter or event.key() == QtCore.Qt.Key.Key_Shift:
-            pass
+        print(cursor.position(), "pos")
+
+        print("perfect")
+
+        cursor.movePosition(
+            QtGui.QTextCursor.MoveOperation.Right,
+            QtGui.QTextCursor.MoveMode.KeepAnchor,
+        )
+        cursor.setCharFormat(self.passed_format)
+        cursor.movePosition(QtGui.QTextCursor.MoveOperation.Left)
+        if len(self.toPlainText()) - 1 == cursor.position():
+            self.finished.emit()
         else:
-            print(len(self.toPlainText()), cursor.position())
-
-            if event.text() == self.toPlainText()[cursor.position()]:
-                print("perfect")
-
-                cursor.movePosition(
-                    QtGui.QTextCursor.MoveOperation.Right,
-                    QtGui.QTextCursor.MoveMode.KeepAnchor,
-                )
-                cursor.setCharFormat(self.passed_format)
-                cursor.movePosition(QtGui.QTextCursor.MoveOperation.Left)
-                if len(self.toPlainText()) - 1 == cursor.position():
-                    self.keyReleaseEvent(event)
-                    self.finished.emit()
-                else:
-                    cursor.movePosition(QtGui.QTextCursor.MoveOperation.Right)
-                    cursor.movePosition(
-                        QtGui.QTextCursor.MoveOperation.Right,
-                        QtGui.QTextCursor.MoveMode.KeepAnchor,
-                    )
-                    cursor.mergeCharFormat(self.underline_format)
-                    cursor.movePosition(QtGui.QTextCursor.MoveOperation.Left)
-                    self.setTextCursor(cursor)
-
-                print()
-            else:
-                self.typo.emit()
-
-        return super().keyPressEvent(event) if event.key() != Qt.Key.Key_Space else None
+            cursor.movePosition(QtGui.QTextCursor.MoveOperation.Right)
+            cursor.movePosition(
+                QtGui.QTextCursor.MoveOperation.Right,
+                QtGui.QTextCursor.MoveMode.KeepAnchor,
+            )
+            cursor.mergeCharFormat(self.underline_format)
+            cursor.movePosition(QtGui.QTextCursor.MoveOperation.Left)
+            self.setTextCursor(cursor)
 
         # format = cursor.charFormat()
         # format.setUnderlineStyle(QtGui.QTextCharFormat.UnderlineStyle.SingleUnderline)
