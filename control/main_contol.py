@@ -1,4 +1,4 @@
-from PySide6.QtCore import QObject
+from PySide6.QtCore import QObject, Qt
 from PySide6.QtWidgets import QDialog
 from model import settingsModel, statisticsModel, ProfilesList, WordList, TextList
 
@@ -24,14 +24,18 @@ class mainControl(QObject):
         # self.statistics_control = StatisticsController(self.statistics_model, self.statistics_view)
         # self.profile_controller = ProfileController(self.profile_model, self.start_window_view)
 
-        KeyWidget.style[0], KeyWidget.style[1] = (
-            (KeyWidget.style[1], KeyWidget.style[0])
-            if self.settings_model.get_theme() == "dark"
-            else (KeyWidget.style[0], KeyWidget.style[1])
+        KeyWidget.styles[0], KeyWidget.styles[1] = (
+            (KeyWidget.styles[1], KeyWidget.styles[0])
+            if self.settings_model.get_theme() == "defaultDark"
+            else (KeyWidget.styles[0], KeyWidget.styles[1])
         )
 
     def show_starter_window(self):
         if self.start_window.exec() == QDialog.Accepted:
+            self.main_window.setWindowFlags(
+                Qt.WindowType.FramelessWindowHint  # Убираем рамку и заголовок
+            )
+        
             self.main_window.showMaximized()
             self.main_window.text_display.setFocus()
         else:

@@ -1,6 +1,8 @@
+/* defaultDark theme
+   widget style */
 
 QWidget {
-        background-color: #2d2d2d;
+        background-color: #1E1E1E;
         color: #ffffff;
         /* border: none; */
     }
@@ -22,12 +24,6 @@ QPushButton:hover, QToolButton:hover {
     background-color: #4a4a4a;
 }
 
-QLineEdit {
-    background-color: #3a3a3a;
-    color: #ffffff;
-    border: 1px solid #555555;
-    padding: 5px;
-}
 
 /* QToolBar {
     background-color: #2d2d2d;
@@ -37,20 +33,46 @@ QToolBar::item:selected {
     background-color: #4a4a4a;
 } */
 
+
+/* KeyWidget : pressed {
+    
+} */
+
 KeyWidget{
     background: #090f1b;
     color: #88C0D0;
     border: 2px solid #88C0D0;
 }
 
+KeyWidget[uncorrect="true"] {
+    background: red;
+}
+
+KeyWidget:pressed{
+    background: #88C0D0;
+    color: #090f1b;
+    border: 2px solid #090f1b;
+}
+
 KeyTextEdit{
-    background: transparent /*#615d80-->*/;
+    background: #615d80;
     border: 3px solid #9480eb;
 }
 
 
+
 QPushButton#reset{
     background: transparent;
+}
+
+QPushButton#minimizeButton {
+    background: #0485f6;
+    color: #ffffff;
+}
+QPushButton#minimizeButton:hover {
+    border:2px solid #0485f6;
+    background: #ffffff;
+    color: #0485f6;
 }
 
 QPushButton#exitButton {

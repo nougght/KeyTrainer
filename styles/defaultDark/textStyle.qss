@@ -1,0 +1,15 @@
+/* defaultDark theme
+   text style */
+
+.passed {
+    color: #28d96c;
+}
+
+.current {
+    text-decoration:underline;
+    color: #9480eb;
+}
+
+.remaining {
+    color: white;
+}

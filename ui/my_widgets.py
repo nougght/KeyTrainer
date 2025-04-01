@@ -43,10 +43,10 @@ class StarterDialog(QDialog):
         self.accept()
 
 
-class KeyWidget(QLabel):
-    style = ["background: #88C0D0; color: #090f1b; border: 2px solid #090f1b;",
+class KeyWidget(QPushButton):
+    styles = ["background: #88C0D0; color: #090f1b; border: 2px solid #090f1b;",
              "background: #090f1b; border: 2px solid #88C0D0; color: #88C0D0;"]
-    
+
     def __init__(self, text, parent=None, isdark=False):
         super().__init__(text, parent)
         self.setMinimumSize(60, 60)  # Минимальный размер клавиши
@@ -54,17 +54,29 @@ class KeyWidget(QLabel):
             QtWidgets.QSizePolicy.Policy.Expanding,  # Растягивается по горизонтали
             QtWidgets.QSizePolicy.Policy.Expanding,  # Растягивается по вертикали
         )
-        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        # self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setProperty('pressed', True)
+        self.setDisabled(True)
+        # self.setDown(True)
 
     def set_active(self, active):
-        self.setStyleSheet(f"KeyWidget  {{ {self.style[active]} }}")
+        self.setProperty("uncorrect", False)
+        self.style().unpolish(self)  # Обновляем стиль
+        self.style().polish(self)
+        self.update()
+        self.setDown(active)
 
-    def theme_switch(self):
-        self.style = [self.style[1], self.style[0]]
-        self.setStyleSheet(f"KeyWidget  {{ {self.style[0]} }}")
+    # def theme_switch(self):
+    #     self.styles = [self.styles[1], self.styles[0]]
+    #     self.setStyleSheet(f"KeyWidget  {{ {self.styles[0]} }}")
 
     def set_uncorrect(self):
-        self.setStyleSheet("background: red;")
+        self.setProperty("uncorrect", True)
+        self.style().unpolish(self)  # Обновляем стиль
+        self.style().polish(self)
+        self.update()
+        # self.repaint()
+
 
 class KeyboardWidget(QtWidgets.QWidget):
     keys_en = [
@@ -132,7 +144,7 @@ class KeyboardWidget(QtWidgets.QWidget):
         [
             {"name": "key_CTRL", "def": "CTRL", "shift": "CTRL"},
             {"name": "key_ALT", "def": "ALT", "shift": "ALT"},
-            {"name": "key_ ", "def": " ", "shift": " "},
+            {"name": "key_SPACE", "def": " ", "shift": " "},
             {"name": "key_ALT", "def": "ALT", "shift": "ALT"},
             {"name": "key_CTRL", "def": "CTRL", "shift": "CTRL"},
         ],
@@ -288,7 +300,7 @@ class KeyProgressDisplay(QLabel):
         self.progress = 0
         self.typos = 0
         self.setText(
-            f"{self.progress}/{self.total} ({self.progress / self.total:.1%})\t Ошибок: {self.typos}"
+            f"{self.progress}/{self.total} ({self.progress / self.total:.1%}) | Ошибок: {self.typos}"
         )
 
     @QtCore.Slot()
@@ -324,8 +336,10 @@ class KeyTextEdit(QTextEdit):
 
         self.passed_format = QtGui.QTextCharFormat()
         self.passed_format.setBackground(QtGui.QColor("#279346"))
+        self.passed_format.setForeground(QtGui.QColor("#ffffff"))
 
         self.setReadOnly(True)
+
         self.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
         # self.text_display.setFixedHeight(150)
         # self.setFixedHeight(200)
@@ -341,20 +355,33 @@ class KeyTextEdit(QTextEdit):
         # Прямоугольник без тени
         # self.setFrameStyle(QtWidgets.QFrame.Panel | QtWidgets.QFrame.Raised)  # Панель с объёмной тенью
 
-    def setText(self, text):
+    # def setText(self, text):
+    #     # self.document().setDefaultStyleSheet(".passed{ color: #f90000; font-size: 25px;}")
+
+    #     self.setHtml(text)
+
+    #     # cursor = self.textCursor()
+    #     # cursor.movePosition(QtGui.QTextCursor.MoveOperation.Start)
+    #     # # Выделить текущий символ
+    #     # cursor.movePosition(QtGui.QTextCursor.MoveOperation.Right, QtGui.QTextCursor.MoveMode.KeepAnchor)
+    #     # cursor.mergeCharFormat(self.underline_format)
+    #     # cursor.movePosition(QtGui.QTextCursor.MoveOperation.Left)
+    #     # self.setTextCursor(cursor)
+    #     self.textSizeChanged.emit(len(text))
+    #     print(self.textCursor().position(), ' position cursor')
+
+    def setHtmlText(self, text=None):
+        if text is None:
+            text = self.toPlainText()
+            position = self.textCursor().position()
+        else:
+            position = 0
+        htmlText = f"""<span class="passed">{text[:position]}</span><span class="remaining"><span class="current">{text[position:position+1]}</span>{text[position+1:]}</span>"""
+        self.setHtml(htmlText)
         cursor = self.textCursor()
-        cursor.setCharFormat(QtGui.QTextCharFormat())
+        cursor.setPosition(position)
         self.setTextCursor(cursor)
-        super().setText(text)
-        cursor = self.textCursor()
-        cursor.movePosition(QtGui.QTextCursor.MoveOperation.Start)
-        # Выделить текущий символ
-        cursor.movePosition(QtGui.QTextCursor.MoveOperation.Right, QtGui.QTextCursor.MoveMode.KeepAnchor)
-        cursor.mergeCharFormat(self.underline_format)
-        cursor.movePosition(QtGui.QTextCursor.MoveOperation.Left)
-        self.setTextCursor(cursor)
-        self.textSizeChanged.emit(len(text))
-        print(self.textCursor().position(), ' position cursor')
+
 
     def get_progress(self):
         print(self.textCursor().position(), " position cursor")
@@ -387,7 +414,7 @@ class KeyTextEdit(QTextEdit):
         print(self.textCursor().position(), " position cursor")
 
         return super().keyPressEvent(event) if event.key() != Qt.Key.Key_Space else None
-    
+
     def toNextChar(self):
         cursor = self.textCursor()
         if cursor.position() == 0:
@@ -398,22 +425,27 @@ class KeyTextEdit(QTextEdit):
         print("perfect")
 
         cursor.movePosition(
-            QtGui.QTextCursor.MoveOperation.Right,
-            QtGui.QTextCursor.MoveMode.KeepAnchor,
+            QtGui.QTextCursor.MoveOperation.Right
         )
-        cursor.setCharFormat(self.passed_format)
-        cursor.movePosition(QtGui.QTextCursor.MoveOperation.Left)
-        if len(self.toPlainText()) - 1 == cursor.position():
-            self.finished.emit()
-        else:
-            cursor.movePosition(QtGui.QTextCursor.MoveOperation.Right)
-            cursor.movePosition(
-                QtGui.QTextCursor.MoveOperation.Right,
-                QtGui.QTextCursor.MoveMode.KeepAnchor,
-            )
-            cursor.mergeCharFormat(self.underline_format)
-            cursor.movePosition(QtGui.QTextCursor.MoveOperation.Left)
-            self.setTextCursor(cursor)
+        self.setTextCursor(cursor)
+        self.setHtmlText()
+        # cursor.movePosition(
+        #     QtGui.QTextCursor.MoveOperation.Right,
+        #     QtGui.QTextCursor.MoveMode.KeepAnchor,
+        # )
+        # cursor.setCharFormat(self.passed_format)
+        # cursor.movePosition(QtGui.QTextCursor.MoveOperation.Left)
+        # if len(self.toPlainText()) - 1 == cursor.position():
+        #     self.finished.emit()
+        # else:
+        #     cursor.movePosition(QtGui.QTextCursor.MoveOperation.Right)
+        #     cursor.movePosition(
+        #         QtGui.QTextCursor.MoveOperation.Right,
+        #         QtGui.QTextCursor.MoveMode.KeepAnchor,
+        #     )
+        #     cursor.mergeCharFormat(self.underline_format)
+        #     cursor.movePosition(QtGui.QTextCursor.MoveOperation.Left)
+        #     self.setTextCursor(cursor)
 
         # format = cursor.charFormat()
         # format.setUnderlineStyle(QtGui.QTextCharFormat.UnderlineStyle.SingleUnderline)

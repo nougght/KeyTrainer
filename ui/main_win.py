@@ -19,7 +19,7 @@ class MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QSizePolicy.Expanding,  # Растягивается по горизонтали
             QtWidgets.QSizePolicy.Expanding,  # Растягивается по вертикали
         )
-        
+
         # self.setWindowIcon(QtGui.QIcon("resources/keyIc (2).ico"))
 
         self.setWindowTitle("Key Trainer")
@@ -28,13 +28,39 @@ class MainWindow(QtWidgets.QMainWindow):
         self.central_layout = QtWidgets.QGridLayout()
         self.central_widget.setLayout(self.central_layout)
 
-        self.close_butt = QtWidgets.QPushButton("exit")
-        self.close_butt.setFlat(True)
-        self.close_butt.setObjectName("exitButton")
-        self.close_butt.clicked.connect(self.on_exit_released)
-        self.central_layout.addWidget(self.close_butt, 0, 1, QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignTop)
+        self.mBar = QtWidgets.QMenuBar()
+        self.mBar.setNativeMenuBar(False)
+        self.mBar.addAction("Профиль")
+        self.mBar.addAction("Настройки")
+        self.mBar.addAction("Статистика")
+
+        self.right_widget = QtWidgets.QWidget()
+        layout = QtWidgets.QHBoxLayout(self.right_widget)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        self.minimize_btn = QtWidgets.QPushButton("—")
+        self.minimize_btn.setObjectName("minimizeButton")
+        self.minimize_btn.pressed.connect(self.showMinimized)
+        self.close_btn = QtWidgets.QPushButton("✕")
+        self.close_btn.setObjectName("exitButton")
+        self.close_btn.pressed.connect(self.on_exit_released)
+
+        layout.addWidget(self.minimize_btn)
+        layout.addWidget(self.close_btn)
+
+        # Добавляем виджет в правый угол меню-бара
+        self.mBar.setCornerWidget(self.right_widget)
+
+        self.mb_spacer1 = QtWidgets.QWidget()
+        self.mb_spacer1.setSizePolicy(
+            QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+            QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+        )
+        self.setMenuBar(self.mBar)
 
         self.theme_switch_button = QtWidgets.QPushButton("Поменять тему")
+        self.theme_switch_button.setObjectName("themes")
+        # self.theme_switch_button.setIcon(QtGui.QIcon("data/themes.svg"))
         self.central_layout.addWidget(self.theme_switch_button, 10, 0, QtCore.Qt.AlignmentFlag.AlignLeft)
 
         self.reset_button = QtWidgets.QPushButton("⟳")
@@ -42,6 +68,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.central_layout.addWidget(self.reset_button, 10, 1, QtCore.Qt.AlignmentFlag.AlignRight)
 
         self.toolbar = QtWidgets.QToolBar()
+        self.toolbar.layout().setSpacing(0)
+        self.toolbar.layout().setContentsMargins(0, 0, 0, 0)
         self.tb_spacer1 = QtWidgets.QWidget()
 
         self.tb_spacer1.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,QtWidgets.QSizePolicy.Policy.MinimumExpanding,)
@@ -111,7 +139,7 @@ class MainWindow(QtWidgets.QMainWindow):
         btns = self.toolbar.findChildren(QtWidgets.QToolButton)
         for bt in btns:
             bt.setObjectName(bt.text().lower())
-        self.toolbar.setStyleSheet("QToolButton { width: 170%; margin: 5px 10px}")
+        self.toolbar.setStyleSheet("QToolButton { width: 170%; margin: 0px 10px}")
         self.addToolBar(QtCore.Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
         self.progress_bar = QtWidgets.QProgressBar(minimum=0, maximum=100)
         self.central_layout.addWidget(self.progress_bar, 1, 1, QtCore.Qt.AlignmentFlag.AlignVCenter)
@@ -125,13 +153,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.char_pos_label = KeyProgressDisplay(1)
         self.central_layout.addWidget(self.char_pos_label, 1, 0, QtCore.Qt.AlignmentFlag.AlignCenter)
 
-
         self.central_layout.addWidget(self.text_display, 2, 0, 1, 2)
         self.vert_spacer_1 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.vert_spacer_2 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
         self.vert_spacer_3 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
 
-        self.central_layout.addItem(self.vert_spacer_1, 0, 0, 1, 2)
         self.central_layout.addItem(self.vert_spacer_2, 3, 0, 1, 2)
         self.central_layout.addItem(self.vert_spacer_3, 9, 0, 1, 2)
         print(self.central_layout.rowCount())
@@ -143,25 +169,34 @@ class MainWindow(QtWidgets.QMainWindow):
         self.key_theme_switch.connect(self.keyboard_widget.on_key_theme_switch)
         self.central_layout.addWidget(self.keyboard_widget, 4, 0, 1, 2, alignment = QtCore.Qt.AlignmentFlag.AlignCenter)
 
-
         self.finish = QtWidgets.QMessageBox()
         button_box = self.finish.findChild(QtWidgets.QDialogButtonBox)
         if button_box:
             button_box.setCenterButtons(True)
 
-    def setStyleSheet(self, styleSheet):
-        print("yoooooo")
-        super().setStyleSheet(styleSheet)
+        for i in range(self.central_layout.count()):
+            item = self.central_layout.itemAt(i)
+            widget = item.widget()
+            row, col, row_span, col_span = self.central_layout.getItemPosition(i)
+
+            if widget:
+                print(
+                    f"  Cell [{row}, {col}] (span: {row_span}x{col_span}): {widget.objectName() or widget.__class__.__name__}"
+                )
+            else:
+                print(f"  Cell [{row}, {col}]: Empty or spacer")
+
+    def setWindowStyle(self, style):
+        self.text_display.document().setDefaultStyleSheet(style[1])
+        self.text_display.setHtmlText()
+        super().setStyleSheet(style[0])
         # print(styleSheet)
 
     @QtCore.Slot()
     def on_stats_display(self, speed, typing_time):
-        self.char_pos_label.on_inc_progress()
-        self.progress_bar.setValue(100)
         self.finish.setText(f'CPM - {speed:.2f} chars per minute\nTime - {typing_time:.2f} seconds')
         # speed_lb = QtWidgets.QLabel(f'CPM - {speed}', finish)
         self.finish.resize(500, 500)
-        time.sleep(0.5)
         self.finish.exec()
 
     @QtCore.Slot()
@@ -200,12 +235,12 @@ class MainWindow(QtWidgets.QMainWindow):
     @QtCore.Slot()
     def toolbutton_activate(self, name, isactive):
         tb = self.toolbar.findChild(QtWidgets.QToolButton, name)
-        if isactive:
-            tb.setStyleSheet("border: 5px solid #707070; font: 700 45px;")
-        else:
-            tb.setStyleSheet(
-                "QToolbutton { border: 2px solid transparent;} QToolButton:hover{ border: 2px solid #707070;}"
-            )
+
+        tb.setProperty("isactive", isactive)
+
+        tb.style().unpolish(tb)  # Обновляем стиль
+        tb.style().polish(tb)
+        tb.update()
 
     def on_key_theme_switch(self, style):
         self.key_theme_switch.emit()
