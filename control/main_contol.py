@@ -1,6 +1,6 @@
 from PySide6.QtCore import QObject, Qt
 from PySide6.QtWidgets import QDialog
-from model import settingsModel, statisticsModel, ProfilesList, WordList, TextList
+from model import dataBase, settingsModel, statisticsModel, ProfilesList, WordList, TextList
 
 from ui.main_win import MainWindow
 from ui.my_widgets import StarterDialog, KeyWidget
@@ -9,6 +9,7 @@ import sys
 
 class mainControl(QObject):
     def __init__(self):
+        self.data_base = dataBase.Database('data/data.db')
         self.settings_model = settingsModel()
         self.statistics_model = statisticsModel()
         self.text_list_model = TextList()

@@ -8,7 +8,7 @@ QToolBar{
     padding: 10px;
 }
 
-QToolButton {
+QToolBar * {
     font-size: 45px;
 }
 

@@ -29,7 +29,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.central_widget.setLayout(self.central_layout)
 
         self.mBar = QtWidgets.QMenuBar()
-        self.mBar.setNativeMenuBar(False)
+        self.mBar.setNativeMenuBar(True)
         self.mBar.addAction("Профиль")
         self.mBar.addAction("Настройки")
         self.mBar.addAction("Статистика")
@@ -58,6 +58,17 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.setMenuBar(self.mBar)
 
+        lang_group = QtWidgets.QButtonGroup()
+        ru_btn = QtWidgets.QRadioButton()
+        ru_btn.setText('yo')
+        en_btn = QtWidgets.QRadioButton()
+        en_btn.setText('oy')
+
+        lang_group.addButton(ru_btn, id=0)
+        lang_group.addButton(en_btn, id=1)
+        self.central_layout.addWidget(ru_btn)
+        self.central_layout.addWidget(en_btn)
+
         self.theme_switch_button = QtWidgets.QPushButton("Поменять тему")
         self.theme_switch_button.setObjectName("themes")
         # self.theme_switch_button.setIcon(QtGui.QIcon("data/themes.svg"))
@@ -75,15 +86,21 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tb_spacer1.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,QtWidgets.QSizePolicy.Policy.MinimumExpanding,)
         self.toolbar.addWidget(self.tb_spacer1)
 
-        self.rus_action = QtWidgets.QWidgetAction(self.toolbar)
-        self.rus_action.setText("Russian")
-        self.toolbar.addAction(self.rus_action)
-        self.rus_action.triggered.connect(self.on_rus_released)
+        self.lang_combo = QtWidgets.QComboBox()
+        self.lang_combo.addItem('Russian')
+        self.lang_combo.addItem('English')
+        self.lang_combo.currentIndexChanged.connect(lambda index: self.language_change.emit(self.lang_combo.itemText(index).lower()))
+        self.toolbar.addWidget(self.lang_combo)
 
-        self.eng_action = QtWidgets.QWidgetAction(self.toolbar)
-        self.eng_action.setText("English")
-        self.toolbar.addAction(self.eng_action)
-        self.eng_action.triggered.connect(self.on_eng_released)
+        # self.rus_action = QtWidgets.QWidgetAction(self.toolbar)
+        # self.rus_action.setText("Russian")
+        # self.toolbar.addAction(self.rus_action)
+        # self.rus_action.triggered.connect(self.on_rus_released)
+
+        # self.eng_action = QtWidgets.QWidgetAction(self.toolbar)
+        # self.eng_action.setText("English")
+        # self.toolbar.addAction(self.eng_action)
+        # self.eng_action.triggered.connect(self.on_eng_released)
 
         self.tb_spacer2 = QtWidgets.QWidget()
         self.tb_spacer2.setSizePolicy(
@@ -139,7 +156,7 @@ class MainWindow(QtWidgets.QMainWindow):
         btns = self.toolbar.findChildren(QtWidgets.QToolButton)
         for bt in btns:
             bt.setObjectName(bt.text().lower())
-        self.toolbar.setStyleSheet("QToolButton { width: 170%; margin: 0px 10px}")
+        self.toolbar.setStyleSheet("QToolButton { width: 170%; margin: 5px 10px}")
         self.addToolBar(QtCore.Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
         self.progress_bar = QtWidgets.QProgressBar(minimum=0, maximum=100)
         self.central_layout.addWidget(self.progress_bar, 1, 1, QtCore.Qt.AlignmentFlag.AlignVCenter)
@@ -204,13 +221,13 @@ class MainWindow(QtWidgets.QMainWindow):
         print("exit")
         self.close()
 
-    @QtCore.Slot()
-    def on_rus_released(self):
-        self.language_change.emit("russian")
+    # @QtCore.Slot()
+    # def on_rus_released(self):
+    #     self.language_change.emit("russian")
 
-    @QtCore.Slot()
-    def on_eng_released(self):
-        self.language_change.emit("english")
+    # @QtCore.Slot()
+    # def on_eng_released(self):
+    #     self.language_change.emit("english")
 
     @QtCore.Slot()
     def on_words_released(self):
