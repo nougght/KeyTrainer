@@ -1,4 +1,5 @@
 import sys
+from PySide6 import QtWidgets, QtCore
 from PySide6.QtWidgets import (QApplication, QMainWindow, QTextEdit, 
                               QVBoxLayout, QWidget, QLabel)
 from PySide6.QtCore import Qt
@@ -10,27 +11,26 @@ class TypingTutor(QMainWindow):
         super().__init__()
         self.setWindowTitle("Тренажер печати")
         self.setGeometry(100, 100, 800, 400)
-        
+
         # Текст для тренировки
         self.practice_text = "В чащах юга жил бы цитрус? Да, но фальшивый экземпляр!"
         self.current_pos = 0
-        
+
         self.init_ui()
         self.update_display()
-        
+
     def init_ui(self):
         # Создаем центральный виджет
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-        
+
         # Основной layout
         layout = QVBoxLayout()
         central_widget.setLayout(layout)
-        
+
         # Инструкция
         instruction = QLabel("Начинайте печатать. Текущий символ выделен красным.")
         layout.addWidget(instruction)
-
 
         # Текстовое поле для отображения текста
         self.text_display = QTextEdit()
@@ -46,7 +46,23 @@ class TypingTutor(QMainWindow):
             }
         """)
         layout.addWidget(self.text_display)
-        
+
+        list_widget = QtWidgets.QListWidget()
+        list_widget.setFlow(list_widget.Flow.LeftToRight)
+        list_widget.setWrapping(True)
+        list_widget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        list_widget.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        list_widget.setSizeAdjustPolicy(QtWidgets.QListWidget.SizeAdjustPolicy.AdjustToContents)
+        list_widget.addItems(["Easy", "Normal", "Hard"])
+        list_widget.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
+        list_widget.adjustSize()
+        list_widget.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
+        list_widget.setSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed,
+        )
+        layout.addWidget(list_widget)
+
         # Статус
         self.status_label = QLabel()
         layout.addWidget(self.status_label)
@@ -64,20 +80,20 @@ class TypingTutor(QMainWindow):
             <span class="remaining">{self.practice_text[self.current_pos+1:] if self.current_pos+1 < len(self.practice_text) else ''}</span>
         </div>
         """
-        
+
         self.text_display.setHtml(html)
         self.update_status()
-        
+
     def update_status(self):
         total = len(self.practice_text)
         typed = self.current_pos
         percent = (typed / total) * 100 if total > 0 else 0
-        
+
         self.status_label.setText(
             f"Прогресс: {typed}/{total} символов ({percent:.1f}%) | "
             f"Осталось: {total - typed}"
         )
-        
+
     def keyPressEvent(self, event):
         if event.key() >= Qt.Key_Space and event.key() <= Qt.Key_AsciiTilde:
             char = event.text()
@@ -92,7 +108,7 @@ class TypingTutor(QMainWindow):
             if self.current_pos > 0:
                 self.current_pos -= 1
                 self.update_display()
-        
+
         super().keyPressEvent(event)
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 from PySide6 import QtWidgets, QtCore, QtGui, QtSvg
-from ui.my_widgets import KeyWidget, KeyTextEdit, KeyProgressDisplay, KeyboardWidget
+from ui.my_widgets import KeyWidget, KeyTextEdit, KeyProgressDisplay, KeyboardWidget, RadioList
 from control.settings_control import SettingControl
 
 import time
@@ -125,6 +125,27 @@ class MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QSizePolicy.Policy.MinimumExpanding,
         )
         self.toolbar.addWidget(self.tb_spacer3)
+
+        mode_list = RadioList()
+        mode_list.add_items(["Words", "Text"])
+        self.toolbar.addWidget(mode_list)
+        diff_list = RadioList()
+        diff_list.add_items(["Easy", "Normal", "Hard"])
+        # list_widget = QtWidgets.QListWidget()
+        # list_widget.setFlow(list_widget.Flow.LeftToRight)
+        # list_widget.setWrapping(True)
+        # list_widget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        # list_widget.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        # list_widget.setSizeAdjustPolicy(QtWidgets.QListWidget.SizeAdjustPolicy.AdjustToContents)
+        # list_widget.addItems(["Easy", "Normal", "Hard"])
+        # list_widget.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
+        # list_widget.adjustSize()
+        # list_widget.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
+        # list_widget.setSizePolicy(
+        #     QtWidgets.QSizePolicy.Policy.Fixed,
+        #     QtWidgets.QSizePolicy.Policy.Fixed,
+        # )
+        self.toolbar.addWidget(diff_list)
 
         self.action1 = QtWidgets.QWidgetAction(self.toolbar)
         self.action1.setText("Easy")

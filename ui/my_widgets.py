@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QDialog, QLabel, QComboBox, QTextEdit, QVBoxLayout, QPushButton
+from PySide6.QtWidgets import QDialog, QLabel, QComboBox, QTextEdit, QVBoxLayout, QPushButton, QWidget, QRadioButton, QButtonGroup, QHBoxLayout
 from PySide6.QtCore import Qt
 from PySide6 import QtCore, QtGui, QtWidgets
 from control.settings_control import SettingControl
@@ -317,6 +317,51 @@ class KeyProgressDisplay(QLabel):
             f"{self.progress}/{self.total} ({self.progress / self.total:.1%})\t Ошибок: {self.typos}"
         )
 
+class RadioList(QWidget):
+    def __init__(self):
+        super().__init__()
+        
+        self.layout = QHBoxLayout(self)
+        self.layout.setSpacing(0)  # Убираем промежутки между кнопками
+        self.layout.setContentsMargins(0, 0, 0, 0)  # Убираем отступы
+        
+        self.button_group = QButtonGroup(self)
+        self.button_group.setExclusive(True)  # Включаем режим "только один выбор"
+        
+        # Стиль для скрытия переключателя и стилизации как списка
+        self.setStyleSheet("""
+            QRadioButton {
+                padding: 5px 10px;
+                margin: 0;
+                border: 1px solid #ccc;
+                border-right: none;  /* Убираем двойные границы между кнопками */
+            }
+            QRadioButton:last-child {
+                border-right: 1px solid #ccc;  /* Граница только у последней кнопки */
+            }
+            QRadioButton::indicator {
+                width: 0px;  /* Полностью скрываем индикатор */
+                height: 0px;
+            }
+            QRadioButton:hover {
+                background: #f0f0f0;
+            }
+            QRadioButton:checked {
+                background: #d0e3ff;
+                border-color: #99c2ff;
+            }
+        """)
+    
+    def add_items(self, items):
+        """Добавляем элементы в список"""
+        for i, text in enumerate(items):
+            btn = QRadioButton(text)
+            self.button_group.addButton(btn, i)
+            self.layout.addWidget(btn)
+        
+        # Делаем первую кнопку выбранной по умолчанию
+        if items:
+            self.button_group.button(0).setChecked(True)
 
 class KeyTextEdit(QTextEdit):
     key_pressed = QtCore.Signal(str)

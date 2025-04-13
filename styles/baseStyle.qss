@@ -8,6 +8,17 @@ QToolBar{
     padding: 10px;
 }
 
+QListWidget {
+    border: none;  /* Убираем стандартную рамку */
+    padding: 0;    /* Убираем внутренние отступы */
+    margin: 0;     /* Убираем внешние отступы */
+}
+QListWidget::item {
+    padding: 2px 5px;  /* Минимальные отступы для элементов */
+    margin: 0;
+    border: none;
+}
+
 QToolBar * {
     font-size: 45px;
 }
