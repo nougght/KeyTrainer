@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QTextEdit,
                               QVBoxLayout, QWidget, QLabel)
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QTextCursor, QColor
-from ui.my_widgets import KeyWidget
+from ui.other_widgets import KeyWidget
 
 class TypingTutor(QMainWindow):
     def __init__(self):

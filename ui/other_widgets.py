@@ -1,46 +1,85 @@
-from PySide6.QtWidgets import QDialog, QLabel, QComboBox, QTextEdit, QVBoxLayout, QPushButton, QWidget, QRadioButton, QButtonGroup, QHBoxLayout
+from PySide6.QtWidgets import QTabBar,  QLabel, QFrame,  QTextEdit, QPushButton, QRadioButton, QButtonGroup, QHBoxLayout
+from PySide6.QtWidgets import (
+    QToolButton,
+    QHBoxLayout,
+    QMenu,
+    QPushButton,
+    QSizePolicy,
+    QSpacerItem,
+    QLabel,
+)
+from PySide6.QtCore import Signal, Slot, Qt
+from PySide6.QtGui import QIcon, QAction
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QAction
 from PySide6 import QtCore, QtGui, QtWidgets
-from control.settings_control import SettingControl
-import time, os, sys
+# from control.settings_control import SettingControl
+# import time, os, sys
 
 
-class StarterDialog(QDialog):
+class TabBarWithControl(QFrame):
+    CloseClicked = Signal()
+    MinimiseClicked = Signal()
+    TabChanged = Signal(int)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        # self.setStyleSheet('border-bottom: 1px solid #2b2e4a;background: #3a11cd;')
+        self.setObjectName("TabPanel")
+        layout = QHBoxLayout(self)
+        layout.setAlignment(Qt.AlignmentFlag.AlignVCenter)
+        layout.setSpacing(0)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        self.tabBar = QTabBar()
+        self.tabBar.setDrawBase(False)
+        # self.tabBar.setStyleSheet('background: red;')
+        layout.addWidget(self.tabBar, alignment=Qt.AlignmentFlag.AlignBottom)
+
+        spacer = QSpacerItem(
+            20, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
+        layout.addItem(spacer)
+
+        self.right_widget = QFrame(self)
+        self.right_widget.setObjectName("Corner")
+        self.right_widget.setLayout(QHBoxLayout(self.right_widget))
+        self.right_widget.layout().setContentsMargins(0, 0, 0, 0)
+        self.right_widget.layout().setSpacing(0)
+        self.theme_button = ThemeButton()
+        self.minimise_btn = QPushButton("—", self)
+        self.minimise_btn.setObjectName("minimiseButton")
+        self.minimise_btn.clicked.connect(self.MinimiseClicked.emit)
+        self.close_btn = QPushButton("✕", self)
+        self.close_btn.setObjectName("exitButton")
+        self.close_btn.clicked.connect(self.CloseClicked.emit)
+        self.right_widget.layout().addWidget(self.theme_button)
+        self.right_widget.layout().addWidget(self.minimise_btn)
+        self.right_widget.layout().addWidget(self.close_btn)
+        layout.addWidget(self.right_widget)
+
+
+class ThemeButton(QToolButton):
+    theme_changed = Signal(str)  # Сигнал при смене темы
+
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Запуск программы")
-        self.resize(350, 300)
+        # self.setText("🎨")
+        self.setIcon(QIcon("data/themes.svg"))  # Иконка смены темы
+        self.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)  # Меню по клику
+        self._setup_menu()
 
-        self.selected_profile = None
+    def _setup_menu(self):
+        self._menu = QMenu()
+        themes = ["Светлая", "Тёмная", "Системная"]
+        for theme in themes:
+            action = self._menu.addAction(theme)
+            action.triggered.connect(lambda _, t=theme: self.theme_changed.emit(t))
+        self.setMenu(self._menu)
 
-        self.vlayout = QVBoxLayout(self)
 
-        self.profile_box = QComboBox()
-        self.profile_box.addItem("Профиль 1")
-        self.vlayout.addWidget(self.profile_box)
-        self.profile_box.addItem("Профиль 2")
-        self.vlayout.addWidget(self.profile_box)
-        self.profile_box.addItem("Профиль 3")
-        self.vlayout.addWidget(self.profile_box)
-
-        self.accept_but = QPushButton("Войти")
-        self.accept_but.clicked.connect(self.accept)
-        self.vlayout.addWidget(self.accept_but, alignment=Qt.AlignmentFlag.AlignHCenter)
-
-        self.theme_switch_button = QPushButton("Поменять тему")
-        self.vlayout.addWidget(self.theme_switch_button, alignment=Qt.AlignmentFlag.AlignLeft)
-
-    def accept(self):
-        self.selected_profile = None
-        return super().accept()
-    
-    def get_selected_profile(self):
-        return self.selected_profile
-    
-    @QtCore.Slot()
-    def on_accept(self):
-        time.sleep(0.3)
-        self.accept()
 
 
 class KeyWidget(QPushButton):
@@ -51,8 +90,8 @@ class KeyWidget(QPushButton):
         super().__init__(text, parent)
         self.setMinimumSize(60, 60)  # Минимальный размер клавиши
         self.setSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Expanding,  # Растягивается по горизонтали
-            QtWidgets.QSizePolicy.Policy.Expanding,  # Растягивается по вертикали
+            QtWidgets.QSizePolicy.Policy.Fixed,  # Растягивается по горизонтали
+            QtWidgets.QSizePolicy.Policy.Fixed,  # Растягивается по вертикали
         )
         # self.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setProperty('pressed', True)
@@ -78,7 +117,7 @@ class KeyWidget(QPushButton):
         # self.repaint()
 
 
-class KeyboardWidget(QtWidgets.QWidget):
+class KeyboardWidget(QtWidgets.QFrame):
     keys_en = [
         [
             {"name": "key_`", "def": "`", "shift": "~"},
@@ -94,7 +133,7 @@ class KeyboardWidget(QtWidgets.QWidget):
             {"name": "key_0", "def": "0", "shift": ")"},
             {"name": "key_-", "def": "-", "shift": "_"},
             {"name": "key_=", "def": "=", "shift": "+"},
-            {"name": "key_BACKSPACE", "def": "BACKSPACE", "shift": "BACKSPACE"},
+            {"name": "key_BACKSPACE", "def": "BACK", "shift": "BACKSPACE"},
         ],
         [
             {"name": "key_TAB", "def": "TAB", "shift": "TAB"},
@@ -164,7 +203,7 @@ class KeyboardWidget(QtWidgets.QWidget):
             {"name": "key_0", "def": "0", "shift": "0"},
             {"name": "key_-", "def": "-", "shift": "-"},
             {"name": "key_+", "def": "+", "shift": "+"},
-            {"name": "key_BACKSPACE", "def": "BACKSPACE", "shift": "BACKSPACE"},
+            {"name": "key_BACKSPACE", "def": "BACK", "shift": "BACKSPACE"},
         ],
         [
             {"name": "key_TAB", "def": "TAB", "shift": "TAB"},
@@ -227,21 +266,31 @@ class KeyboardWidget(QtWidgets.QWidget):
             QtWidgets.QSizePolicy.Policy.Expanding,  # Растягивается по вертикали
         )
         self.vert_layout = QtWidgets.QVBoxLayout(self)
+        self.vert_layout.setContentsMargins(0, 0, 0, 0)
         self.language = lang
         self.keys = self.keys_en if self.language == "english" else self.keys_ru
         for i in range(len(self.keys)):
             keys_layout = QtWidgets.QHBoxLayout()
-            keys_layout.setSpacing(5)
+            keys_layout.setSpacing(2)
             for k in self.keys[i]:
                 key = KeyWidget(k['def'])
                 print(key.sizePolicy().horizontalPolicy().name)
                 key.setObjectName(k['name'])
-                if (k['def'] in ['CTRL', 'SHIFT', 'ALT', 'CAPS', 'ENTER', 'TAB']):
+                if (k['def'] in ['CTRL', 'SHIFT', 'ALT', 'CAPS', 'ENTER', 'TAB','BACKSPACE']):
+                    
+                    key.setSizePolicy(
+                        QtWidgets.QSizePolicy.Policy.Expanding,  # Растягивается по горизонтали
+                        QtWidgets.QSizePolicy.Policy.Expanding,  # Растягивается по вертикали
+                    )
                     keys_layout.addWidget(
                         key,  stretch=2
                     )
-                elif (k['def'] in [' ', 'BACKSPACE']):
+                elif (k['def'] in [' ', ]):
                     keys_layout.addWidget(key, stretch=4)
+                    key.setSizePolicy(
+                        QtWidgets.QSizePolicy.Policy.Expanding,  # Растягивается по горизонтали
+                        QtWidgets.QSizePolicy.Policy.Expanding,  # Растягивается по вертикали
+                    )
                 # self.key_theme_switch.connect(key.on_theme_switch)
                 else:
                     keys_layout.addWidget(
@@ -317,48 +366,35 @@ class KeyProgressDisplay(QLabel):
             f"{self.progress}/{self.total} ({self.progress / self.total:.1%})\t Ошибок: {self.typos}"
         )
 
-class RadioList(QWidget):
+class RadioList(QFrame):
     def __init__(self):
         super().__init__()
-        
         self.layout = QHBoxLayout(self)
-        self.layout.setSpacing(0)  # Убираем промежутки между кнопками
+        self.layout.setSpacing(10)  # Убираем промежутки между кнопками
         self.layout.setContentsMargins(0, 0, 0, 0)  # Убираем отступы
         
+        self.setSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed,
+        )
         self.button_group = QButtonGroup(self)
         self.button_group.setExclusive(True)  # Включаем режим "только один выбор"
-        
+
         # Стиль для скрытия переключателя и стилизации как списка
-        self.setStyleSheet("""
-            QRadioButton {
-                padding: 5px 10px;
-                margin: 0;
-                border: 1px solid #ccc;
-                border-right: none;  /* Убираем двойные границы между кнопками */
-            }
-            QRadioButton:last-child {
-                border-right: 1px solid #ccc;  /* Граница только у последней кнопки */
-            }
-            QRadioButton::indicator {
-                width: 0px;  /* Полностью скрываем индикатор */
-                height: 0px;
-            }
-            QRadioButton:hover {
-                background: #f0f0f0;
-            }
-            QRadioButton:checked {
-                background: #d0e3ff;
-                border-color: #99c2ff;
-            }
-        """)
-    
+        # self.setStyleSheet(
+        #     """
+
+        # """
+        # # )
+        # self.setStyleSheet('background: black;')
+
     def add_items(self, items):
         """Добавляем элементы в список"""
         for i, text in enumerate(items):
             btn = QRadioButton(text)
             self.button_group.addButton(btn, i)
             self.layout.addWidget(btn)
-        
+
         # Делаем первую кнопку выбранной по умолчанию
         if items:
             self.button_group.button(0).setChecked(True)
@@ -385,11 +421,11 @@ class KeyTextEdit(QTextEdit):
 
         self.setReadOnly(True)
 
-        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         # self.text_display.setFixedHeight(150)
         # self.setFixedHeight(200)
         self.setFont(QtGui.QFont("Consolas", 35, 500))
-        self.setAlignment(QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.cursorForPosition(QtCore.QPoint(0, 0))
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -462,8 +498,8 @@ class KeyTextEdit(QTextEdit):
 
     def toNextChar(self):
         cursor = self.textCursor()
-        if cursor.position() == 0:
-            self.typing_start.emit()
+        # if cursor.position() == 0:
+        #     self.typing_start.emit()
 
         print(cursor.position(), "pos")
 

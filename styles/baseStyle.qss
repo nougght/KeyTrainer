@@ -1,49 +1,16 @@
 
-QWidget {
-    font-size: 25px;
-}
-
 QToolBar{
     spacing: 0px;
     padding: 10px;
 }
 
-QListWidget {
-    border: none;  /* Убираем стандартную рамку */
-    padding: 0;    /* Убираем внутренние отступы */
-    margin: 0;     /* Убираем внешние отступы */
-}
-QListWidget::item {
-    padding: 2px 5px;  /* Минимальные отступы для элементов */
-    margin: 0;
-    border: none;
-}
 
 QToolBar * {
-    font-size: 45px;
-}
-
-
-
-KeyWidget {
-    padding: 10px 20px 10px 20px;
-    border-radius: 7px;
-    margin: 2px;
-}
-
-
-KeyTextEdit {
-    font: 500 45px 'Consolas';
-    margin: 15px;
-    padding: 15px;
-    border-radius: 10px;
-}
-
-KeyProgressDisplay{
-    font: 500 35px monospace;
+    font-size: 30px;
 }
 
 QPushButton, QToolButton {
+    font-size: 25px;
     padding: 5px;
     border-radius: 5px;
     /* border: 2px solid transparent; */
@@ -52,11 +19,14 @@ QPushButton, QToolButton {
 
 QPushButton#reset{
     font-weight: 500;
-    font-size: 50px;
+    font-size: 30px;
     text-align: center;
-    padding: 0px 10px 10px;
     background: transparent;
     border: 2px solid transparent;
+    margin: 0px;
+    width: 40px;
+    height: 40px;
+    border-radius: 27px;
 }
 
 
@@ -69,17 +39,18 @@ QPushButton#reset:pressed{
 }
 
 QMenuBar {
-    font-size: 30px;
-    border: 1px solid;
+    font-size: 24px;
 }
-QPushButton#exitButton,#minimizeButton {
+
+QPushButton#exitButton,#minimiseButton {
     font-size: 20px;
-    border-radius: 5px;
-    border: 2px solid #270a0a;
+    /* border-radius: 5px; */
+    /* border: 2px solid #270a0a; */
+    border: none;
     font-weight: 600;
     text-align: center;
-    padding: 5px 10px;
-    margin: 1px;
+    padding: 7px 14px;
+    margin: 0px;
 }
 
 QPushButton#exitButton:hover {
@@ -87,6 +58,26 @@ QPushButton#exitButton:hover {
     padding: 3px 8px;
 }
 
+
+
+
+KeyWidget {
+    font: 500 22px 'Consolas';
+    padding: 0.4em 0.64em;
+    border-radius: 7%;
+    margin: 2px;
+}
+
+KeyTextEdit {
+    font: 500 45px 'Consolas';
+    margin: 15% 30%;
+    padding: 15%;
+    border-radius: 10%;
+}
+
+KeyProgressDisplay{
+    font: 500 30px monospace;
+}
 
 
 

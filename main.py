@@ -2,9 +2,7 @@ from PySide6.QtWidgets import QApplication, QStyleFactory
 from PySide6.QtCore import Qt
 import sys
 from control.main_contol import mainControl
-
-
-# print(QStyleFactory.keys())
+import qdarkstyle
 
 # запуск приложения
 if __name__ == "__main__":
@@ -17,8 +15,6 @@ if __name__ == "__main__":
     main_control.setting_control.set_base_style(app)
     app.setWindowIcon(main_control.setting_control.get_icon())
 
-    # окно входа
+    # запуск начального окна
     main_control.show_starter_window()
     sys.exit(app.exec())
-
-

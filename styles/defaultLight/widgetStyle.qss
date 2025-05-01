@@ -6,27 +6,30 @@ QWidget {
     color: #2b2e4a;
 }
 
+
 QProgressBar {
     margin: 0px 10px 0px;
     text-align: center;
     border-radius:5px;
-    background: #f0f5ed;
-    /* border: 2px solid; */
+    background: #e4f0dd;
+    border: 2px solid #2b2e4a;
     height: 30%;
 }
 
 QProgressBar::chunk {
-    border-radius: 3px;
+    margin: 2px;
+    width: 17%;
+    border-radius: 6%;
     background-color:#05bc67;
 }
 
 
 QToolBar {
-    background: #d4d4d4;
+    background: transparent;
     border: 0px;
 }
 
-QToolBar > QWidget#spacer {
+QToolBar > QWidget#spacer{
     background: transparent;
 }
 
@@ -36,6 +39,7 @@ QPushButton, QToolButton {
     color: #2b2e4a;
     /* border: 2px solid transparent; */
 }
+
 
 /* QPushButton#themes {
     icon: url('data/themes.svg');
@@ -54,14 +58,14 @@ QPushButton#themes:hover::icon {
     background-color: #037841;
 } */
 
-QPushButton:hover, QToolButton:hover {
+QPushButton:hover {
     background-color: #fafafa;
     color: #05bc67;
     border: 2px solid #05bc67;
 }
 
 
-QPushButton:pressed, QToolButton:pressed {
+QPushButton:pressed {
     background-color: #05bc67;
     color: #fafafa;
     border: 2px solid transparent;
@@ -78,14 +82,10 @@ QToolButton[isactive="false"] {
 } */
 
 
-QMenuBar::item:selected {
-    background-color: #4a4a4a;
-}
-
 KeyWidget{
-    background: #88C0D0;
-    color: #090f1b;
-    border: 2px solid #090f1b;
+    background: #fafafa;
+    color: #000000;
+    border: 2px solid #2b2e4a;
 }
 
 KeyWidget[uncorrect="true"] {
@@ -93,25 +93,181 @@ KeyWidget[uncorrect="true"] {
 }
 
 KeyWidget:pressed{
-    background: #090f1b;
-    color: #88C0D0;
-    border: 2px solid #88C0D0;
+    background: #05bc67;
+    color: #fafafa;
+    border: 3px solid #2b2e4a;
+}
+
+
+KeyboardWidget {
+    margin: 0;
+    /* background:red; */
 }
 
 KeyTextEdit{
-    background: transparent/* #8781b5 */ ;
-    border: 3px solid #9480eb;
+    width: 70%;
+    background: #f0f5ed/* #8781b5 */ ;
+    border: 2px solid #d3f1d6;
 }
 
-QPushButton#reset{
+/* QPushButton#reset{
+    background: transparent;
+} */
+
+QMenuBar {
+    border-bottom: 1px solid #2b2e4a;
+    background:#f0f5ed;
+}
+
+QMenuBar::item {
+    border-radius: 10%;
+    margin: 3%;
+    padding: 2%;
+}
+
+QMenuBar::item:selected {
+    background-color: rgba(5, 196, 107, 0.4);
+}
+
+/* TypingWidget{
+    background: black;
+} */
+
+TabBarWithControl {
+    border-bottom: 1px solid rgba(5, 196, 107, 0.2);
+    background: #f0f5ed !important;
+}
+
+ThemeButton {
+    icon-size: 30px;
+    background: transparent;
+    border: 0;
+    margin: 0;
+    padding: 0 10px;
+    margin-right: 35px;
+}
+
+#Corner {
     background: transparent;
 }
+/* Стиль для QTabBar */
 
-QPushButton#exitButton {
-    background: #a72727;
-    color: #131313;
+QTabBar {
+    font: 500 20px;
+    background: transparent;  /* Общий фон с кнопками */
+    border: none;
+    margin: 0;
 }
 
-QPushButton#exitButton:pressed {
+QTabBar::tab {
+    color: #2b2e4a;          /* Нейтральный цвет текста */
+    padding: 6px 12px;
+    margin: 0 0 0 10%;
+    border: none;
+    border-bottom: 3px solid transparent;
+}
+
+QTabBar::tab:selected {
+    /* background: rgba(5, 196, 107, 0.1); */
+    color: #05c46b;         /* Акцентный цвет (как у кнопок) */
+    border-bottom: 3px solid #05c46b;
+}
+
+/* Для темной темы:
+.dark QTabBar::tab {
+    color: #A0A0A0;
+}
+.dark QTabBar::tab:selected {
+    color: #4FC3F7;
+    border-bottom-color: #4FC3F7;
+} */
+
+QPushButton#exitButton, QPushButton#minimiseButton {
+    /* font-size: 5px; */
+    margin: 0;
+    border: 0px;
+    background: transparent;
+
+    /* border-bottom: 1px solid #2b2e4a; */
+    border-radius: none;
+}
+
+QPushButton#minimiseButton:hover {
+    background-color: rgba(5, 196, 107, 0.4);
+    color:#2b2e4a;
+}
+
+QPushButton#exitButton:hover {
     background:#ffe72b2b;
+    color:#2b2e4a;
+}
+
+
+RadioList {
+    background-color: #07e47d;
+    border-radius: 15%;
+    margin: 5px 0;
+}
+
+QRadioButton {
+    font-size: 30px;
+    text-align: center;
+    background: transparent;
+    border-radius: 15%;
+    padding: 4% 10%;
+    margin: 0;
+    border: 5px solid transparent;
+}
+
+/* 
+QRadioButton:last-child {
+    border-right: 1px solid #ccc;  /* Граница только у последней кнопки */
+/* } */
+
+QRadioButton::indicator {
+    background-color: transparent;
+    width: 0px;  /* Полностью скрываем индикатор */
+    height: 0px;
+}
+QRadioButton:hover {
+    
+    background-color: rgba(5, 196, 107, 0.4);
+    /* border-color: #07e47d; */
+}
+QRadioButton:pressed {
+    /* background:#07e47d;
+    border-color: #07e47d;
+    color: #fafafa; */
+}
+
+QRadioButton:checked {
+    /* background: #d0e3ff; */
+    border: 5px solid #2b2e4a;
+}
+
+
+QFrame#cell {
+    width: 15px;
+    border-radius: 5px;
+    border: 2px solid #2b2e4a;
+}
+
+QFrame#cell:hover {
+    border: 2px solid #aa0c0c;
+}
+
+QFrame[activity='0'] {
+    background: rgb(235, 237, 240);
+}
+QFrame[activity='1'] {
+    background: rgb(155, 233, 168);
+}
+QFrame[activity='2'] {
+    background: rgb(64, 196, 99);
+}
+QFrame[activity='3'] {
+    background: rgb(48, 161, 78);
+}
+QFrame[activity='4'] {
+    background: rgb(33, 110, 57);
 }
