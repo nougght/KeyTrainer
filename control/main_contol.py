@@ -45,8 +45,9 @@ class mainControl(QObject):
             # self.user_repository.recalculate_user_data(
             #     self.user_session.get_user()["user_id"]
             # )
-
             # self.statistics_control.daily_activity_repository.recalculate_activity(self.user_session.get_user()["user_id"], date.today().isoformat())
+            
+            self.statistics_control.show_general_stats(self.user_session.get_user()["user_id"])
             self.main_window.setWindowFlags(
                 Qt.WindowType.FramelessWindowHint  # Убираем рамку и заголовок
             )

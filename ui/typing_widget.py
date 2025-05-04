@@ -21,7 +21,7 @@ from ui.other_widgets import (
     KeyboardWidget,
     RadioList,
 )
-from ui.statistics_widget import chart
+from ui.statistics_widget import SessionChart
 
 class TypingWidget(QFrame):
     key_theme_switch = Signal()
@@ -106,8 +106,7 @@ class TypingWidget(QFrame):
         )
         self.central_layout.addWidget(self.text_display, 2, 0, 1, 2)
 
-
-        self.chart = chart()
+        self.chart = SessionChart()
         self.central_layout.addWidget(self.chart, 2, 0, 1, 2)
         self.chart.hide()
 
@@ -217,13 +216,13 @@ class TypingWidget(QFrame):
         diff_list.setObjectName("diffList")
         diff_list.add_items(["Easy", "Normal", "Hard"])
         diff_list.button_group.button(0).clicked.connect(
-            lambda: self.mod_change.emit("easy")
+            lambda: self.difficulty_change.emit("easy")
         )
         diff_list.button_group.button(1).clicked.connect(
-            lambda: self.mod_change.emit("normal")
+            lambda: self.difficulty_change.emit("normal")
         )
         diff_list.button_group.button(2).clicked.connect(
-            lambda: self.mod_change.emit("hard")
+            lambda: self.difficulty_change.emit("hard")
         )
         self.tool_layout.addWidget(diff_list)
 
@@ -322,7 +321,6 @@ class TypingWidget(QFrame):
         # speed_lb = QLabel(f'CPM - {speed}', finish)
         self.finish.resize(500, 500)
         self.finish.exec()
-        
 
     @Slot()
     def on_exit_released(self):

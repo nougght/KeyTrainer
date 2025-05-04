@@ -46,7 +46,7 @@ class UserRepository:
             cursor = db_connection.cursor()
             cursor.execute(
                 """
-                SELECT user_id, username, avatar FROM users
+                SELECT user_id, username, password_hash, avatar FROM users
                 WHERE user_id = ?
                 """,
                 (user_id,)
@@ -59,21 +59,22 @@ class UserRepository:
             cursor = db_connection.cursor()
             cursor.execute(
                 """
-                SELECT user_id, username, avatar FROM users
+                SELECT user_id, username, password_hash, avatar FROM users
                 ORDER BY username
                 """
             )
             return cursor.fetchall()
 
-    def create_user(self, username, avatar=None):
+    def create_user(self, username, password_hash, avatar=None):
         """Создает нового пользователя и возвращает его ID."""
         with self.db.get_connection() as db_connection:
             cursor = db_connection.cursor()
             cursor.execute(
-                "INSERT INTO users (username, avatar, sync_token) VALUES (?, ?, ?)",
+                "INSERT INTO users (username, avatar, password_hash, sync_token) VALUES (?, ?, ?, ?)",
                 (
                     username,
                     avatar,
+                    password_hash,
                     "temp_token",
                 ),  # В реальном приложении генерируйте токен
             )
@@ -92,11 +93,12 @@ class UserRepository:
             cursor = db_connection.cursor()
             cursor.execute(
                 """
-                SELECT username, avatar, created_at, sync_token, settings, total_time, total_sessions, total_chars, best_cpm, avg_cpm, avg_accuracy, max_streak, current_streak, total_days
+                SELECT username, created_at, total_days, total_sessions, total_time, total_chars, best_cpm, best_cpm/5, avg_cpm, avg_cpm/5, avg_accuracy, max_streak, current_streak
                 FROM users WHERE user_id = ?
-                """
+                """,
+                (user_id,),
             )
-            return cursor.fetchall()
+            return cursor.fetchone()
 
     def calc_user_streak(self, user_id) -> tuple[int]:
         with self.db.get_connection() as db_connection:
@@ -242,18 +244,32 @@ class SessionRepository:
         with self.db.get_connection() as db_connection:
             cursor = db_connection.cursor()
             cursor.execute(
+                # """
+                # SELECT * FROM sessions
+                # WHERE user_id = ?
+                # ORDER BY start_time DESC
+                # LIMIT ? OFFSET ?;
+                # """,
                 """
-                SELECT * FROM sessions
+                SELECT session_id FROM sessions
                 WHERE user_id = ?
                 ORDER BY start_time DESC
                 LIMIT ? OFFSET ?;
                 """,
-                (user_id, end - start, start),
+                (user_id, end - start, start)
             )
             return cursor.fetchall()
 
-    def get_session(self, user_id, session_id):
-        pass
+    def get_session(self, user_id, session_id, conn = None):
+        with self.db.get_connection() if self.db else conn as db_connection:
+            cursor = db_connection.cursor()
+            cursor.execute("""
+                SELECT start_time, test_type, duration_seconds, total_chars, avg_cpm, max_cpm, avg_cpm/5, accuracy*100 FROM sessions
+                WHERE user_id = ? AND session_id = ? LIMIT 1;
+                """,
+                (user_id, session_id),
+            )
+            return cursor.fetchone()
 
     def save_session(self, user_id, session):
         with self.db.get_connection() as db_connection:
@@ -296,8 +312,8 @@ class TimePointsRepository:
             db_connection.commit()
             return cursor.lastrowid
     
-    def get_session_points(self, session_id):
-        with self.db.get_connection() as db_connection:
+    def get_session_points(self, session_id, conn=None):
+        with self.db.get_connection() if self.db else conn as db_connection:
             cursor = db_connection.cursor()
             cursor.execute(
                 """
@@ -305,13 +321,23 @@ class TimePointsRepository:
                 WHERE session_id = ?
                 ORDER BY second
                 """,
-                (session_id)
+                (session_id, )
             )
             return cursor.fetchall()
 
 class DailyActivityRepository:
     def  __init__(self, db):
         self.db = db
+
+    def get_activity_by_uid(self, user_id):
+        with self.db.get_connection() as db_connection:
+            cursor = db_connection.cursor()
+            cursor.execute(
+                """SELECT * FROM daily_activity
+                WHERE user_id = ?""",
+                (user_id, ),
+            )
+            return cursor.fetchall()
 
     def get_activity_by_uid_date(self, user_id, date):
         with self.db.get_connection() as db_connection:
@@ -322,7 +348,7 @@ class DailyActivityRepository:
                 LIMIT 1 """,
                 (user_id, date)
             )
-            return cursor.fetchall()
+            return cursor.fetchone()
 
     def save_activity(self, user_id, daily_activity):
         with self.db.get_connection() as db_connection:

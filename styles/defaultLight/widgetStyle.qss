@@ -34,7 +34,7 @@ QToolBar > QWidget#spacer{
 }
 
 
-QPushButton, QToolButton {
+QPushButton {
     background-color: #05bc67;
     color: #2b2e4a;
     /* border: 2px solid transparent; */
@@ -245,7 +245,33 @@ QRadioButton:checked {
     border: 5px solid #2b2e4a;
 }
 
+SessionStatistics {
+    border: 1px solid #07e47d;
+}
+SessionStatistics > QPushButton {
+    font-size: 20px;
+    padding: 2px;
+}
+GeneralStatistics > QFrame{
+    border-radius: 10px;
+    background: #f0f5ed;
+}
+QLabel#uname_label{
+    font-size: 35px;
+}
 
+QLabel#title_label {
+    font-size: 15px;
+}
+
+GeneralStatistics > QFrame > QLabel{
+    font-size: 25px;
+    background: transparent;
+}
+ActivityCalendar {
+    border-radius: 10px;
+    background: #6e916e;
+}
 QFrame#cell {
     width: 15px;
     border-radius: 5px;
@@ -257,17 +283,22 @@ QFrame#cell:hover {
 }
 
 QFrame[activity='0'] {
-    background: rgb(235, 237, 240);
+    background: rgb(255, 255, 255);
 }
 QFrame[activity='1'] {
-    background: rgb(155, 233, 168);
+    background: rgb(148, 227, 161);
 }
 QFrame[activity='2'] {
-    background: rgb(64, 196, 99);
+    background: rgb(71, 178, 99);
 }
 QFrame[activity='3'] {
-    background: rgb(48, 161, 78);
+    background: rgb(36, 135, 62);
 }
 QFrame[activity='4'] {
-    background: rgb(33, 110, 57);
+    background: rgb(16, 74, 34);
+}
+
+QPushButton#to_registration, QPushButton#to_password_recovery, QPushButton#to_login  {
+    background: transparent;
+
 }

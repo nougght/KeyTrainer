@@ -17,6 +17,24 @@ QPushButton, QToolButton {
     text-align: center;
 }
 
+LoginWindow QLabel {
+    font-size: 25px;
+}
+LoginWindow QLineEdit {
+    font-size: 15px;
+    placeholder-text-color: #8d8d8d;
+}
+
+QLineEdit:disabled {
+    background-color: transparent;
+    placeholder-text-color: #e1e0e0;
+}
+
+QPushButton#to_registration, QPushButton#to_password_recovery, QPushButton#to_login {
+    font-size: 15px;
+    text-align: right;
+}
+
 QPushButton#reset{
     font-weight: 500;
     font-size: 30px;

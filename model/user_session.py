@@ -7,7 +7,8 @@ class UserSession:
     def set_user(self, user_info):
         self.user_id = user_info["user_id"]
         self.username = user_info["username"]
+        self.password_hash = user_info["password_hash"]
         self.avatar = user_info["avatar"]
     
     def get_user(self):
-        return {"user_id": self.user_id, "username": self.username, "avatar":self.avatar}
+        return {"user_id": self.user_id, "username": self.username, "password_hash": self.password_hash, "avatar":self.avatar}
