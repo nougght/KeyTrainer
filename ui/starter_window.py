@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QRegularExpressionValidator, QAction, QIcon
 from control.users_control import UserController
+from utils import resource_path
 
 class LoginInput(QLineEdit):
     def __init__(self, parent=None, placeholderText=None):
@@ -57,17 +58,17 @@ class PasswordInput(QLineEdit):
 
     def switch_correct_icon(self):
         if self.is_correct is True:
-            self.correct_icon.setIcon(QIcon("data/checkmark.svg"))
+            self.correct_icon.setIcon(QIcon(resource_path("data/checkmark.svg")))
         else:
-            self.correct_icon.setIcon(QIcon("data/cross.svg"))
+            self.correct_icon.setIcon(QIcon(resource_path("data/cross.svg")))
 
     def switch_echo_mode(self):
         if self.echoMode() == QLineEdit.EchoMode.Password:
             self.setEchoMode(QLineEdit.EchoMode.Normal)
-            self.echo_mode_btn.setIcon(QIcon("data/eye-slash.svg"))
+            self.echo_mode_btn.setIcon(QIcon(resource_path("data/eye-slash.svg")))
         else:
             self.setEchoMode(QLineEdit.EchoMode.Password)
-            self.echo_mode_btn.setIcon(QIcon("data/eye.svg"))
+            self.echo_mode_btn.setIcon(QIcon(resource_path("data/eye.svg")))
 
     def check_password(self, password):
         import string
@@ -161,21 +162,21 @@ class RegistrationForm(QWidget):
 
     def switch_login_icon(self):
         if self.login_input.is_correct:
-            self.correct_login_icon.setIcon(QIcon("data/checkmark.svg"))
+            self.correct_login_icon.setIcon(QIcon(resource_path("data/checkmark.svg")))
         else:
-            self.correct_login_icon.setIcon(QIcon("data/cross.svg"))
+            self.correct_login_icon.setIcon(QIcon(resource_path("data/cross.svg")))
 
     def switch_password_icon(self):
         if self.password_input.is_correct:
-            self.correct_password_icon.setIcon(QIcon("data/checkmark.svg"))
+            self.correct_password_icon.setIcon(QIcon(resource_path("data/checkmark.svg")))
         else:
-            self.correct_password_icon.setIcon(QIcon("data/cross.svg"))
+            self.correct_password_icon.setIcon(QIcon(resource_path("data/cross.svg")))
 
     def switch_verify_icon(self):
         if self.password_verify_input.is_correct:
-            self.correct_verify_icon.setIcon(QIcon("data/checkmark.svg"))
+            self.correct_verify_icon.setIcon(QIcon(resource_path("data/checkmark.svg")))
         else:
-            self.correct_verify_icon.setIcon(QIcon("data/cross.svg"))
+            self.correct_verify_icon.setIcon(QIcon(resource_path("data/cross.svg")))
 
     def on_password_enable(self, is_enable):
         if is_enable:

@@ -1,13 +1,13 @@
 import sqlite3
 from pathlib import Path
-
+from utils import resource_path
 
 class Database:
     def __init__(self, db_path):
         """
         :param db_path: Путь к существующему файлу БД
         """
-        self.db_path = Path(db_path)
+        self.db_path = Path(resource_path(db_path))
         if not self.db_path.exists():
             raise FileNotFoundError(f"Database file {db_path} not found")
 

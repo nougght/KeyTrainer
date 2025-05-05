@@ -2,6 +2,10 @@ from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QPushButton, Q
 from ui.other_widgets import TabBarWithControl
 from ui.typing_widget import TypingWidget
 from ui.statistics_widget import StatisticsWidget
+from ui.settings_widget import SettingsWidget
+from PySide6.QtCore import Signal
+
+
 
 # from control.settings_control import SettingControl
 
@@ -16,6 +20,7 @@ from ui.statistics_widget import StatisticsWidget
 # from control.settings_control import SettingControl
 
 class MainWindow(QMainWindow):
+    change_theme = Signal(str)
     def __init__(self):
         super().__init__()
         # self.setFixedSize(500, 500)
@@ -27,6 +32,7 @@ class MainWindow(QMainWindow):
         self.central_layout.setSpacing(0)
 
         self.tab = TabBarWithControl()
+        self.tab.theme_button.theme_changed.connect(lambda t: self.change_theme.emit(t))
 
         self.tab.minimise_btn.clicked.connect(self.showMinimized)
         self.tab.close_btn.clicked.connect(self.on_exit_released)
@@ -37,9 +43,10 @@ class MainWindow(QMainWindow):
         self.stacked_widget = QStackedWidget()
         self.typing_widget = TypingWidget()
         self.statistics_widget = StatisticsWidget()
+        self.settings_widget = SettingsWidget()
         self.stacked_widget.addWidget(self.typing_widget)
         self.stacked_widget.addWidget(self.statistics_widget)
-        self.stacked_widget.addWidget(QPushButton("два"))
+        self.stacked_widget.addWidget(self.settings_widget)
 
         self.tab.tabBar.currentChanged.connect(self.stacked_widget.setCurrentIndex)
         self.central_layout.addWidget(self.tab)

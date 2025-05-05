@@ -25,14 +25,15 @@ class SettingControl(QtCore.QObject):
         main_window.typing_widget.theme_switch_button.clicked.connect(
             self.on_theme_change
         )
+        main_window.change_theme.connect(self.on_theme_change)
         self.theme_changed.connect(
             lambda style: main_window.typing_widget.setWindowStyle(style)
         )
         self.theme_changed.connect(lambda style: start_window.setStyleSheet(style[0]))
         self.theme_changed.connect(main_window.typing_widget.on_key_theme_switch)
 
-    def on_theme_change(self):
-        self.model.switch_theme()
+    def on_theme_change(self, theme):
+        self.model.switch_theme(theme)
         print(self.model.get_theme())
         self.theme_changed.emit(self.model.get_theme_style())
 

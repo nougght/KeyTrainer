@@ -5,7 +5,7 @@ build/
 dist/
 __pycache__
 *.spec
-data.db
+
 from PySide6.py
 chart.py
 t.py

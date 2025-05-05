@@ -37,45 +37,51 @@ class GeneralStatistics(QFrame):
 
         self.left_frame = QFrame()
         self.left_layout = QVBoxLayout(self.left_frame)
-        self.left_layout.setSpacing(10)
+        self.left_layout.setSpacing(5)
         self.left_layout.addWidget(QLabel(self.username), 0)
+        self.left_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.left_layout.itemAt(0).widget().setObjectName('uname_label')
         for i in range(len(self.l_titles)):
             lo = QVBoxLayout()
-            lo.addWidget(QLabel(self.l_titles[i]))
+            lo.addWidget(QLabel(self.l_titles[i]), alignment=Qt.AlignmentFlag.AlignCenter)
             lo.itemAt(0).widget().setObjectName('title_label')
-            lo.addWidget(QLabel(self.l_values[i]))
+            lo.addWidget(QLabel(self.l_values[i]), alignment=Qt.AlignmentFlag.AlignCenter)
             lo.itemAt(1).widget().setObjectName("value_label")
+            lo.setSpacing(0)
             self.left_layout.addLayout(lo, i + 1)
-            lo.setSpacing(5)
 
         self.right_up_frame = QFrame()
         self.right_up_layout = QHBoxLayout(self.right_up_frame)
         self.right_up_layout.setSpacing(100)
+        self.right_up_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.right_up_layout.setContentsMargins(10, 20, 10, 20)
         for i in range(len(self.r_up_titles)):
             lo = QVBoxLayout()
-            lo.addWidget(QLabel(self.r_up_titles[i]))
+            lo.addWidget(QLabel(self.r_up_titles[i]), alignment=Qt.AlignmentFlag.AlignCenter)
             lo.itemAt(0).widget().setObjectName("title_label")
-            lo.addWidget(QLabel(self.r_up_values[i]))
+            lo.addWidget(QLabel(self.r_up_values[i]), alignment=Qt.AlignmentFlag.AlignCenter)
             lo.itemAt(1).widget().setObjectName("value_label")
-            self.right_up_layout.addLayout(lo, i)
             lo.setSpacing(5)
+            lo.setContentsMargins(1, 1, 1, 1)
+            self.right_up_layout.addLayout(lo, i)
 
         self.right_down_frame = QFrame()
         self.right_down_layout = QHBoxLayout(self.right_down_frame)
-        self.right_down_layout.setSpacing(100)
+        self.right_down_layout.setSpacing(200)
+        self.right_down_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.right_down_layout.setContentsMargins(10, 20, 10, 20)
         for i in range(len(self.r_down_titles)):
             lo = QVBoxLayout()
-            lo.addWidget(QLabel(self.r_down_titles[i]))
+            lo.addWidget(QLabel(self.r_down_titles[i]), alignment=Qt.AlignmentFlag.AlignCenter)
             lo.itemAt(0).widget().setObjectName("title_label")
-            lo.addWidget(QLabel(self.r_down_values[i]))
+            lo.addWidget(QLabel(self.r_down_values[i]), alignment=Qt.AlignmentFlag.AlignCenter)
             lo.itemAt(1).widget().setObjectName("value_label")
             self.right_down_layout.addLayout(lo, i)
             lo.setSpacing(5)
 
         self.grid_layout.addWidget(self.left_frame, 0, 0, 2, 1)
-        self.grid_layout.addWidget(self.right_up_frame, 0, 1, 1, 1)
-        self.grid_layout.addWidget(self.right_down_frame, 1, 1, 1, 1)
+        self.grid_layout.addWidget(self.right_up_frame, 0, 1, 1, 1, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.grid_layout.addWidget(self.right_down_frame, 1, 1, 1, 1, alignment=Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
 
         self.created_date_label = QLabel('2000 00 00')
         self.sessions_label = QLabel('')
@@ -83,7 +89,12 @@ class GeneralStatistics(QFrame):
     def update_ui(self, data):
         self.l_values = [data[i] for i in range(1, 4)]
         self.r_up_values = [data[i] for i in range(4, 8)]
+        self.r_up_values[2] = round(self.r_up_values[2], 2)
+        self.r_up_values[3] = round(self.r_up_values[3], 2)
         self.r_down_values = [data[i] for i in range(8, 11)]
+        self.r_down_values[0] = round(self.r_down_values[0], 2)
+        self.r_down_values[1] = round(self.r_down_values[1], 2)
+        self.r_down_values[2] = round(self.r_down_values[2]*100, 2)
 
         from datetime import timedelta
 
@@ -171,12 +182,16 @@ class SessionStatistics(QFrame):
         for i in range(len(self.up_row_values)):
             self.up_row_values[i] = session_data[i]
             self.down_row_values[i] = session_data[i + len(self.up_row_values)]
-        
+
+        self.up_row_values[2] = round(self.up_row_values[2], 2)
+        self.down_row_values[0] = round(self.down_row_values[0], 2)
+        self.down_row_values[2] = round(self.down_row_values[2], 2)
+
         for i in range(len(self.up_row_values)):
             self.up_row_layout.itemAt(i).layout().itemAt(1).widget().setText(str(self.up_row_values[i]))
-        for i in range(len(self.down_row_values)):
+        for i in range(len(self.down_row_values)-1):
             self.down_row_layout.itemAt(i).layout().itemAt(1).widget().setText(str(self.down_row_values[i]))
-        
+        self.down_row_layout.itemAt(3).layout().itemAt(1).widget().setText(f"{round(self.down_row_values[3], 2)}% / {session_data[-1]}")
         self.chart.update_data(chart_data)
 
 class ListWithPages(QFrame):
@@ -220,8 +235,8 @@ class ActivityCalendar(QFrame):
         self.setLayout(self.layout)
 
         # Создаем сетку для календаря
-        with open("styles/defaultLight/widgetStyle.qss") as f:
-            self.setStyleSheet(f.read())
+        # with open("styles/defaultLight/widgetStyle.qss") as f:
+        #     self.setStyleSheet(f.read())
 
     def create_grid(self, data, current_streak, max_streak, total_days):
         labels = QHBoxLayout()
@@ -264,7 +279,9 @@ class ActivityCalendar(QFrame):
                 wd = date.dayOfWeek()
                 # Создаем ячейку
                 cell = QFrame()
-                cell.setFixedSize(18, 18)  # Размер ячейки
+                
+                cell.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+                cell.setFixedSize(20, 20)  # Размер ячейки
                 # cell.setAlignment(Qt.AlignCenter)
 
                 # Получаем уровень активности (можно заменить на данные из SQLite)
@@ -283,7 +300,7 @@ class ActivityCalendar(QFrame):
                 # Добавляем tooltip с датой и активностью
 
                 # Добавляем ячейку в сетку
-                grid.addWidget(cell, day + 1, week, Qt.AlignmentFlag.AlignBottom)
+                grid.addWidget(cell, day + 1, week, Qt.AlignmentFlag.AlignCenter)
 
                 # Переходим к следующему дню
                 date = date.addDays(1)

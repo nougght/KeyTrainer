@@ -16,6 +16,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 # from control.settings_control import SettingControl
 # import time, os, sys
 
+from utils import resource_path
 
 class TabBarWithControl(QFrame):
     CloseClicked = Signal()
@@ -67,13 +68,13 @@ class ThemeButton(QToolButton):
     def __init__(self):
         super().__init__()
         # self.setText("🎨")
-        self.setIcon(QIcon("data/themes.svg"))  # Иконка смены темы
+        self.setIcon(QIcon(resource_path("data/themes.svg")))  # Иконка смены темы
         self.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)  # Меню по клику
         self._setup_menu()
 
     def _setup_menu(self):
         self._menu = QMenu()
-        themes = ["Светлая", "Тёмная", "Системная"]
+        themes = ["defaultDark", "defaultLight", "Системная"]
         for theme in themes:
             action = self._menu.addAction(theme)
             action.triggered.connect(lambda _, t=theme: self.theme_changed.emit(t))

@@ -264,7 +264,7 @@ class SessionRepository:
         with self.db.get_connection() if self.db else conn as db_connection:
             cursor = db_connection.cursor()
             cursor.execute("""
-                SELECT start_time, test_type, duration_seconds, total_chars, avg_cpm, max_cpm, avg_cpm/5, accuracy*100 FROM sessions
+                SELECT start_time, test_type, duration_seconds, total_chars, avg_cpm, max_cpm, avg_cpm/5, accuracy*100, total_errors FROM sessions
                 WHERE user_id = ? AND session_id = ? LIMIT 1;
                 """,
                 (user_id, session_id),

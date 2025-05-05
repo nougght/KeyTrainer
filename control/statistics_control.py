@@ -51,7 +51,7 @@ class StatisticsControl(QObject):
             if act[3] > mx:
                 mx = act[3]
             print('actttt', act[2])
-        activity = {activity[i][2] : round(activity[i][3] / mx * 4) for i in range(len(activity))}
+        activity = {activity[i][2] : 1 + round(activity[i][3] / mx * 3) for i in range(len(activity))}
         td = timedelta(seconds=user_data["total_time"])
 
 

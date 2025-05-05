@@ -33,7 +33,7 @@ class TypingWidget(QFrame):
         super().__init__()
 
         self.setStyleSheet("width: 100%")
-        self.setWindowIcon(QIcon("resources/keyIc (2).ico"))
+        # self.setWindowIcon(QIcon("resources/keyIc (2).ico"))
 
         # self.setCentralWidget(QWidget())
         self.setWindowTitle("Key Trainer")

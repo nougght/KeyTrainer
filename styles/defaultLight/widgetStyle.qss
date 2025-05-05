@@ -245,13 +245,6 @@ QRadioButton:checked {
     border: 5px solid #2b2e4a;
 }
 
-SessionStatistics {
-    border: 1px solid #07e47d;
-}
-SessionStatistics > QPushButton {
-    font-size: 20px;
-    padding: 2px;
-}
 GeneralStatistics > QFrame{
     border-radius: 10px;
     background: #f0f5ed;
@@ -267,19 +260,39 @@ QLabel#title_label {
 GeneralStatistics > QFrame > QLabel{
     font-size: 25px;
     background: transparent;
+    margin: 0;
+    padding: 2px;
 }
+
+SessionStatistics {
+    border: 1px solid #07e47d;
+}
+SessionStatistics > QLabel {
+    background: transparent;
+}
+SessionStatistics > QPushButton {
+    font-size: 20px;
+    padding: 2px;
+}
+
 ActivityCalendar {
     border-radius: 10px;
-    background: #6e916e;
+    /* background: #6e916e; */
+    width: 80%;
+}
+
+ActivityCalendar > QLabel{
+    background: transparent;
 }
 QFrame#cell {
-    width: 15px;
+    width: 50px;
+    height: 50px;
     border-radius: 5px;
     border: 2px solid #2b2e4a;
 }
 
 QFrame#cell:hover {
-    border: 2px solid #aa0c0c;
+    border: 3px solid #aa0c0c;
 }
 
 QFrame[activity='0'] {
@@ -301,4 +314,42 @@ QFrame[activity='4'] {
 QPushButton#to_registration, QPushButton#to_password_recovery, QPushButton#to_login  {
     background: transparent;
 
+}
+
+
+QScrollBar:vertical {
+    border: none;
+    border-radius: 5px;
+    background: #f1f1f1;
+    width: 10px;
+    margin: 0px 0px 0px 0px;
+}
+QScrollBar::handle:vertical {
+    background: #c1c1c1;
+    min-height: 20px;
+    border-radius: 5px;
+
+}
+QScrollBar::add-line:vertical {
+    border: none;
+    background: none;
+    height: 0px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+QScrollBar::sub-line:vertical {
+    border: none;
+    background: none;
+    height: 0px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+    border: none;
+    width: 0px;
+    height: 0px;
+    background: none;
+}
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none;
 }

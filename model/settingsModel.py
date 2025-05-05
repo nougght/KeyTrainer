@@ -29,8 +29,9 @@ class settingsModel:
             self.load_style(self.get_theme())
         return self.styles[self.get_theme()]
 
-    def switch_theme(self):
-        self.settings.setValue("theme", "defaultDark" if self.get_theme() == "defaultLight" else "defaultLight")
+    def switch_theme(self, theme):
+        # self.settings.setValue("theme", "defaultDark" if self.get_theme() == "defaultLight" else "defaultLight")
+        self.settings.setValue("theme", theme)
 
     def load_style(self, name):
         lst = []

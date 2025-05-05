@@ -2,7 +2,6 @@ import json
 import sqlite3
 from pathlib import Path
 
-
 def load_json_to_sqlite(json_path: str, db_path: str = "app.db"):
     # 1. Загрузка JSON
     with open(json_path, "r", encoding="utf-8") as f:
