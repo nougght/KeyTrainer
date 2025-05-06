@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QSpacerItem,
     QLabel,
+    QLineEdit
 )
 from PySide6.QtCore import Signal, Slot, Qt
 from PySide6.QtGui import QIcon, QAction
@@ -15,8 +16,77 @@ from PySide6.QtGui import QAction
 from PySide6 import QtCore, QtGui, QtWidgets
 # from control.settings_control import SettingControl
 # import time, os, sys
+from html import escape
 
 from utils import resource_path
+
+
+class LoginInput(QLineEdit):
+    def __init__(self, parent=None, placeholderText=None):
+        super().__init__(parent, placeholderText=placeholderText)
+        self.used_names = None
+        self.textChanged.connect(self.check_login)
+        self.is_correct = False
+        self.warning = "Логин не может быть пустым"
+        self.used_names = []
+        
+    def set_used_names(self, names):
+        self.used_names = names
+
+    def check_login(self, login):
+        import string
+        k = [(c in string.ascii_letters.__str__()) for c in login]
+        if not login:
+            self.warning = "Логин не может быть пустым"
+        elif len(login) < 3:
+            self.warning = "Логин слишком короткий"
+        elif not all((c in string.ascii_letters + string.digits + '_') for c in login):
+            self.warning = "Логин должен содержать только символы латинского алфавита, цифры и _"
+        elif login in self.used_names:
+            self.warning = "Пользователь с таким именем уже существует"
+        else:
+            self.warning = None
+        self.is_correct = self.warning is None
+
+class PasswordInput(QLineEdit):
+    def __init__(self, parent=None, placeholderText=None):
+        super().__init__(parent, placeholderText=placeholderText)
+        self.echo_mode_btn = QAction()
+        self.addAction(self.echo_mode_btn, QLineEdit.ActionPosition.TrailingPosition)
+        # self.setValidator(QRegularExpressionValidator(QRegularExpression("[a-zA-Z]+")))
+        self.echo_mode_btn.triggered.connect(self.switch_echo_mode)
+        self.switch_echo_mode()
+        self.textChanged.connect(self.check_password)
+        self.is_correct = False
+        self.warning = "Пароль не может быть пустым"
+
+    # def switch_correct_icon(self):
+    #     if self.is_correct is True:
+    #         self.correct_icon.setIcon(QIcon(resource_path("data/checkmark.svg")))
+    #     else:
+    #         self.correct_icon.setIcon(QIcon(resource_path("data/cross.svg")))
+
+    def switch_echo_mode(self):
+        if self.echoMode() == QLineEdit.EchoMode.Password:
+            self.setEchoMode(QLineEdit.EchoMode.Normal)
+            self.echo_mode_btn.setIcon(QIcon(resource_path("data/eye-slash.svg")))
+        else:
+            self.setEchoMode(QLineEdit.EchoMode.Password)
+            self.echo_mode_btn.setIcon(QIcon(resource_path("data/eye.svg")))
+
+    def check_password(self, password):
+        import string
+        if len(password) < 8:
+            self.warning = "Пароль слишком короткий"
+        elif not all((c in string.ascii_letters + string.digits) for c in password):
+            self.warning = "Допустимы только символы латинского алфавита и цифры"
+        elif not any(c.isdigit() for c in password):
+            self.warning = "Добавьте хотя бы одну цифру"
+        else:
+            self.warning = None
+        self.is_correct = self.warning is None
+        # self.switch_correct_icon()
+
 
 class TabBarWithControl(QFrame):
     CloseClicked = Signal()
@@ -74,13 +144,12 @@ class ThemeButton(QToolButton):
 
     def _setup_menu(self):
         self._menu = QMenu()
-        themes = ["defaultDark", "defaultLight", "Системная"]
+        themes = ["defaultDark", "defaultLight"]
         for theme in themes:
             action = self._menu.addAction(theme)
-            action.triggered.connect(lambda _, t=theme: self.theme_changed.emit(t))
+            # action.triggered.connect(lambda: self.theme_changed.emit(theme))
+        self._menu.triggered.connect(lambda action: self.theme_changed.emit(action.text()))
         self.setMenu(self._menu)
-
-
 
 
 class KeyWidget(QPushButton):
@@ -168,7 +237,7 @@ class KeyboardWidget(QtWidgets.QFrame):
             {"name": "key_ENTER", "def": "ENTER", "shift": "ENTER"},
         ],
         [
-            {"name": "key_SHIFT", "def": "SHIFT", "shift": "SHIFT"},
+            {"name": "key_SHIFT1", "def": "SHIFT", "shift": "SHIFT"},
             {"name": "key_z", "def": "z", "shift": "Z"},
             {"name": "key_x", "def": "x", "shift": "X"},
             {"name": "key_c", "def": "c", "shift": "C"},
@@ -179,14 +248,14 @@ class KeyboardWidget(QtWidgets.QFrame):
             {"name": "key_,", "def": ",", "shift": "<"},
             {"name": "key_.", "def": ".", "shift": ">"},
             {"name": "key_/", "def": "/", "shift": "?"},
-            {"name": "key_SHIFT", "def": "SHIFT", "shift": "SHIFT"},
+            {"name": "key_SHIFT2", "def": "SHIFT", "shift": "SHIFT"},
         ],
         [
-            {"name": "key_CTRL", "def": "CTRL", "shift": "CTRL"},
+            {"name": "key_CTRL1", "def": "CTRL", "shift": "CTRL"},
             {"name": "key_ALT", "def": "ALT", "shift": "ALT"},
             {"name": "key_SPACE", "def": " ", "shift": " "},
             {"name": "key_ALT", "def": "ALT", "shift": "ALT"},
-            {"name": "key_CTRL", "def": "CTRL", "shift": "CTRL"},
+            {"name": "key_CTRL2", "def": "CTRL", "shift": "CTRL"},
         ],
     ]
     keys_ru = [
@@ -270,6 +339,7 @@ class KeyboardWidget(QtWidgets.QFrame):
         self.vert_layout.setContentsMargins(0, 0, 0, 0)
         self.language = lang
         self.keys = self.keys_en if self.language == "english" else self.keys_ru
+
         for i in range(len(self.keys)):
             keys_layout = QtWidgets.QHBoxLayout()
             keys_layout.setSpacing(2)
@@ -278,7 +348,7 @@ class KeyboardWidget(QtWidgets.QFrame):
                 print(key.sizePolicy().horizontalPolicy().name)
                 key.setObjectName(k['name'])
                 if (k['def'] in ['CTRL', 'SHIFT', 'ALT', 'CAPS', 'ENTER', 'TAB','BACKSPACE']):
-                    
+
                     key.setSizePolicy(
                         QtWidgets.QSizePolicy.Policy.Expanding,  # Растягивается по горизонтали
                         QtWidgets.QSizePolicy.Policy.Expanding,  # Растягивается по вертикали
@@ -311,8 +381,8 @@ class KeyboardWidget(QtWidgets.QFrame):
         self.setMinimumSize(500, 300)
         # self.key_lang_change()
 
-    def key_lang_change(self):
-        if self.keys == self.keys_en:
+    def key_lang_change(self, lang):
+        if lang == 'russian':
             self.keys = self.keys_ru
         else:
             self.keys = self.keys_en
@@ -331,11 +401,14 @@ class KeyboardWidget(QtWidgets.QFrame):
 
     def key_switch(self, name, isPress):
         wid = self.findChild(KeyWidget, name)
-        wid.set_active(isPress)
-    
+        if wid is None:
+            self.findChild(KeyWidget, "key_SHIFT1").set_active(isPress)
+        else:
+            wid.set_active(isPress)
     def key_uncorrect(self, name):
         wid = self.findChild(KeyWidget, name)
-        wid.set_uncorrect()
+        if wid is not None:
+            wid.set_uncorrect()
 
 
 class KeyProgressDisplay(QLabel):
@@ -401,7 +474,7 @@ class RadioList(QFrame):
             self.button_group.button(0).setChecked(True)
 
 class KeyTextEdit(QTextEdit):
-    key_pressed = QtCore.Signal(str)
+    key_pressed = QtCore.Signal(str, bool)
     key_released = QtCore.Signal(str)
     textSizeChanged = QtCore.Signal(int)
     typing_start = QtCore.Signal()
@@ -410,6 +483,7 @@ class KeyTextEdit(QTextEdit):
     def __init__(self):
         super().__init__()
         # Инициализация формата подчёркивания
+        self.text = ''
         self.underline_format = QtGui.QTextCharFormat()
         self.underline_format.setUnderlineStyle(
             QtGui.QTextCharFormat.UnderlineStyle.SingleUnderline
@@ -452,18 +526,32 @@ class KeyTextEdit(QTextEdit):
     #     self.textSizeChanged.emit(len(text))
     #     print(self.textCursor().position(), ' position cursor')
 
+
+    def adjust_position(self, original_text, position):
+        """Пересчитывает позицию курсора после экранирования."""
+        escaped_part = escape(original_text[:position])
+        return len(escaped_part)  # Новая позиция в экранированном тексте
+    
     def setHtmlText(self, text=None):
         if text is None:
-            text = self.toPlainText()
-            position = self.textCursor().position()
+            text = self.text
+            original_position = self.textCursor().position()
+            position = original_position # Пересчитываем позицию
         else:
+            self.text = text
             position = 0
-        htmlText = f"""<span class="passed">{text[:position]}</span><span class="remaining"><span class="current">{text[position:position+1]}</span>{text[position+1:]}</span>"""
+        
+        
+        passed = escape(text[:position])
+        current = escape(text[position:position+1])
+        remaining = escape(text[position+1:])
+
+        # text = text[:position+1] + escape(text[position+1:])
+        htmlText = f"""<span class="passed">{passed}</span><span class="remaining"><span class="current">{current}</span>{remaining}</span>"""
         self.setHtml(htmlText)
         cursor = self.textCursor()
         cursor.setPosition(position)
         self.setTextCursor(cursor)
-
 
     def get_progress(self):
         print(self.textCursor().position(), " position cursor")
@@ -478,11 +566,11 @@ class KeyTextEdit(QTextEdit):
         elif event.key() == QtCore.Qt.Key.Key_Alt:
             key_name = "key_ALT"
         elif event.key() == QtCore.Qt.Key.Key_Shift:
-            key_name = "key_SHIFT"
+            key_name = "key_SHIFT1"
         elif event.key() == QtCore.Qt.Key.Key_Backspace:
             key_name = "key_BACKSPACE"
         elif event.key() == QtCore.Qt.Key.Key_Control:
-            key_name = "key_CTRL"
+            key_name = "key_CTRL1"
         elif event.key() == QtCore.Qt.Key.Key_CapsLock:
             key_name = "key_CAPS"
         else:
@@ -490,12 +578,14 @@ class KeyTextEdit(QTextEdit):
         return key_name
 
     def keyPressEvent(self, event):
-        self.key_pressed.emit(self.keyName(event))
+
+        self.key_pressed.emit(self.keyName(event), event.modifiers() & Qt.KeyboardModifier.ShiftModifier)
 
         ch = event.text()
+
         print(self.textCursor().position(), " position cursor")
 
-        return super().keyPressEvent(event) if event.key() != Qt.Key.Key_Space else None
+        return super().keyPressEvent(event) if event.key() != Qt.Key.Key_Space and event.key() != Qt.Key.Key_Shift else None
 
     def toNextChar(self):
         cursor = self.textCursor()

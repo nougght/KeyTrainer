@@ -8,7 +8,7 @@ from PySide6.QtGui import QIcon, QAction, QPen, QColor, QPainter
 from PySide6.QtCharts import QChart, QLineSeries, QChartView, QValueAxis, QSplineSeries, QBarSeries, QBarSet
 
 
-from PySide6.QtWidgets import QSizePolicy, QWidget, QGridLayout, QLabel, QVBoxLayout, QToolTip, QFrame, QHBoxLayout, QSizePolicy, QToolButton, QPushButton
+from PySide6.QtWidgets import QSizePolicy, QStackedWidget, QWidget, QGridLayout, QLabel, QVBoxLayout, QToolTip, QFrame, QHBoxLayout, QSizePolicy, QToolButton, QPushButton
 from PySide6.QtCore import Qt, QDate
 from PySide6.QtGui import QColor, QPainter, QPen
 import random
@@ -23,12 +23,12 @@ class GeneralStatistics(QFrame):
         self.grid_layout.setContentsMargins(10, 10, 10, 10)
 
         self.l_titles = ["Дата регистрации:", "Активных дней", "Всего тренировок:"]
-        self.r_up_titles = ["Общее время:", "Набрано символов:", "Лучшее CPM:", "Лучшее WPM"]
-        self.r_down_titles = ["Среднее CPM:",  "Среднее WPM", "Средняя точность:"]
+        self.r_up_titles = ["Общее время:", "Набрано символов:", "Лучший CPM:", "Лучший WPM"]
+        self.r_down_titles = ["Средний CPM:",  "Средний WPM", "Средняя точность:"]
 
         title = [
             "Дата регистрации:", "Всего тренировок:", "Активных дней", "Общее время:",
-            "Набрано символов:", "Лучшее CPM:", "Среднее CPM:", "Лучшее WPM:", "Среднее WPM", "Средняя точность:"
+            "Набрано символов:", "Лучший CPM:", "Средний CPM:", "Лучший WPM:", "Средний WPM", "Средняя точность:"
         ]
         self.username = "username"
         self.l_values = ["2000 00 00", "45", "100"]
@@ -111,12 +111,13 @@ class GeneralStatistics(QFrame):
 
 
 class SessionStatistics(QFrame):
+    chart_hide = Signal()
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Fixed)
         self.up_row_titles = ["Время старта", "Тип тренировки", "Длительность", "Символов"]
         self.up_row_values = ["2000 01 01", "Текст/Русский", "100", "150"]
-        self.down_row_titles = ["Среднее CPM", "Лучшее CPM", "Среднее WPM", "Точность/Ошибок"]
+        self.down_row_titles = ["Средний CPM", "Лучший CPM", "Средний WPM", "Точность/Ошибок"]
         self.down_row_values = ["250", "300", "50", "96% / 5"]
 
         self.frame_layout = QVBoxLayout(self)
@@ -147,9 +148,15 @@ class SessionStatistics(QFrame):
         self.frame_layout.addWidget(self.expand_button, 2, alignment=Qt.AlignmentFlag.AlignVCenter)
         self.expand_button.clicked.connect(lambda: self.set_chart_visible(not self.is_chart_visible))
 
+        self.stack_chart = QStackedWidget()
+        self.stack_chart.setMaximumHeight(0)
+        self.empty = QWidget()
+        self.empty.setFixedHeight(10)
         self.chart = SessionChart()
-        self.frame_layout.addWidget(self.chart, 3)
-        self.chart.hide()
+        self.stack_chart.addWidget(self.empty)
+        self.stack_chart.addWidget(self.chart)
+        self.frame_layout.addWidget(self.stack_chart, 3)
+        # self.chart.hide()
 
         self.setStyleSheet(
             """
@@ -168,14 +175,20 @@ class SessionStatistics(QFrame):
         )
 
     def set_chart_visible(self, is_visible):
+        from PySide6.QtCore import QTimer
         if is_visible is True:
             self.expand_button.setText('^ Скрыть график')
-            self.chart.show()
+            self.stack_chart.setCurrentIndex(1)
+            self.stack_chart.setMaximumHeight(400)
+            # self.chart.show()
         else:
             self.expand_button.setText("V Показать график")
-            # self.setFixedHeight(self.height() - self.chart.height())
-            self.chart.hide()
-            self.adjustSize()
+            self.stack_chart.setCurrentIndex(0)
+            self.stack_chart.setMaximumHeight(0)
+            # # self.setFixedHeight(self.height() - self.chart.height())
+            # self.chart.hide()
+            # self.adjustSize()
+        # self.chart.setVisible(is_visible)
         self.is_chart_visible = is_visible
 
     def update_data(self, session_data, chart_data):
@@ -204,6 +217,8 @@ class ListWithPages(QFrame):
         self.frame_layout = QVBoxLayout(self)
 
         self.list = QWidget()
+        # self.list.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        # self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.list_layout = QVBoxLayout(self.list)
         self.frame_layout.addWidget(self.list, 0)
 
@@ -218,12 +233,14 @@ class ListWithPages(QFrame):
         self.frame_layout.addLayout(self.navigation, 1)
 
         for i in range(self.page_items_number):
-            self.list_layout.addWidget(SessionStatistics())
+            s = SessionStatistics()
+            self.list_layout.addWidget(s)
+            s.setVisible(False)
 
     def load_page(self, number, items_data):
-        for i in range(self.page_items_number):
+        for i in range(len(items_data)):
             self.list_layout.itemAt(i).widget().update_data(items_data[i][0], items_data[i][1])
-
+            self.list_layout.itemAt(i).widget().setVisible(True)
 class ActivityCalendar(QFrame):
     def __init__(self):
         super().__init__()
@@ -231,14 +248,13 @@ class ActivityCalendar(QFrame):
         # self.setFixedSize(800, 200)  # Фиксированный размер (можно менять)
 
         # Основной layout
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
 
         # Создаем сетку для календаря
         # with open("styles/defaultLight/widgetStyle.qss") as f:
         #     self.setStyleSheet(f.read())
 
     def create_grid(self, data, current_streak, max_streak, total_days):
+        self.layout = QVBoxLayout(self)
         labels = QHBoxLayout()
 
         cs_label = QLabel(f'Дней без перерыва: {current_streak}')
@@ -279,7 +295,7 @@ class ActivityCalendar(QFrame):
                 wd = date.dayOfWeek()
                 # Создаем ячейку
                 cell = QFrame()
-                
+
                 cell.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
                 cell.setFixedSize(20, 20)  # Размер ячейки
                 # cell.setAlignment(Qt.AlignCenter)
@@ -311,7 +327,7 @@ class ActivityCalendar(QFrame):
         for i in range(self.layout.count()):
             item = self.layout.itemAt(i)
             widget = item.layout()
-            
+
             if widget:
                 print(
                     f"  Cell [{i}] (span:): {widget.objectName() or widget.__class__.__name__}"
@@ -370,41 +386,56 @@ class SessionChart(QWidget):
         # self.setWindowFlags(Qt.FramelessWindowHint | Qt.Tool | Qt.WindowStaysOnTopHint)
 
     def setup_ui(self):
+        from PySide6.QtGui import QFont
         self.chart = QChart()
+        font = QFont("Segoe UI", 15)
+        self.chart.setFont(QFont("Segoe UI", 20, QFont.Weight.Bold))
         self.setFixedHeight(400)
-        # self.chart.setBackgroundBrush(Qt.transparent)
         self.chart.setMargins(QMargins(0, 0, 0, 0))
-        self.chart.legend().hide()
         self.chart.setAnimationOptions(QChart.AnimationOption.SeriesAnimations)
 
-        self.chart.setBackgroundBrush(QColor("#121212"))  # Тёмный фон
-        self.chart.setTitleBrush(QColor("#FFFFFF"))       # Белый заголовок
+        self.chart.setBackgroundBrush(QColor(40, 40, 40, 200))  # Тёмный фон
+        self.chart.setBackgroundPen(Qt.PenStyle.NoPen)
+
+        # self.chart.setTitleBrush(QColor("#FFFFFF"))       # Белый заголовок
         # self.chart.setTitleFont(QFont("Segoe UI", 14, QFont.Bold))
-        self.chart.legend().setVisible(False)
+        self.chart.legend().setVisible(True)
 
         self.er = QBarSeries()
         self.chart.addSeries(self.er)
+
+        axis_pen = QPen(QColor('#AAAAAA'))  # светло-серый с прозрачностью
+        axis_pen.setWidth(1)
+        label_color = QColor("#DDDDDD") 
 
         self.series = QSplineSeries()
         self.series.setPointsVisible(True)
         # self.chart.addSeries(self.series)
         self.prseries = QSplineSeries()
+        self.prseries.setName("Средний CPM")
         self.prseries.setPointsVisible(True)
         self.chart.addSeries(self.prseries)
         self.smseries = QSplineSeries()
+        self.smseries.setName("Моментальный CPM")
         self.smseries.setPointsVisible(True)
         self.chart.addSeries(self.smseries)
 
         self.axis_x = QValueAxis()
+        self.axis_x.setTitleText('Секунды')
         self.axis_y = QValueAxis()
+        self.axis_y.setTitleText("CPM")
         self.chart.addAxis(self.axis_x, Qt.AlignmentFlag.AlignBottom)
         self.chart.addAxis(self.axis_y, Qt.AlignmentFlag.AlignLeft)
         for axis in self.chart.axes():
-            axis.setLabelsBrush(QColor("#BBBBBB"))
-            axis.setGridLineColor(QColor("#444444"))
-            axis.setLinePen(QPen(QColor("#888888")))
-            axis.setTitleText("")
+            axis.setTitleBrush(label_color)
+            axis.setTitleFont(font)
+            axis.setLabelsBrush(label_color)
+            axis.setGridLinePen(axis_pen)
+            axis.setLabelsFont(QFont("Segoe UI", 12))
+            axis.setLinePen(axis_pen)
 
+        self.chart.legend().setLabelColor(label_color)
+        self.chart.legend().setFont(font)
         # self.series.attachAxis(self.axis_x)
         # self.series.attachAxis(self.axis_y)
         self.prseries.attachAxis(self.axis_x)
@@ -414,32 +445,31 @@ class SessionChart(QWidget):
         self.er.attachAxis(self.axis_x)
         self.er.attachAxis(self.axis_y)
 
+        self.chart.setTitleBrush(label_color)
+        self.chart.setTitleFont(self.chart.font())
+
         self.chart_view = QChartView(self.chart)
         self.chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
-        self.chart_view.setStyleSheet("background: transparent; border: none;")
+        # self.chart_view.setStyleSheet("background: transparent; border: none;")
 
-        self.chart_view.setStyleSheet("""
-            QChartView {
-                border: 2px solid #00BFFF;
-                border-radius: 12px;
-                background-color: #1e1e1e;
-            }
-        """)
+        # self.chart_view.setStyleSheet("""
+        #     QChartView {
+        #         border: 2px solid #00BFFF;
+        #         border-radius: 12px;
+        #         background-color: #1e1e1e;
+        #     }
+        # """)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.chart_view)
 
         # Стиль графика
-        pen = QPen(QColor("#00BFFF"))
-        pen.setWidth(1)
-        self.smseries.setPen(pen)
+        self.smseries.setPen(QPen(QColor("#00BFFF"), 2))
 
-        pen = QPen(QColor("#07e47d"))
-        pen.setWidth(3)
-        self.prseries.setPen(pen)
+        self.prseries.setPen(QPen(QColor("#07E47D"), 3))
 
-        self.axis_x.setGridLineVisible(False)
-        self.axis_y.setGridLineVisible(False)
+        self.axis_x.setGridLineVisible(True)
+        self.axis_y.setGridLineVisible(True)
         # self.axis_x.setLabelsVisible(False)
 
     def update_data(self, cpm_data: list):
@@ -477,7 +507,7 @@ class SessionChart(QWidget):
             for i in range(len(ers)):
                 ers[i] = ers[i] / max_er * max_cpm
         bset.append(ers)
-        bset.setColor("#aa0c0c")
+        bset.setColor(QColor("#FF5733"))
         self.er.append(bset)
 
         self.axis_x.setRange(1, len(cpm))

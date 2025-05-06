@@ -52,6 +52,28 @@ class UserRepository:
                 (user_id,)
             )
             return cursor.fetchall()
+    def change_username_by_id(self, id, new_name):
+        with self.db.get_connection() as db_connection:
+            cursor = db_connection.cursor()
+            cursor.execute(
+                """
+                UPDATE users SET
+                username = ?
+                WHERE user_id = ?
+                """,(new_name, id)
+            )
+            db_connection.commit()
+    def change_password_by_id(self, id, hash):
+        with self.db.get_connection() as db_connection:
+            cursor = db_connection.cursor()
+            cursor.execute(
+                """
+                UPDATE users SET
+                password_hash = ?
+                WHERE user_id = ?
+                """,(hash, id)
+            )
+            db_connection.commit()
 
     def get_all_users(self):
         """Возвращает список всех пользователей: (id, username, avatar)."""
@@ -80,6 +102,16 @@ class UserRepository:
             )
             db_connection.commit()
             return cursor.lastrowid
+        
+    def delete_user_by_id(self, user_id):
+        with self.db.get_connection() as db_connection:
+            cursor = db_connection.cursor()
+            cursor.execute(
+                """DELETE FROM users
+                WHERE user_id = ?""",
+                (user_id,),  # В реальном приложении генерируйте токен
+            )
+            db_connection.commit()
 
     def user_exists(self, username: str) -> bool:
         """Проверяет, существует ли пользователь с таким именем."""
@@ -100,7 +132,7 @@ class UserRepository:
             )
             return cursor.fetchone()
 
-    def calc_user_streak(self, user_id) -> tuple[int]:
+    def calc_user_streak(self, user_id):
         with self.db.get_connection() as db_connection:
             cursor = db_connection.cursor()
             # загрузка всех дней из сессий

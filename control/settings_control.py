@@ -17,6 +17,7 @@ class SettingControl(QtCore.QObject):
 
         main_window.setWindowStyle(self.model.get_theme_style())
         start_window.setStyleSheet(self.model.get_theme_style()[0])
+        start_window.login_form.set_last_user(settings_model.get_last_user())
         # start_window.setStyleSheet(self.model.get_theme_style())
         # main_window.setStyleSheet(self.model.get_theme_style())
         # start_window.theme_switch_button.clicked.connect(
@@ -25,12 +26,16 @@ class SettingControl(QtCore.QObject):
         main_window.typing_widget.theme_switch_button.clicked.connect(
             self.on_theme_change
         )
+        start_window.change_theme.connect(self.on_theme_change)
         main_window.change_theme.connect(self.on_theme_change)
         self.theme_changed.connect(
-            lambda style: main_window.typing_widget.setWindowStyle(style)
+            lambda style: main_window.setWindowStyle(style)
         )
         self.theme_changed.connect(lambda style: start_window.setStyleSheet(style[0]))
-        self.theme_changed.connect(main_window.typing_widget.on_key_theme_switch)
+        # self.theme_changed.connect(main_window.typing_widget.on_key_theme_switch)
+
+    def set_user(self, user_id):
+        self.model.set_last_user(user_id)
 
     def on_theme_change(self, theme):
         self.model.switch_theme(theme)

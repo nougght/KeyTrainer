@@ -42,6 +42,7 @@ class StatisticsControl(QObject):
         self.user_repository.update_user_data(self.user_session.get_user()["user_id"], 
             (session["duration"], session["total_chars"], session["avg_cpm"]))
         self.show_statistics.emit(self.time_points_repository.get_session_points(session_id))
+        self.show_general_stats(self.user_session.get_uid())
 
     def show_general_stats(self, user_id):
         user_data = self.user_repository.get_user_data(user_id)

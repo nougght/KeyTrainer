@@ -32,27 +32,47 @@ class mainControl(QObject):
         self.main_window = MainWindow()
 
         # контроллеры - связывают интерфейс с данными
-        self.user_control = UserController(self.start_window, self.user_repository, self.user_session)
+        self.user_control = UserController(self.start_window, self.main_window, self.user_repository, self.user_session)
         self.statistics_control = StatisticsControl(self.text_repository, self.user_repository, self.session_repository, self.time_points_repository, self.daily_activity_repository, self.main_window, self.user_session)
         self.typing_control = TypingControl(self.text_repository, self.main_window)
         self.typing_control.typing_stats.connect(lambda a, b, data : self.statistics_control.on_session_finished(data))
         self.setting_control = SettingControl(self.settings_model, self.main_window, self.start_window)
         # self.statistics_control = StatisticsController(self.statistics_model, self.statistics_view)
         # self.profile_controller = ProfileController(self.profile_model, self.start_window_view)
+        self.user_control.successful_login.connect(self.setting_control.set_user)
+        self.user_control.user_created.connect(self.setting_control.set_user)
+        self.main_window.settings_widget.name_change_form.change_login.connect(self.user_control.change_username)
+        self.main_window.settings_widget.name_change_form.change_login.connect(lambda: self.statistics_control.show_general_stats(self.user_session.get_uid()))
+        self.main_window.settings_widget.user_leaved.connect(self.return_to_login)
+        
+        self.main_window.settings_widget.password_change_form.password_change_request.connect(self.user_control.handle_password_change)
+        self.main_window.settings_widget.user_deleted.connect(self.user_control.delete_current_user)
+        self.main_window.settings_widget.user_deleted.connect(self.return_to_login)
 
+    def return_to_login(self):
+        self.main_window.close()
+        self.start_window.show_users(self.user_control.get_all_users())
+        self.show_starter_window()
+    
     def show_starter_window(self):
+        if self.user_control.get_all_users() is None:
+            self.start_window.stack.setCurrentIndex(1)
+        else:
+            self.start_window.stack.setCurrentIndex(0)
+        self.start_window.show()
         if self.start_window.exec() == QDialog.Accepted:
-            # self.user_repository.recalculate_user_data(
-            #     self.user_session.get_user()["user_id"]
-            # )
-            # self.statistics_control.daily_activity_repository.recalculate_activity(self.user_session.get_user()["user_id"], date.today().isoformat())
-            
+            self.user_repository.recalculate_user_data(
+                self.user_session.get_user()["user_id"]
+            )
+            self.statistics_control.daily_activity_repository.recalculate_activity(self.user_session.get_uid(), date.today().isoformat())
+
             self.statistics_control.show_general_stats(self.user_session.get_user()["user_id"])
             self.main_window.setWindowFlags(
                 Qt.WindowType.FramelessWindowHint  # Убираем рамку и заголовок
             )
 
             self.main_window.showMaximized()
+            self.main_window.tab.tabBar.setCurrentIndex(0)
             self.main_window.typing_widget.text_display.setFocus()
         else:
             sys.exit()

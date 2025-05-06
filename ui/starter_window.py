@@ -16,72 +16,8 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QRegularExpressionValidator, QAction, QIcon
 from control.users_control import UserController
+from ui.other_widgets import LoginInput, PasswordInput, ThemeButton
 from utils import resource_path
-
-class LoginInput(QLineEdit):
-    def __init__(self, parent=None, placeholderText=None):
-        super().__init__(parent, placeholderText=placeholderText)
-        self.used_names = None
-        self.textChanged.connect(self.check_login)
-        self.is_correct = False
-        self.warning = "Логин не может быть пустым"
-
-    def set_used_names(self, names):
-        self.used_names = names
-
-    def check_login(self, login):
-        import string
-        k = [(c in string.ascii_letters.__str__()) for c in login]
-        if not login:
-            self.warning = "Логин не может быть пустым"
-        elif len(login) < 3:
-            self.warning = "Логин слишком короткий"
-        elif not all((c in string.ascii_letters + string.digits + '_') for c in login):
-            self.warning = "Логин должен содержать только символы латинского алфавита, цифры и _"
-        elif login in self.used_names:
-            self.warning = "Пользователь с таким именем уже существует"
-        else:
-            self.warning = None
-        self.is_correct = self.warning is None
-
-class PasswordInput(QLineEdit):
-    def __init__(self, parent=None, placeholderText=None):
-        super().__init__(parent, placeholderText=placeholderText)
-        self.echo_mode_btn = QAction()
-        self.addAction(self.echo_mode_btn, QLineEdit.ActionPosition.TrailingPosition)
-        # self.setValidator(QRegularExpressionValidator(QRegularExpression("[a-zA-Z]+")))
-        self.echo_mode_btn.triggered.connect(self.switch_echo_mode)
-        self.switch_echo_mode()
-        self.textChanged.connect(self.check_password)
-        self.is_correct = False
-        self.warning = "Пароль не может быть пустым"
-
-    def switch_correct_icon(self):
-        if self.is_correct is True:
-            self.correct_icon.setIcon(QIcon(resource_path("data/checkmark.svg")))
-        else:
-            self.correct_icon.setIcon(QIcon(resource_path("data/cross.svg")))
-
-    def switch_echo_mode(self):
-        if self.echoMode() == QLineEdit.EchoMode.Password:
-            self.setEchoMode(QLineEdit.EchoMode.Normal)
-            self.echo_mode_btn.setIcon(QIcon(resource_path("data/eye-slash.svg")))
-        else:
-            self.setEchoMode(QLineEdit.EchoMode.Password)
-            self.echo_mode_btn.setIcon(QIcon(resource_path("data/eye.svg")))
-
-    def check_password(self, password):
-        import string
-        if len(password) < 8:
-            self.warning = "Пароль слишком короткий"
-        elif not all((c in string.ascii_letters + string.digits) for c in password):
-            self.warning = "Допустимы только символы латинского алфавита и цифры"
-        elif not any(c.isdigit() for c in password):
-            self.warning = "Добавьте хотя бы одну цифру"
-        else:
-            self.warning = None
-        self.is_correct = self.warning is None
-        # self.switch_correct_icon()
 
 
 class LoginForm(QWidget):
@@ -107,6 +43,8 @@ class LoginForm(QWidget):
         self.password_recovery = QPushButton("Забыли пароль?")
         self.password_recovery.setObjectName("to_password_recovery")
         self.login_layout.addWidget(self.password_recovery)
+    def set_last_user(self, user_id):
+        self.user_combo.setCurrentIndex(self.user_combo.findData(user_id))
 
     def on_login(self):
         user_id = self.user_combo.currentData()
@@ -157,7 +95,7 @@ class RegistrationForm(QWidget):
         self.registration_layout.addWidget(self.registration_to_login, 5, 0, 1, 2)
         self.password_checkbox = QCheckBox("Использовать пароль?")
         self.password_checkbox.setChecked(True)
-        self.password_checkbox.checkStateChanged.connect(lambda: self.on_password_enable(self.password_checkbox.isChecked()))
+        self.password_checkbox.stateChanged.connect(lambda: self.on_password_enable(self.password_checkbox.isChecked()))
         self.registration_layout.addWidget(self.password_checkbox, 6, 0, 1, 2)
 
     def switch_login_icon(self):
@@ -212,6 +150,7 @@ class RegistrationForm(QWidget):
 
 
 class LoginWindow(QDialog):
+    change_theme = Signal(str)
     def __init__(self):
         super().__init__()
         self.setup_ui()
@@ -221,7 +160,8 @@ class LoginWindow(QDialog):
         self.main_layout = QGridLayout(self)
         self.stack = QStackedLayout()
         self.main_layout.addLayout(self.stack, 0, 0, 1, 2)
-        self.style_btn = QPushButton('Style')
+        self.style_btn = ThemeButton()
+        self.style_btn.theme_changed.connect(lambda t: self.change_theme.emit(t))
         self.language_btn = QPushButton('ru')
         self.main_layout.addWidget(self.style_btn, 1, 0)
         self.main_layout.addWidget(self.language_btn, 1, 1)
@@ -249,6 +189,6 @@ class LoginWindow(QDialog):
         self.registration_form.login_input.set_used_names([user["username"] for user in users])
 
         # QMessageBox.warning(self, "Ошибка", "Пользователь уже существует")
-    
+
     def show_warning(self):
         QMessageBox.warning(self, 'Ошибка', 'Неправильный пароль')

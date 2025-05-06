@@ -2,13 +2,11 @@ from PySide6.QtWidgets import QApplication, QStyleFactory
 from PySide6.QtCore import Qt
 import sys
 from control.main_contol import mainControl
-import qdarkstyle
-from PyInstaller.utils.hooks import collect_data_files
+
+# import qdarkstyle
 
 # запуск приложения
 if __name__ == "__main__":
-    print(collect_data_files('data'))
-    print(collect_data_files("styles"))
     app = QApplication()
     app.setStyle("Fusion")
     QApplication.setStyle("Fusion")

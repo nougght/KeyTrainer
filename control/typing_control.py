@@ -4,7 +4,7 @@ import time, sys, os
 
 class TypingControl(QObject):
     # toolbt_activate = Signal(str, bool)
-    keyboard_lang_change = Signal()
+    keyboard_lang_change = Signal(str)
     typing_stats = Signal(float, float, TypingSession)
     text_changed = Signal(str)
     correctPress = Signal(str)
@@ -13,11 +13,14 @@ class TypingControl(QObject):
     release = Signal(str)
     def __init__(self, text_repository,  main_window):
         super().__init__()
+        self.main_window = main_window
+
+        self.is_shift_pressed = False
+
         self.timer = QTimer(self)
         self.timer.setTimerType(Qt.PreciseTimer)
         self.timer.setInterval(1000)
         self.timer.timeout.connect(self.on_timer)
-
 
         self.session = TypingSession()
         self.text = ''
@@ -91,14 +94,34 @@ class TypingControl(QObject):
             length = 20 if self.difficulty == 'easy' else 40 if self.difficulty == 'normal' else 60
             self.text = self.text_repository.get_words(self.language, length)
         self.position = 0
+        print(self.text)
         self.text_changed.emit(self.text)
         self.toNextChar.emit("key_" + self.text[self.position].lower())
 
-    def on_key_press(self, key_name):
-        key = key_name.split('_')[1]
+    def on_key_press(self, key_name, is_shift):
+        # key = key_name.split('_')[1]
+        key = None
+        for row in self.main_window.typing_widget.keyboard_widget.keys:
+            for k in row:
+                if k["name"] == key_name:
+                    key = k
+                    break
+                elif f'key_{k["shift"]}' == key_name:
+                    key = k
+                    break
+            if key is not None:
+                break
+        if key:
+            if self.is_shift_pressed is True:
+                key = key["shift"]
+            else:
+                key = key['def']
+        # key = key['def']
+
         if self.position == 0:
             self.on_typing_start()
-        if len(key) == 1 and self.text[self.position].lower() == key or key == 'SPACE' and self.text[self.position] == ' ':
+        print(self.position)
+        if len(key) == 1 and self.text[self.position] == (key.upper() if is_shift else key) or key == 'SPACE' and self.text[self.position] == ' ':
             self.position += 1
             self.session.add_keystroke(key, True)
             self.correctPress.emit(key_name)
@@ -107,12 +130,18 @@ class TypingControl(QObject):
                 self.on_typing_finished()
             nextKey = 'key_' + ('SPACE' if self.text[self.position] == ' ' else self.text[self.position])
             self.toNextChar.emit(nextKey)
+        elif key == "SHIFT":
+            self.is_shift_pressed = True
         elif key not in ["SHIFT", "CAPS"]:
             self.session.add_keystroke(key, False)
             self.typo.emit(key_name)
             self.errors += 1
 
     def on_key_release(self, key_name):
+        key = key_name.split("_")[1]
+        if key == "SHIFT1":
+            self.is_shift_pressed = False
+
         self.release.emit(key_name)
 
     def on_typing_start(self):
@@ -131,14 +160,13 @@ class TypingControl(QObject):
         self.typing_stats.emit(len(self.text) / typing_time * 60, typing_time, self.session)
         self.session.reset_stats()
 
-
     def on_language_change(self, language="english"):
         if self.language != language.lower():
             # self.toolbt_activate.emit(self.language, False)
             self.language = language
             # self.toolbt_activate.emit(language, True)
             self.correctPress.emit("key_" + self.text[self.position].lower())
-            self.keyboard_lang_change.emit()
+            self.keyboard_lang_change.emit(language)
             self.change_text()
 
     def on_mod_change(self, mod="words"):

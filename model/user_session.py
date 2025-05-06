@@ -3,7 +3,8 @@ class UserSession:
         self.user_id = None
         self.username = None
         self.avatar = None
-    
+    def get_uid(self):
+        return self.user_id
     def set_user(self, user_info):
         self.user_id = user_info["user_id"]
         self.username = user_info["username"]

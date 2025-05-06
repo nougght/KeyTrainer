@@ -353,3 +353,8 @@ QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
     background: none;
 }
+
+QScrollArea {
+    border: none;
+    "#AAAAAA";
+}

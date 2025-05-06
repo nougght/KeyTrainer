@@ -99,4 +99,10 @@ KeyProgressDisplay{
 
 
 
+SettingsWidget > QLabel, SettingsWidget > QCheckBox {
+    font-size: 30px;
+}
 
+QScrollArea {
+    border: none;
+}

@@ -6,16 +6,15 @@ class settingsModel:
     def __init__(self):
         self.settings = QSettings("pyKey", "KeyTrainer0.3")
         self.settings.setValue("icon_path", "data/keyIc.ico")
-        if (self.settings.value("theme") == None):
+        self.settings.remove("theme")
+        if self.settings.value("theme") not in ["defaultDark", "defaultLight"]:
             self.settings.setValue("theme", "defaultDark")
         print(self.settings.allKeys())
 
         self.icon = QIcon(self.resource_path(self.settings.value("icon_path")))
-
         self.styles = {}
         with open(self.resource_path("styles/baseStyle.qss"), "r") as f:
             self.styles['baseStyle'] = f.read()
-
 
     def get_theme(self):
         return self.settings.value("theme")
@@ -32,10 +31,17 @@ class settingsModel:
     def switch_theme(self, theme):
         # self.settings.setValue("theme", "defaultDark" if self.get_theme() == "defaultLight" else "defaultLight")
         self.settings.setValue("theme", theme)
+        
+    def set_last_user(self, user_id):
+        self.settings.setValue("user_id", user_id)
+
+    def get_last_user(self):
+        id = self.settings.value("user_id")
+        return id if id else 0
 
     def load_style(self, name):
         lst = []
-        with open(self.resource_path(f"styles\{name}\widgetStyle.qss"), "r") as f:
+        with open(self.resource_path(f"styles/{name}/widgetStyle.qss"), "r") as f:
             lst.append(f.read())
         with open(self.resource_path(f"styles/{name}/textStyle.qss"), "r") as f:
             lst.append(f.read())

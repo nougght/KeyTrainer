@@ -32,6 +32,8 @@ class TypingWidget(QFrame):
     def __init__(self):
         super().__init__()
 
+        self.is_keyboard_visible = True
+
         self.setStyleSheet("width: 100%")
         # self.setWindowIcon(QIcon("resources/keyIc (2).ico"))
 
@@ -160,11 +162,13 @@ class TypingWidget(QFrame):
 
         self.lang_combo = QComboBox()
         self.lang_combo.setObjectName("langComboBox")
-        self.lang_combo.addItem("Russian")
-        self.lang_combo.addItem("English")
+        self.lang_combo.addItem("Russian", "russian")
+        self.lang_combo.addItem("English", "english")
+        self.lang_combo.addItem("Python", "python")
+        self.lang_combo.addItem("C++", "cpp")
         self.lang_combo.currentIndexChanged.connect(
             lambda index: self.language_change.emit(
-                self.lang_combo.itemText(index).lower()
+                self.lang_combo.itemData(index)
             )
         )
         self.tool_layout.addWidget(self.lang_combo)
@@ -294,6 +298,10 @@ class TypingWidget(QFrame):
                 )
             else:
                 print(f"  Cell [{row}, {col}]: Empty or spacer")
+
+    def set_keyboard_visible(self, is_visible):
+        self.is_keyboard_visible = is_visible
+        self.keyboard_widget.setVisible(is_visible)
 
     def setWindowStyle(self, style):
         self.text_display.document().setDefaultStyleSheet(style[1])

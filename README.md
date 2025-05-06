@@ -6,6 +6,9 @@ python -m venv new_venv\
 source new_venv/bin/activate\
 pip install -r requirements.txt\
 
+datas=[('data/eye.svg', 'data'), ("data/data.db", "data"), ('data/reset.png', 'data'), ('data/cross.svg', 'data'),('data/keyIc.ico', 'data'), ('data/checkmark.svg', 'data'), ('data/themes.svg', 'data'), ('data/eye-slash.svg', 'data'),
+    ('styles/defaultLight/textStyle.qss', 'styles/defaultLight'), ('styles/defaultDark/widgetStyle.qss', 'styles/defaultDark'), ('styles/baseStyle.qss', 'styles'), ('styles/defaultDark/textStyle.qss', 'styles/defaultDark'), ('styles/defaultLight/widgetStyle.qss', 'styles/defaultLight'), ('styles/defaultLight/textStyle.qss', 'styles/defaultLight'), ('styles/defaultDark/widgetStyle.qss', 'styles/defaultDark'), ('styles/baseStyle.qss', 'styles'), ('styles/defaultDark/textStyle.qss', 'styles/defaultDark'), ('styles/defaultLight/widgetStyle.qss', 'styles/defaultLight')],
+    
 
 pyinstaller keytrainer.spec
 

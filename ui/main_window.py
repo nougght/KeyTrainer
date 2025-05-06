@@ -44,6 +44,7 @@ class MainWindow(QMainWindow):
         self.typing_widget = TypingWidget()
         self.statistics_widget = StatisticsWidget()
         self.settings_widget = SettingsWidget()
+        self.settings_widget.change_keyboard_visible.connect(self.typing_widget.set_keyboard_visible)
         self.stacked_widget.addWidget(self.typing_widget)
         self.stacked_widget.addWidget(self.statistics_widget)
         self.stacked_widget.addWidget(self.settings_widget)
@@ -56,7 +57,7 @@ class MainWindow(QMainWindow):
     def setWindowStyle(self, style):
         self.typing_widget.text_display.document().setDefaultStyleSheet(style[1])
         self.typing_widget.text_display.setHtmlText()
-        super().setStyleSheet(style[0])
+        self.setStyleSheet(style[0])
         # print(styleSheet)
 
     def on_exit_released(self):
