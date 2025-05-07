@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QToolBar,
     QComboBox,
     QMessageBox,
+    QToolButton
 )
 from PySide6.QtCore import Signal, Slot, Qt
 from PySide6.QtGui import QIcon, QAction
@@ -22,6 +23,7 @@ from ui.other_widgets import (
     RadioList,
 )
 from ui.statistics_widget import SessionChart
+from utils import resource_path
 
 class TypingWidget(QFrame):
     key_theme_switch = Signal()
@@ -144,7 +146,8 @@ class TypingWidget(QFrame):
         #     self.theme_switch_button, 1, 0, Qt.AlignmentFlag.AlignLeft
         # )
 
-        self.reset_button = QPushButton("⟳")
+        self.reset_button = QToolButton()
+        self.reset_button.setIcon(QIcon(resource_path('data/reset.png')))
         self.reset_button.setObjectName("reset")
         self.reset_button.clicked.connect(lambda: self.set_statistics_mode(False))
         # self.central_layout.addWidget(self.reset_button, 6, 1, Qt.AlignmentFlag.AlignRight)

@@ -117,6 +117,7 @@ class SettingsWidget(QFrame):
     user_leaved = Signal()
     user_deleted = Signal()
     change_keyboard_visible = Signal(bool)
+    clear_user_data = Signal()
 
     def __init__(self):
         super().__init__()
@@ -131,46 +132,51 @@ class SettingsWidget(QFrame):
         self.password_change_form = PasswordChangeForm()
         self.main_layout.addWidget(self.password_change_form)
         self.stats_reset = QPushButton('Сбросить статистику профиля')
+        self.stats_reset.clicked.connect(self.on_clear_data)
         self.main_layout.addWidget(self.stats_reset, 2, 0, 1, 2)
-
-        self.leave_user = QPushButton("Выйти из аккаунта")
-        self.leave_user.setObjectName("leave_btn")
-        self.leave_user.clicked.connect(self.user_leaved)
-        self.main_layout.addWidget(self.leave_user, 3, 0, 1, 2)
 
         spacer1 = QSpacerItem(
             20, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
         )
-        self.main_layout.addItem(spacer1, 4, 0, 1, 2)
+        self.main_layout.addItem(spacer1, 3, 0, 1, 2)
         self.language_change_label = QLabel('Язык интерфейса')
-        self.main_layout.addWidget(self.language_change_label, 5, 0)
+        self.main_layout.addWidget(self.language_change_label, 4, 0)
 
         self.keyboard_visible = QCheckBox('Отображать клавиатуру во время тренировки')
         self.keyboard_visible.stateChanged.connect(lambda is_visible: self.change_keyboard_visible.emit(is_visible))
-        self.main_layout.addWidget(self.keyboard_visible, 6, 0)
+        self.main_layout.addWidget(self.keyboard_visible, 5, 0)
 
         spacer2 = QSpacerItem(
             20, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
         )
-        self.main_layout.addItem(spacer2, 7, 0, 1, 2)
+        self.main_layout.addItem(spacer2, 6, 0, 1, 2)
 
         self.profile_import_label = QLabel('Импорт аккаунта')
-        self.main_layout.addWidget(self.profile_import_label, 8, 0)
+        self.main_layout.addWidget(self.profile_import_label, 7, 0)
 
         self.profile_export_label = QLabel('Импорт аккаунта')
-        self.main_layout.addWidget(self.profile_export_label, 9, 0)
+        self.main_layout.addWidget(self.profile_export_label, 8, 0)
+
+        self.leave_user = QPushButton("Выйти из аккаунта")
+        self.leave_user.setObjectName("leave_btn")
+        self.leave_user.clicked.connect(self.user_leaved)
+        self.main_layout.addWidget(self.leave_user, 9, 0, 1, 2)
 
         self.delete_user = QPushButton("Удалить аккаунт")
         self.delete_user.setObjectName("delete_btn")
         self.delete_user.clicked.connect(self.on_delete_user)
         self.main_layout.addWidget(self.delete_user, 10, 0, 1, 2)
+    
+    def on_clear_data(self):
+        ret = QMessageBox.warning(self,
+            "KeyTrainer",
+            "Все данные будут очищены\nПродолжить?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,)
+
+        if ret == QMessageBox.StandardButton.Yes:
+            self.clear_user_data.emit()
 
     def on_delete_user(self):
-        msgBox = QMessageBox()
-        msgBox.setText("Удаление аккаунта")
-        msgBox.setInformativeText("После удаления все данные будут очищены.\nПродолжить?")
-        msgBox.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        msgBox.setDefaultButton(QMessageBox.StandardButton.No)
         ret = QMessageBox.warning(self,
             "KeyTrainer",
             "После удаления все данные будут очищены\nПродолжить?",

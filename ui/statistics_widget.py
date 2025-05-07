@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Signal, Slot, Qt, QMargins, QPropertyAnimation, Qt 
 from PySide6.QtGui import QIcon, QAction, QPen, QColor, QPainter
-from PySide6.QtCharts import QChart, QLineSeries, QChartView, QValueAxis, QSplineSeries, QBarSeries, QBarSet
+from PySide6.QtCharts import QChart, QBarCategoryAxis, QLineSeries, QChartView, QValueAxis, QSplineSeries, QBarSeries, QBarSet
 
 
 from PySide6.QtWidgets import QSizePolicy, QStackedWidget, QWidget, QGridLayout, QLabel, QVBoxLayout, QToolTip, QFrame, QHBoxLayout, QSizePolicy, QToolButton, QPushButton
@@ -38,6 +38,7 @@ class GeneralStatistics(QFrame):
         self.left_frame = QFrame()
         self.left_layout = QVBoxLayout(self.left_frame)
         self.left_layout.setSpacing(5)
+        self.left_layout.setContentsMargins(25, 25, 25, 25)
         self.left_layout.addWidget(QLabel(self.username), 0)
         self.left_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.left_layout.itemAt(0).widget().setObjectName('uname_label')
@@ -54,7 +55,7 @@ class GeneralStatistics(QFrame):
         self.right_up_layout = QHBoxLayout(self.right_up_frame)
         self.right_up_layout.setSpacing(100)
         self.right_up_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        self.right_up_layout.setContentsMargins(10, 20, 10, 20)
+        self.right_up_layout.setContentsMargins(25, 25, 25, 25)
         for i in range(len(self.r_up_titles)):
             lo = QVBoxLayout()
             lo.addWidget(QLabel(self.r_up_titles[i]), alignment=Qt.AlignmentFlag.AlignCenter)
@@ -69,7 +70,7 @@ class GeneralStatistics(QFrame):
         self.right_down_layout = QHBoxLayout(self.right_down_frame)
         self.right_down_layout.setSpacing(200)
         self.right_down_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        self.right_down_layout.setContentsMargins(10, 20, 10, 20)
+        self.right_down_layout.setContentsMargins(25, 25, 25, 25)
         for i in range(len(self.r_down_titles)):
             lo = QVBoxLayout()
             lo.addWidget(QLabel(self.r_down_titles[i]), alignment=Qt.AlignmentFlag.AlignCenter)
@@ -121,6 +122,7 @@ class SessionStatistics(QFrame):
         self.down_row_values = ["250", "300", "50", "96% / 5"]
 
         self.frame_layout = QVBoxLayout(self)
+        self.frame_layout.setContentsMargins(15, 15, 15, 15)
         self.up_row_layout = QHBoxLayout()
         self.down_row_layout = QHBoxLayout()
         for i in range(len(self.up_row_titles)):
@@ -149,30 +151,16 @@ class SessionStatistics(QFrame):
         self.expand_button.clicked.connect(lambda: self.set_chart_visible(not self.is_chart_visible))
 
         self.stack_chart = QStackedWidget()
+        self.stack_chart.setContentsMargins(0, 0, 0, 0)
+        self.stack_chart.layout().setContentsMargins(0, 0, 0, 0)
         self.stack_chart.setMaximumHeight(0)
         self.empty = QWidget()
-        self.empty.setFixedHeight(10)
+        self.empty.setFixedHeight(0)
         self.chart = SessionChart()
         self.stack_chart.addWidget(self.empty)
         self.stack_chart.addWidget(self.chart)
         self.frame_layout.addWidget(self.stack_chart, 3)
         # self.chart.hide()
-
-        self.setStyleSheet(
-            """
-        SessionStatistics{
-            border-radius: 10px;
-            background: #f0f5ed;
-            }
-        
-        SessionStatistics > QLabel#session_title_label {
-            font-size: 15px;
-            }
-        SessionStatistics > QLabel#session_value_label {
-            font-size: 35px;
-            }
-        """
-        )
 
     def set_chart_visible(self, is_visible):
         from PySide6.QtCore import QTimer
@@ -208,6 +196,7 @@ class SessionStatistics(QFrame):
         self.chart.update_data(chart_data)
 
 class ListWithPages(QFrame):
+    to_page = Signal(int)
     def __init__(self, parent=None):
         super().__init__(parent)
         self.page = 1
@@ -225,10 +214,14 @@ class ListWithPages(QFrame):
         self.navigation = QHBoxLayout()
         self.prev_btn = QPushButton("<")
         self.next_btn = QPushButton(">")
-        self.page_label = QLabel(f"1 из {self.total_pages}")
+        self.page_label = QLabel()
+        self.update_label()
+
+        self.prev_btn.clicked.connect(self.on_prev_btn)
+        self.next_btn.clicked.connect(self.on_next_btn)
 
         self.navigation.addWidget(self.prev_btn)
-        self.navigation.addWidget(self.page_label)
+        self.navigation.addWidget(self.page_label, alignment=Qt.AlignmentFlag.AlignCenter)
         self.navigation.addWidget(self.next_btn)
         self.frame_layout.addLayout(self.navigation, 1)
 
@@ -237,10 +230,30 @@ class ListWithPages(QFrame):
             self.list_layout.addWidget(s)
             s.setVisible(False)
 
-    def load_page(self, number, items_data):
+    def on_prev_btn(self):
+        if self.page > 1:
+            self.page -= 1
+            self.to_page.emit(self.page)
+
+    def on_next_btn(self):
+        if self.page < self.total_pages:
+            self.page += 1
+            self.to_page.emit(self.page)
+
+    def update_label(self):
+        self.page_label.setText(f"{self.page} из {self.total_pages}")
+
+    def load_page(self, total_pages, items_data):
+        self.total_pages = total_pages
         for i in range(len(items_data)):
             self.list_layout.itemAt(i).widget().update_data(items_data[i][0], items_data[i][1])
             self.list_layout.itemAt(i).widget().setVisible(True)
+        if not items_data:
+            self.page = 0
+            for i in range(self.page_items_number):
+                self.list_layout.itemAt(i).widget().setVisible(False)
+        self.update_label()
+
 class ActivityCalendar(QFrame):
     def __init__(self):
         super().__init__()
@@ -254,10 +267,14 @@ class ActivityCalendar(QFrame):
         #     self.setStyleSheet(f.read())
 
     def create_grid(self, data, current_streak, max_streak, total_days):
-        self.layout = QVBoxLayout(self)
+        old_lo = self.layout()
+        if old_lo:
+            QWidget().setLayout(old_lo)
+        self.setLayout(QVBoxLayout())
         labels = QHBoxLayout()
 
         cs_label = QLabel(f'Дней без перерыва: {current_streak}')
+        cs_label.setObjectName('streak')
         mx_label = QLabel(f'Максимум дней без перерыва: {max_streak}')
         td_label = QLabel(f'Всего активных дней: {total_days}')
         labels.addWidget(cs_label, alignment=Qt.AlignmentFlag.AlignBottom)
@@ -265,7 +282,7 @@ class ActivityCalendar(QFrame):
         labels.addWidget(td_label, alignment=Qt.AlignmentFlag.AlignBottom)
         labels.addSpacing(4)
 
-        self.layout.addLayout(labels, 0)
+        self.layout().addLayout(labels, 0)
 
         """Создает сетку календаря (53 недели x 7 дней)."""
         grid = QGridLayout()
@@ -297,7 +314,7 @@ class ActivityCalendar(QFrame):
                 cell = QFrame()
 
                 cell.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-                cell.setFixedSize(20, 20)  # Размер ячейки
+                cell.setFixedSize(22, 22)  # Размер ячейки
                 # cell.setAlignment(Qt.AlignCenter)
 
                 # Получаем уровень активности (можно заменить на данные из SQLite)
@@ -317,15 +334,14 @@ class ActivityCalendar(QFrame):
 
                 # Добавляем ячейку в сетку
                 grid.addWidget(cell, day + 1, week, Qt.AlignmentFlag.AlignCenter)
-
                 # Переходим к следующему дню
                 date = date.addDays(1)
 
         # Добавляем сетку в основной layout
-        self.layout.addLayout(grid, 1)
+        self.layout().addLayout(grid, 1)
 
-        for i in range(self.layout.count()):
-            item = self.layout.itemAt(i)
+        for i in range(self.layout().count()):
+            item = self.layout().itemAt(i)
             widget = item.layout()
 
             if widget:
@@ -378,7 +394,7 @@ class ActivityCalendar(QFrame):
 #             prod_series.append(i, cpm[i])
 
 
-class SessionChart(QWidget):
+class DistributionChart(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setup_ui()
@@ -387,7 +403,109 @@ class SessionChart(QWidget):
 
     def setup_ui(self):
         from PySide6.QtGui import QFont
+        from PySide6.QtCore import QMargins
+
         self.chart = QChart()
+        self.chart.setMargins(QMargins(0, 0, 0, 0))
+        font = QFont("Segoe UI", 15)
+        # self.chart.setFont(QFont("Segoe UI", 20, QFont.Weight.Bold))
+        self.setFixedHeight(400)
+        self.chart.setMargins(QMargins(0, 0, 0, 0))
+        self.chart.setAnimationOptions(QChart.AnimationOption.SeriesAnimations)
+
+        self.chart.setBackgroundBrush(QColor(40, 40, 40, 200))  # Тёмный фон
+        self.chart.setBackgroundPen(Qt.PenStyle.NoPen)
+
+        # self.chart.setTitleBrush(QColor("#FFFFFF"))       # Белый заголовок
+        # self.chart.setTitleFont(QFont("Segoe UI", 14, QFont.Bold))
+        self.chart.legend().setVisible(True)
+
+        self.tests = QBarSeries()
+        self.chart.addSeries(self.tests)
+
+        axis_pen = QPen(QColor("#888888"))  # светло-серый с прозрачностью
+        axis_pen.setWidth(1)
+        label_color = QColor("#DDDDDD")
+
+        self.axis_x = QBarCategoryAxis()
+        self.axis_x.setTitleText("CPM")
+        self.axis_y = QValueAxis()
+        self.axis_y.setTitleText("Тесты")
+        self.chart.addAxis(self.axis_x, Qt.AlignmentFlag.AlignBottom)
+        self.chart.addAxis(self.axis_y, Qt.AlignmentFlag.AlignLeft)
+        for axis in self.chart.axes():
+            axis.setTitleBrush(label_color)
+            axis.setTitleFont(font)
+            axis.setLabelsBrush(label_color)
+            axis.setGridLinePen(axis_pen)
+            axis.setLabelsFont(QFont("Segoe UI", 12))
+            axis.setLinePen(axis_pen)
+
+        self.tests.attachAxis(self.axis_x)
+        self.tests.attachAxis(self.axis_y)
+
+        self.chart.legend().setLabelColor(label_color)
+        self.chart.legend().setFont(font)
+
+        self.chart.setTitleBrush(label_color)
+        self.chart.setTitleFont(self.chart.font())
+
+        self.chart_view = QChartView(self.chart)
+        self.chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
+        # self.chart_view.setBackgroundBrush(QColor(40, 40, 40, 200))
+        self.chart_view.setContentsMargins(0, 0, 0, 0)
+        # self.chart_view.setStyleSheet("background: transparent; border: none;")
+
+        # self.chart_view.setStyleSheet("""
+        #     QChartView {
+        #         border: 2px solid #00BFFF;
+        #         border-radius: 12px;
+        #         background-color: #1e1e1e;
+        #     }
+        # """)
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.chart_view)
+
+        self.axis_x.setGridLineVisible(True)
+        self.axis_y.setGridLineVisible(True)
+        # self.axis_x.setLabelsVisible(False)
+
+    def update_data(self, cpm_data):
+        """Обновляет график новыми данными CPM"""
+        self.tests.clear()
+        mx = int(max(cpm_data) // 50) + 1 if cpm_data else 0
+        distribution = [0] * mx
+        for cpm in cpm_data:
+            r = int(cpm // 50)
+            distribution[r] += 1
+
+        bset = QBarSet("Тренировки")
+        bset.append(distribution)
+        bset.setColor(QColor("#328936"))
+        bset.setBorderColor(QColor("#429721"))
+        self.tests.setBarWidth(0.75)
+        self.tests.append(bset)
+
+        categories = [f"{i*50}-{(i+1)*50 - 1}" for i in range(mx+1)]
+        self.axis_x.append(categories)
+
+        self.axis_y.setRange(0, max(distribution if distribution else [0])+3)
+        self.axis_y.setLabelFormat("%d")
+        # self.axis_x.setRange(1, len(distribution))
+
+class SessionChart(QFrame):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setup_ui()
+        # self.setAttribute(Qt.WA_TransparentForMouseEvents)
+        # self.setWindowFlags(Qt.FramelessWindowHint | Qt.Tool | Qt.WindowStaysOnTopHint)
+
+    def setup_ui(self):
+        from PySide6.QtGui import QFont
+        from PySide6.QtCore import QMargins
+        self.chart = QChart()
+        self.chart.setMargins(QMargins(0, 0, 0, 0))
         font = QFont("Segoe UI", 15)
         self.chart.setFont(QFont("Segoe UI", 20, QFont.Weight.Bold))
         self.setFixedHeight(400)
@@ -404,7 +522,7 @@ class SessionChart(QWidget):
         self.er = QBarSeries()
         self.chart.addSeries(self.er)
 
-        axis_pen = QPen(QColor('#AAAAAA'))  # светло-серый с прозрачностью
+        axis_pen = QPen(QColor("#888888"))  # светло-серый с прозрачностью
         axis_pen.setWidth(1)
         label_color = QColor("#DDDDDD") 
 
@@ -450,6 +568,8 @@ class SessionChart(QWidget):
 
         self.chart_view = QChartView(self.chart)
         self.chart_view.setRenderHint(QPainter.RenderHint.Antialiasing)
+        # self.chart_view.setBackgroundBrush(QColor(40, 40, 40, 200))
+        self.chart_view.setContentsMargins(0, 0, 0, 0)
         # self.chart_view.setStyleSheet("background: transparent; border: none;")
 
         # self.chart_view.setStyleSheet("""
@@ -474,7 +594,10 @@ class SessionChart(QWidget):
 
     def update_data(self, cpm_data: list):
         """Обновляет график новыми данными CPM"""
+        self.prseries.clear()
         self.series.clear()
+        self.smseries.clear()
+        self.er.clear()
         cpm = [elem[4] for elem in cpm_data]
         prs = [cpm_data[0][3]]
         for i in range(1, len(cpm_data)):
@@ -499,18 +622,23 @@ class SessionChart(QWidget):
         for i, c in enumerate(smoothed):
             self.smseries.append(i + 1, c)
         bset = QBarSet('Ошибки')
-        ers = []
-        for c in cpm_data:
-            ers.append(c[5])
+        bset_limit = max_cpm * 0.8
+        ers = [float(c[5]) for c in cpm_data]
         max_er = max(ers)
-        if max_er:
-            for i in range(len(ers)):
-                ers[i] = ers[i] / max_er * max_cpm
+
+        if max_er > 0:
+            ers = [int(e / max_er * bset_limit) for e in ers]
+        else:
+            ers = [0 for _ in ers]
+        ers.insert(0, 0)
         bset.append(ers)
         bset.setColor(QColor("#FF5733"))
         self.er.append(bset)
 
         self.axis_x.setRange(1, len(cpm))
+        self.axis_x.setTickInterval(1)
+        self.axis_x.setLabelFormat("%d")
+        self.axis_y.setLabelFormat("%d")
 
     def show_overlay(self):
         """Показывает оверлей с анимацией"""
@@ -573,6 +701,10 @@ if __name__ == "__main__":
     from PySide6.QtWidgets import QApplication
     import sqlite3
     app = QApplication()
+    c = DistributionChart()
+    c.update_data([34, 1, 55, 99, 65, 495, 101])
+    c.show()
+
     window = SessionChart()
     # window.chart_view.setStyleSheet(chart_style)
     conn = sqlite3.connect("C:\PythonProjects\pyKey\data\data.db")
@@ -610,5 +742,7 @@ class StatisticsWidget(QWidget):
         self.grid.addWidget(self.general_stats, 0, 0, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
         self.grid.addWidget(self.activity_calendar, 1, 0, alignment=Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
 
+        self.distribution_chart = DistributionChart()
+        self.grid.addWidget(self.distribution_chart, 2, 0)
         self.session_widget = ListWithPages()
-        self.grid.addWidget(self.session_widget, 2, 0)
+        self.grid.addWidget(self.session_widget, 3, 0)

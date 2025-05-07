@@ -1,9 +1,8 @@
-from PySide6.QtCore import QObject, Qt
+from PySide6.QtCore import QObject, Qt, QDate 
 from PySide6.QtWidgets import QDialog
 from model import dataBase, TextRepository, settingsModel, statisticsModel, UserSession, UserRepository, SessionRepository, TimePointsRepository, DailyActivityRepository
 
 from datetime import date
-
 from ui.main_window import MainWindow
 from ui.starter_window import LoginWindow
 from control import TypingControl, SettingControl, UserController, StatisticsControl
@@ -64,7 +63,8 @@ class mainControl(QObject):
             self.user_repository.recalculate_user_data(
                 self.user_session.get_user()["user_id"]
             )
-            self.statistics_control.daily_activity_repository.recalculate_activity(self.user_session.get_uid(), date.today().isoformat())
+            for i in range(366):
+                self.statistics_control.daily_activity_repository.recalculate_activity(self.user_session.get_uid(), (QDate.currentDate().addDays(-i).toString("yyyy-MM-dd")))
 
             self.statistics_control.show_general_stats(self.user_session.get_user()["user_id"])
             self.main_window.setWindowFlags(

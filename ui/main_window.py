@@ -64,6 +64,14 @@ class MainWindow(QMainWindow):
         print("exit")
         self.close()
 
+    def keyPressEvent(self, event):
+        from PySide6.QtCore import Qt
+        if event.key() == Qt.Key.Key_F11:
+            if self.isFullScreen():
+                self.setWindowState(Qt.WindowState.WindowMaximized)  # Плавный переход
+            else:
+                self.setWindowState(Qt.WindowState.WindowFullScreen)
+        return super().keyPressEvent(event)
 
 if __name__ == "__main__":
     app = QApplication()

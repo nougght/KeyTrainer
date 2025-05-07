@@ -2,17 +2,94 @@
    widget style */
 
 QWidget {
-    background-color: #fafafa;
+    background-color: #f8faf9;
     color: #2b2e4a;
+    font-family: 'Inter', sans-serif;
 }
 
+LoginWindow {
+    background: #f8faf9;
+}
+QLabel {
+    background: transparent;
+}
+
+
+QLabel#title_label, QLabel#session_title_label, ActivityCalendar > QLabel {
+    color: #666a7b;
+}
+
+QLabel#value_label, QLabel#session_value_label{
+    font-size: 30px;
+}
+
+QLabel#streak {
+    color:#2b2e4a;
+}
+
+QComboBox {
+    background-color: #0ec771;
+    border: 1px solid #2b2e4a;
+    color: #f8faf9;;
+    border-radius: 4px;
+    padding: 6px 12px;
+    min-width: 120px;
+}
+QComboBox::selected {
+    background: #0ec771;
+}
+QComboBox::drop-down {
+    width: 20px;
+    border-left: 1px solid #cedad2;
+    background: transparent;
+}
+
+QComboBox::down-arrow {
+    image: url(down_arrow.svg);
+    width: 12px;
+    height: 12px;
+}
+
+QComboBox QAbstractItemView {
+    border: 1px solid #cedad2;
+    background: #2b2e4a;
+
+}
+
+QComboBox QAbstractItemView::item {
+    /* color: #2b2e4a; */
+}
+
+QLineEdit {
+    background-color: #ffffff;
+    border: 1px solid #cedad2;
+    border-radius: 4px;
+    padding: 6px 12px;
+    /* font: 14px; */
+    selection-background-color: #0d6efd;
+    selection-color: white;
+}
+
+QLineEdit:focus {
+    border: 1px solid #86b7fe;
+    outline: none;
+}
+
+QChartView {
+
+}
+
+KeyProgressDisplay
+{
+    color: #666a7b;
+}
 
 QProgressBar {
     margin: 0px 10px 0px;
     text-align: center;
     border-radius:5px;
-    background: #e4f0dd;
-    border: 2px solid #2b2e4a;
+    background: #f0f5ed;
+    border: 2px solid #cedad2;
     height: 30%;
 }
 
@@ -36,154 +113,41 @@ QToolBar > QWidget#spacer{
 
 QPushButton {
     background-color: #05bc67;
-    color: #2b2e4a;
+    color: #f8faf9;
     /* border: 2px solid transparent; */
 }
 
 
-/* QPushButton#themes {
-    icon: url('data/themes.svg');
-}
-
-QPushButton#themes::icon {
-    color: #2b2e4a;  
-}
-
-QPushButton#themes:hover::icon {
-    color: #fafafa;  
-} */
-
-
-/* QPushButton:hover, QToolButton:hover {
-    background-color: #037841;
-} */
-
 QPushButton:hover {
-    background-color: #fafafa;
+    background-color: #069f58;
+}
+
+QPushButton:pressed {
+    background-color: #f8faf9;
     color: #05bc67;
     border: 2px solid #05bc67;
 }
 
-
-QPushButton:pressed {
-    background-color: #05bc67;
-    color: #fafafa;
-    border: 2px solid transparent;
+QPushButton#to_registration, QPushButton#to_password_recovery, QPushButton#to_login {
+    background: transparent;
+    color:#2b2e4a;
 }
 
-/* QToolButton[isactive="true"] {
+QPushButton#to_registration:hover, QPushButton#to_password_recovery:hover, QPushButton#to_login:hover {
+    background-color: #f8faf9;
     color: #2b2e4a;
-    font: 700 45px;
+    border: 2px solid #05bc67;
 }
 
-QToolButton[isactive="false"] {
-    color: #fafafa;
-    font: 500 45px;
-} */
-
-
-KeyWidget{
-    background: #fafafa;
-    color: #000000;
-    border: 2px solid #2b2e4a;
+QPushButton#to_registration:pressed, QPushButton#to_password_recovery:pressed, QPushButton#to_login:pressed {
+    background-color: #f8faf9;
+    color: #05bc67;
+    border: 2px solid #05bc67;
 }
-
-KeyWidget[uncorrect="true"] {
-    background: red;
-}
-
-KeyWidget:pressed{
-    background: #05bc67;
-    color: #fafafa;
-    border: 3px solid #2b2e4a;
-}
-
-
-KeyboardWidget {
-    margin: 0;
-    /* background:red; */
-}
-
-KeyTextEdit{
-    width: 70%;
-    background: #f0f5ed/* #8781b5 */ ;
-    border: 2px solid #d3f1d6;
-}
-
-/* QPushButton#reset{
-    background: transparent;
-} */
-
-QMenuBar {
-    border-bottom: 1px solid #2b2e4a;
-    background:#f0f5ed;
-}
-
-QMenuBar::item {
-    border-radius: 10%;
-    margin: 3%;
-    padding: 2%;
-}
-
-QMenuBar::item:selected {
-    background-color: rgba(5, 196, 107, 0.4);
-}
-
-/* TypingWidget{
-    background: black;
-} */
-
-TabBarWithControl {
-    border-bottom: 1px solid rgba(5, 196, 107, 0.2);
-    background: #f0f5ed !important;
-}
-
-ThemeButton {
-    icon-size: 30px;
-    background: transparent;
-    border: 0;
-    margin: 0;
-    padding: 0 10px;
-    margin-right: 35px;
-}
-
-#Corner {
-    background: transparent;
-}
-/* Стиль для QTabBar */
-
-QTabBar {
-    font: 500 20px;
-    background: transparent;  /* Общий фон с кнопками */
-    border: none;
-    margin: 0;
-}
-
-QTabBar::tab {
-    color: #2b2e4a;          /* Нейтральный цвет текста */
-    padding: 6px 12px;
-    margin: 0 0 0 10%;
-    border: none;
-    border-bottom: 3px solid transparent;
-}
-
-QTabBar::tab:selected {
-    /* background: rgba(5, 196, 107, 0.1); */
-    color: #05c46b;         /* Акцентный цвет (как у кнопок) */
-    border-bottom: 3px solid #05c46b;
-}
-
-/* Для темной темы:
-.dark QTabBar::tab {
-    color: #A0A0A0;
-}
-.dark QTabBar::tab:selected {
-    color: #4FC3F7;
-    border-bottom-color: #4FC3F7;
-} */
 
 QPushButton#exitButton, QPushButton#minimiseButton {
     /* font-size: 5px; */
+    color: #2b2e4a;
     margin: 0;
     border: 0px;
     background: transparent;
@@ -202,10 +166,105 @@ QPushButton#exitButton:hover {
     color:#2b2e4a;
 }
 
+QPushButton#delete_btn {
+    background-color: #ffcc2525;
+}
+
+QPushButton#delete_btn:hover {
+    background-color: #ff9d1d1d;
+}
+
+QPushButton#delete_btn:pressed {
+    background-color: #f8faf9;
+    color: #ffcc2525;
+    border: 2px solid #ffcc2525;
+}
+
+KeyWidget{
+    background: #fafafa;
+    color: #666a7b;
+    border: 2px solid #666a7b;
+}
+
+KeyWidget[uncorrect="true"] {
+    background: #dc3545;
+    color: #fafafa;
+    border: 3px solid #dc3545;
+}
+
+KeyWidget:pressed{
+    background: #05bc67;
+    color: #fafafa;
+    border: 3px solid #05bc67;
+}
+
+
+KeyboardWidget {
+    margin: 0;
+    /* background:red; */
+}
+
+KeyTextEdit{
+    width: 70%;
+    background: #ffffff/* #8781b5 */ ;
+    border: 2px solid #cedad2;
+    margin: 20px;
+    padding:25px;
+    font-family: 'consolas', 'monospace';
+}
+
+QToolButton#reset{
+    icon-size: 50px;
+    background: #05bc67;
+}
+
+
+TabBarWithControl {
+    border-bottom: 1px solid #cedad2;
+    background: #f0f5ed !important;
+}
+
+ThemeButton {
+    icon-size: 35px;
+    background: transparent;
+    border: 0;
+    margin: 0;
+    padding: 0 10px;
+    margin-right: 35px;
+}
+
+#Corner {
+    background: transparent;
+}
+/* Стиль для QTabBar */
+
+
+QTabBar {
+    font: 500 24px;
+    background: transparent;  /* Общий фон с кнопками */
+    border: none;
+    margin: 0;
+}
+
+QTabBar::tab {
+    color: #2b2e4a;          /* Нейтральный цвет текста */
+    padding: 8px 16px;
+    margin: 0, 0, 0, 10px;
+    border: none;
+    border-bottom: 3px solid transparent;
+    background: transparent;
+}
+
+QTabBar::tab:selected {
+    /* background: rgba(5, 196, 107, 0.1); */
+    color: #05c46b;         /* Акцентный цвет (как у кнопок) */
+    border-bottom: 3px solid #05c46b;
+}
+
 
 RadioList {
-    background-color: #07e47d;
-    border-radius: 15%;
+    background-color: #05bc67;
+    border-radius:25px;
     margin: 5px 0;
 }
 
@@ -213,16 +272,12 @@ QRadioButton {
     font-size: 30px;
     text-align: center;
     background: transparent;
-    border-radius: 15%;
+    border-radius: 25px;
     padding: 4% 10%;
     margin: 0;
+    color:#dbdddb;
     border: 5px solid transparent;
 }
-
-/* 
-QRadioButton:last-child {
-    border-right: 1px solid #ccc;  /* Граница только у последней кнопки */
-/* } */
 
 QRadioButton::indicator {
     background-color: transparent;
@@ -231,90 +286,85 @@ QRadioButton::indicator {
 }
 QRadioButton:hover {
     
-    background-color: rgba(5, 196, 107, 0.4);
+    background-color: #129958;
     /* border-color: #07e47d; */
 }
 QRadioButton:pressed {
-    /* background:#07e47d;
-    border-color: #07e47d;
-    color: #fafafa; */
+    color:#f8faf9;
 }
 
 QRadioButton:checked {
     /* background: #d0e3ff; */
     border: 5px solid #2b2e4a;
+    color:#f8faf9;
 }
 
 GeneralStatistics > QFrame{
-    border-radius: 10px;
+    border-radius: 8px;
     background: #f0f5ed;
-}
-QLabel#uname_label{
-    font-size: 35px;
-}
-
-QLabel#title_label {
-    font-size: 15px;
-}
-
-GeneralStatistics > QFrame > QLabel{
-    font-size: 25px;
-    background: transparent;
-    margin: 0;
-    padding: 2px;
+    border: 1px solid #cedad2;
 }
 
 SessionStatistics {
-    border: 1px solid #07e47d;
+    border-radius: 8px;
+    background:#f0f5ed;
+    border: 1px solid #cedad2;
+    margin: 7px;
 }
-SessionStatistics > QLabel {
+SessionChart {
+    background: transparent;
+    /* border: 2px solid red; */
+}
+QChartView {
     background: transparent;
 }
+QStackedWidget {
+    background: transparent;
+}
+
+
 SessionStatistics > QPushButton {
     font-size: 20px;
     padding: 2px;
 }
 
 ActivityCalendar {
-    border-radius: 10px;
-    /* background: #6e916e; */
+    border-radius: 8px;
+    border: 1px solid #cedad2;
     width: 80%;
+    margin-bottom: 30px;
 }
 
-ActivityCalendar > QLabel{
-    background: transparent;
-}
 QFrame#cell {
-    width: 50px;
-    height: 50px;
     border-radius: 5px;
-    border: 2px solid #2b2e4a;
+    /* border: 2px solid #2b2e4a; */
 }
 
 QFrame#cell:hover {
-    border: 3px solid #aa0c0c;
+    border: 3px solid #0c28c7;
 }
 
 QFrame[activity='0'] {
-    background: rgb(255, 255, 255);
+    background: rgb(239, 245, 244);
+    border: 1px solid rgb(215, 225, 225);
 }
 QFrame[activity='1'] {
-    background: rgb(148, 227, 161);
+    background: #adfac1;
+    border: 1px solid #8ad49e;
 }
 QFrame[activity='2'] {
-    background: rgb(71, 178, 99);
+    background: #54d677;
+    border: 1px solid #3c9f56;
 }
 QFrame[activity='3'] {
-    background: rgb(36, 135, 62);
+    background: #2baa4d;
+    border: 1px solid #1a7532;
 }
 QFrame[activity='4'] {
-    background: rgb(16, 74, 34);
+    background: #096823;
+    border: 1px solid  #04391f;
 }
 
-QPushButton#to_registration, QPushButton#to_password_recovery, QPushButton#to_login  {
-    background: transparent;
-
-}
 
 
 QScrollBar:vertical {
@@ -354,7 +404,5 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
     background: none;
 }
 
-QScrollArea {
-    border: none;
-    "#AAAAAA";
-}
+
+#888888

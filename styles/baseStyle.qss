@@ -1,27 +1,24 @@
 
-QToolBar{
-    spacing: 0px;
-    padding: 10px;
+LoginWindow{
+    width:fit-content;
+    height: fit-content;
 }
-
-
-QToolBar * {
-    font-size: 30px;
-}
-
-QPushButton, QToolButton {
-    font-size: 25px;
-    padding: 5px;
-    border-radius: 5px;
-    /* border: 2px solid transparent; */
-    text-align: center;
-}
-
 LoginWindow QLabel {
+    font-size: 30px;
+    font-weight: 600;
+}
+ListWithPages QLabel {
     font-size: 25px;
 }
-LoginWindow QLineEdit {
-    font-size: 15px;
+LoginWindow QComboBox {
+    font-size: 20px;
+}
+MainWindow QComboBox {
+    font-size: 35px;
+}
+
+QLineEdit {
+    font-size: 20px;
     placeholder-text-color: #8d8d8d;
 }
 
@@ -31,37 +28,16 @@ QLineEdit:disabled {
 }
 
 QPushButton#to_registration, QPushButton#to_password_recovery, QPushButton#to_login {
-    font-size: 15px;
+    font-size: 17px;
     text-align: right;
+    text-decoration: underline;
 }
+/* 
+ThemeButton -> widgetStyle */
 
-QPushButton#reset{
-    font-weight: 500;
-    font-size: 30px;
-    text-align: center;
-    background: transparent;
-    border: 2px solid transparent;
-    margin: 0px;
-    width: 40px;
-    height: 40px;
-    border-radius: 27px;
-}
-
-
-QPushButton#reset:hover{
-    border: 2px solid #707070;
-}
-
-QPushButton#reset:pressed{
-    font-weight: 600;
-}
-
-QMenuBar {
-    font-size: 24px;
-}
 
 QPushButton#exitButton,#minimiseButton {
-    font-size: 20px;
+    font-size: 27px;
     /* border-radius: 5px; */
     /* border: 2px solid #270a0a; */
     border: none;
@@ -71,18 +47,57 @@ QPushButton#exitButton,#minimiseButton {
     margin: 0px;
 }
 
-QPushButton#exitButton:hover {
-    border: 4px solid #270a0a;
-    padding: 3px 8px;
+
+QPushButton {
+    font-size: 25px;
+    padding: 5px;
+    border-radius: 5px;
+    /* border: 2px solid transparent; */
+    text-align: center;
+}
+
+
+QToolButton#reset{
+    margin: 5px;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+}
+
+
+QToolButton#reset:hover{
+    border: 2px solid #707070;
+}
+
+QToolButton#reset:pressed{
+    font-weight: 600;
 }
 
 
 
 
+QScrollArea {
+    border: none;
+}
+
+
+QLabel#uname_label{
+    font-size: 40px;
+    font-weight: 600;
+}
+
+QLabel#title_label, QLabel#session_title_label, ActivityCalendar > QLabel {
+    font-size: 20px;
+}
+
+QLabel#value_label, QLabel#session_value_label{
+    font-size: 35px;
+}
+
 KeyWidget {
     font: 500 22px 'Consolas';
     padding: 0.4em 0.64em;
-    border-radius: 7%;
+    border-radius: 4px;
     margin: 2px;
 }
 
@@ -90,7 +105,7 @@ KeyTextEdit {
     font: 500 45px 'Consolas';
     margin: 15% 30%;
     padding: 15%;
-    border-radius: 10%;
+    border-radius: 8px;
 }
 
 KeyProgressDisplay{
@@ -104,5 +119,12 @@ SettingsWidget > QLabel, SettingsWidget > QCheckBox {
 }
 
 QScrollArea {
+    border: none;
+}
+
+
+QMenu {
+    font-size: 22px;
+    text-align: center;
     border: none;
 }

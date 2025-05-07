@@ -102,7 +102,26 @@ class UserRepository:
             )
             db_connection.commit()
             return cursor.lastrowid
-        
+
+    def clear_user_data(self, user_id):
+        with self.db.get_connection() as db_connection:
+            cursor = db_connection.cursor()
+            cursor.execute(
+                """UPDATE users SET
+                total_sessions = ?,
+                total_time = ?,
+                total_chars = ?,
+                best_cpm = ?,
+                avg_cpm = ?,
+                avg_accuracy = ?,
+                max_streak = ?,
+                current_streak = ?,
+                total_days = ?
+                WHERE user_id = ?""",
+                (0, 0, 0, 0, 0, 0, 0, 0, 0, user_id),  
+            )
+            db_connection.commit()
+
     def delete_user_by_id(self, user_id):
         with self.db.get_connection() as db_connection:
             cursor = db_connection.cursor()
@@ -324,6 +343,17 @@ class SessionRepository:
             db_connection.commit()
             return cursor.lastrowid
 
+    def clear_user_data(self, user_id):
+        with self.db.get_connection() as db_connection:
+            cursor = db_connection.cursor()
+            cursor.execute(
+                """DELETE FROM sessions
+                WHERE user_id = ?""",
+                (user_id, ),
+            )
+            db_connection.commit()
+
+
 class TimePointsRepository:
     def __init__(self, db):
         self.db = db
@@ -343,7 +373,7 @@ class TimePointsRepository:
             cursor.executemany(query, time_points)
             db_connection.commit()
             return cursor.lastrowid
-    
+
     def get_session_points(self, session_id, conn=None):
         with self.db.get_connection() if self.db else conn as db_connection:
             cursor = db_connection.cursor()
@@ -356,6 +386,17 @@ class TimePointsRepository:
                 (session_id, )
             )
             return cursor.fetchall()
+
+    # def clear_user_data(self, user_id):
+    #     with self.db.get_connection() as db_connection:
+    #         cursor = db_connection.cursor()
+    #         cursor.execute(
+    #             """DELETE FROM time_points
+    #             WHERE user_id = ?""",
+    #             (user_id,),
+    #         )
+    #         db_connection.commit()
+
 
 class DailyActivityRepository:
     def  __init__(self, db):
@@ -415,12 +456,12 @@ class DailyActivityRepository:
                     avg_accuracy = ?
                     WHERE user_id = ? and date = ?""",
                     (total_sessions, new_data[0], new_data[1], new_data[2],new_data[3], user_id, date))
-            else:
+            elif total_sessions > 0:
                 self.save_activity(
                     user_id,
                     (
                         date,
-                        len(new_data),
+                        total_sessions,
                         new_data[0],
                         new_data[1],
                         new_data[2],
@@ -457,3 +498,13 @@ class DailyActivityRepository:
         else:
             total_sessions = 1
             self.save_activity(user_id, (date, total_sessions, new_time, new_cpm, new_cpm, activity[-1]))
+
+    def clear_user_data(self, user_id):
+        with self.db.get_connection() as db_connection:
+            cursor = db_connection.cursor()
+            cursor.execute(
+                """DELETE FROM daily_activity
+                WHERE user_id = ?""",
+                (user_id,),
+            )
+            db_connection.commit()

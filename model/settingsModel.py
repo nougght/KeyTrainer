@@ -6,7 +6,7 @@ class settingsModel:
     def __init__(self):
         self.settings = QSettings("pyKey", "KeyTrainer0.3")
         self.settings.setValue("icon_path", "data/keyIc.ico")
-        self.settings.remove("theme")
+        # self.settings.remove("theme")
         if self.settings.value("theme") not in ["defaultDark", "defaultLight"]:
             self.settings.setValue("theme", "defaultDark")
         print(self.settings.allKeys())

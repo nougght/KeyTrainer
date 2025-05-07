@@ -2,14 +2,14 @@
    text style */
 
 .passed {
-    color: #28d96c;
+    color: #fef8fd;
 }
 
 .current {
     text-decoration:underline;
-    color: #9480eb;
+    text-decoration-color: #ff793f;
 }
 
 .remaining {
-    color: white;
+    color: #6e7d8f;
 }

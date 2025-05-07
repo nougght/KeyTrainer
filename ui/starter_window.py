@@ -26,6 +26,9 @@ class LoginForm(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.login_layout = QVBoxLayout(self)
+        self.login_layout.setSpacing(7)
+        self.login_layout.setContentsMargins(15, 15, 15, 15)
+
         self.login_label = QLabel('Вход')
         self.login_layout.addWidget(self.login_label, alignment=Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
         self.user_combo = QComboBox()
@@ -59,6 +62,8 @@ class RegistrationForm(QWidget):
         super().__init__(parent=parent)
 
         self.registration_layout = QGridLayout(self)
+        self.registration_layout.setSpacing(7)
+        self.registration_layout.setContentsMargins(15, 15, 15, 15)
         self.registration_label = QLabel("Регистрация")
         self.registration_layout.addWidget(
             self.registration_label, 0, 0, 1, 2,
@@ -156,6 +161,7 @@ class LoginWindow(QDialog):
         self.setup_ui()
 
     def setup_ui(self):
+        self.setFixedWidth(400)
         self.setWindowTitle("Авторизация")
         self.main_layout = QGridLayout(self)
         self.stack = QStackedLayout()

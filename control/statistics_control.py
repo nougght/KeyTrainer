@@ -6,6 +6,8 @@ class StatisticsControl(QObject):
 
     def __init__(self, text_repository, user_repository, session_repository, time_points_repository, daily_activity_repository, main_window, user_session):
         super().__init__()
+        self.sessions_page = 1
+
         self.main_window = main_window
         self.user_session = user_session
         self.text_repository = text_repository
@@ -15,6 +17,9 @@ class StatisticsControl(QObject):
         self.daily_activity_repository = daily_activity_repository
 
         self.show_statistics.connect(main_window.typing_widget.on_show_statistics)
+
+        self.main_window.statistics_widget.session_widget.to_page.connect(self.to_sessions_page)
+        self.main_window.settings_widget.clear_user_data.connect(self.on_clear_data)
     @Slot()
     def on_session_finished(self, session):
         session = session.stats
@@ -52,25 +57,36 @@ class StatisticsControl(QObject):
             if act[3] > mx:
                 mx = act[3]
             print('actttt', act[2])
-        activity = {activity[i][2] : 1 + round(activity[i][3] / mx * 3) for i in range(len(activity))}
+        
+        activity = {activity[i][2] : 1 + round(activity[i][3] / mx * 3) for i in range(len(activity)) if mx > 0}
+        
         td = timedelta(seconds=user_data["total_time"])
-
 
         self.main_window.statistics_widget.general_stats.update_ui(user_data)
         self.main_window.statistics_widget.activity_calendar.create_grid(activity, user_data['current_streak'], user_data['max_streak'], user_data['total_days'])
-        
-        sessions_id = self.session_repository.get_last_sessions(user_id, 0, 5)
 
-        sessions_data = [(self.session_repository.get_session(user_id, id[0]), self.time_points_repository.get_session_points(id[0])) for id in sessions_id]
         # session_data = [session_data["start_time"], session_data["test_type"], session_data["duration_seconds"], session_data["total_chars"], session_data["avg_cpm"], session_data["max_cpm"], session_data["avg_cpm"]/5, f"{session_data["accuracy"]} / {session_data["total_errors"]}"]
         # chart_data = self.time_points_repository.get_session_points(24)
-        self.main_window.statistics_widget.session_widget.load_page(1, sessions_data)
 
+        sessions_id = self.session_repository.get_last_sessions(user_id, (self.sessions_page-1)*5, self.sessions_page*5)
+        all_id = self.session_repository.get_last_sessions(user_id, 0, 1000)
+        sessions_data = [(self.session_repository.get_session(user_id, id[0]), self.time_points_repository.get_session_points(id[0])) for id in sessions_id]
+        self.main_window.statistics_widget.session_widget.load_page(((len(all_id) + 4) // 5), sessions_data)
 
-    def show_sessions_list(self):
-        pass
+        self.main_window.statistics_widget.distribution_chart.update_data([self.session_repository.get_session(user_id, id[0])['avg_cpm'] for id in all_id])
 
-    def expand_session(self):
-        pass
-    def collapse_session(self):
-        pass
+    def to_sessions_page(self, page):
+        user_id = self.user_session.get_uid()
+        self.sessions_page = page
+        sessions_id = self.session_repository.get_last_sessions(user_id, (self.sessions_page-1)*5, self.sessions_page*5)
+        all_id = self.session_repository.get_last_sessions(user_id, 0, 1000)
+        sessions_data = [(self.session_repository.get_session(user_id, id[0]), self.time_points_repository.get_session_points(id[0])) for id in sessions_id]
+        self.main_window.statistics_widget.session_widget.load_page(((len(all_id) + 4) // 5), sessions_data)
+
+    def on_clear_data(self):
+        user_id = self.user_session.get_uid()
+        self.user_repository.clear_user_data(user_id)
+        self.session_repository.clear_user_data(user_id)
+        self.daily_activity_repository.clear_user_data(user_id)
+        self.show_general_stats(user_id)
+        self.to_sessions_page(1)

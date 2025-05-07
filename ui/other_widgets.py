@@ -317,7 +317,7 @@ class KeyboardWidget(QtWidgets.QFrame):
             {"name": "key_ь", "def": "ь", "shift": "Ь"},
             {"name": "key_б", "def": "б", "shift": "Б"},
             {"name": "key_ю", "def": "ю", "shift": "Ю"},
-            {"name": "key_.", "def": ".", "shift": "."},
+            {"name": "key_.", "def": ".", "shift": ","},
             {"name": "key_SHIFT2", "def": "SHIFT", "shift": "SHIFT"},
         ],
         [
