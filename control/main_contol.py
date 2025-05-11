@@ -1,6 +1,6 @@
 from PySide6.QtCore import QObject, Qt, QDate 
 from PySide6.QtWidgets import QDialog
-from model import dataBase, TextRepository, settingsModel, statisticsModel, UserSession, UserRepository, SessionRepository, TimePointsRepository, DailyActivityRepository
+from model import dataBase, TextRepository, settingsModel, UserSession, UserRepository, SessionRepository, TimePointsRepository, DailyActivityRepository
 
 from datetime import date
 from ui.main_window import MainWindow

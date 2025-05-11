@@ -43,7 +43,8 @@ if __name__ == "__main__":
     main_control = mainControl()
     main_control.setting_control.set_base_style(app)
     main_control.setting_control.language_changed.connect(lambda tr: change_translator(app, translators, tr))
-
+    
+    change_translator(app, translators, main_control.settings_model.get_language())
     app.installTranslator(translators[main_control.setting_control.model.get_language()])
 
     app.setWindowIcon(QIcon(':/data/keyIc.ico'))
