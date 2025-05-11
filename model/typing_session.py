@@ -3,22 +3,7 @@ from dataclasses import dataclass, field
 import json, typing
 
 
-@dataclass
-class Session:
-    time: typing.List
-    chars: typing.List
-    cpm: typing.List
-    wpm: typing.List
-    errors: typing.List
-    total_chars: int
-    total_errors: int
-    duration: int
-    avg_cpm: int
-    avg_wpm: int
-    max_cpm: int
-    max_wpm: int
-
-
+# обработка сессии тренировки
 class TypingSession:
     def __init__(self):
         self.reset_stats()

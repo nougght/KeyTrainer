@@ -2,6 +2,7 @@ from PySide6.QtCore import QObject, Signal, Slot
 from PySide6.QtWidgets import QFileDialog, QMessageBox
 from datetime import datetime, date, timedelta
 
+# контроллер статистики
 class StatisticsControl(QObject):
     show_statistics = Signal(list)
 
@@ -23,6 +24,9 @@ class StatisticsControl(QObject):
         self.main_window.settings_widget.clear_user_data.connect(self.on_clear_data)
         self.main_window.settings_widget.export_user.connect(self.export_user)
         self.main_window.settings_widget.import_user.connect(self.import_user)
+    
+    # обработчик окончания тренировки
+    # обновляет данные в бд и передает их в основное окно
     @Slot()
     def on_session_finished(self, session):
         user_id = self.user_session.get_uid()
@@ -56,6 +60,7 @@ class StatisticsControl(QObject):
         self.show_statistics.emit(session_stats)
         self.show_general_stats(self.user_session.get_uid())
 
+    # экспорт данных пользователя
     def export_user(self):
         user_id = self.user_session.get_uid()
 
@@ -115,6 +120,7 @@ class StatisticsControl(QObject):
                         )
                 f.write("COMMIT;\n")
 
+    # импорт данных пользователя
     def import_user(self):
         import_file, _ = QFileDialog.getOpenFileName(
             self.main_window,
@@ -141,7 +147,7 @@ class StatisticsControl(QObject):
         )
 
         # self.main_window.settings_widget.user_leaved.emit()
-
+    # удаления пользователя
     def delete_current_user(self, user_id=None):
         if user_id is None:
             user_id = self.user_session.get_uid()
@@ -152,7 +158,7 @@ class StatisticsControl(QObject):
         for id in session_ids:
             self.session_repository.delete_session_by_id(id[0])
             self.time_points_repository.delete_points_by_id(id[0])
-
+    # передача статистики в основное окно
     def show_general_stats(self, user_id):
         user_data = self.user_repository.get_user_data(user_id)
         activity = self.daily_activity_repository.get_activity_by_uid(user_id)

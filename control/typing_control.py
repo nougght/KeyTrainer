@@ -2,6 +2,7 @@ from PySide6.QtCore import QObject, Signal, Qt, QTimer
 from model.typing_session import TypingSession
 import time, sys, os
 
+# контроллер тренировки
 class TypingControl(QObject):
     # toolbt_activate = Signal(str, bool)
     keyboard_lang_change = Signal(str)
@@ -185,7 +186,6 @@ class TypingControl(QObject):
             # self.toolbt_activate.emit(difficulty, True)
 
     def resource_path(self, relative_path):
-        """Get the absolute path to the resource, works for dev and for PyInstaller"""
         if hasattr(sys, "_MEIPASS"):
             # Если приложение запущено из собранного exe
             base_path = sys._MEIPASS

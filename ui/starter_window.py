@@ -19,11 +19,12 @@ from control.users_control import UserController
 from ui.other_widgets import LoginInput, PasswordInput, ThemeButton
 from utils import resource_path
 
-
+# форма входа в аккаунт
 class LoginForm(QWidget):
     to_registration = Signal()
     to_recovery = Signal()
-    user_login_request = Signal(int, str)
+    user_login_request = Signal(int, str)  # запрос входа в аккаунт
+
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.login_layout = QVBoxLayout(self)
@@ -60,7 +61,7 @@ class LoginForm(QWidget):
         if user_id:
             self.user_login_request.emit(user_id, self.password_input.text())
 
-
+# форма регистрации
 class RegistrationForm(QWidget):
     to_login = Signal()
     create_new_user = Signal(str, str, str)
@@ -164,7 +165,7 @@ class RegistrationForm(QWidget):
             self.password_verify_input.setEnabled(False)
 
     def on_create_user(self):
-        """Обработчик создания пользователя."""
+        # Обработчик создания пользователя.
         username = self.login_input.text().strip()
         is_password_enabled = self.password_checkbox.isChecked()
         password = self.password_input.text().strip()
@@ -188,7 +189,7 @@ class RegistrationForm(QWidget):
             # self.user_combo.setCurrentIndex(self.user_combo.findText(username))
             # print(self.user_combo.findText(username))
 
-
+# форма восстановления пароля
 class PasswordRecoveryForm(QWidget):
     password_recovery_request = Signal(int, str, str)
     recovery_to_login = Signal()
@@ -301,7 +302,7 @@ class PasswordRecoveryForm(QWidget):
         else:
             QMessageBox.warning(self, self.tr("Ошибка"), self.tr("Неправильный пароль"))
 
-
+# стартовое окно
 class LoginWindow(QDialog):
     change_language = Signal(str)
     change_theme = Signal(str)
@@ -328,10 +329,9 @@ class LoginWindow(QDialog):
         self.main_layout.addWidget(self.style_btn, 1, 0)
         self.main_layout.addWidget(self.language_combo, 1, 1)
 
+        # добавление форм в переключатель виджетов
         self.login_form = LoginForm()
-
         self.registration_form = RegistrationForm()
-
         self.recovery_form = PasswordRecoveryForm()
 
         self.stack.addWidget(self.login_form)
@@ -345,22 +345,20 @@ class LoginWindow(QDialog):
         self.login_form.profile_import.clicked.connect(lambda: (self.import_user.emit(),self.update_user.emit()))
 
         self.stack.setCurrentWidget(self.registration_form)
-
+    # переключить форму
     def switch_form(self, index):
         self.stack.setCurrentIndex(index)
 
     def set_lang_combo(self, lang):
         self.language_combo.setCurrentIndex(self.language_combo.findData(lang))
-
+    # загрузка пользователей
     def show_users(self, users):
-        """Загружает пользователей через контроллер."""
         self.login_form.user_combo.clear()
         for user in users:
             self.login_form.user_combo.addItem(user["username"], user["id"])
             self.recovery_form.user_combo.addItem(user["username"], user["id"])
         self.registration_form.login_input.set_used_names([user["username"] for user in users])
         self.update()
-        # QMessageBox.warning(self, "Ошибка", "Пользователь уже существует")
 
     def show_warning(self):
         QMessageBox.warning(self, self.tr('Ошибка'), self.tr('Неправильный пароль'))
@@ -369,7 +367,7 @@ class LoginWindow(QDialog):
         if event.type() == QEvent.Type.LanguageChange:
             self.retranslate()
         return super().event(event)
-
+    # обновление надписей после смены языка
     def retranslate(self):
         self.login_form.login_label.setText(self.tr("Вход"))
         self.login_form.password_input.setPlaceholderText(self.tr("Пароль"))
@@ -391,7 +389,6 @@ class LoginWindow(QDialog):
         self.registration_form.password_checkbox.setText(
             self.tr("Использовать пароль?")
         )
-
         self.recovery_form.recovery_label.setText(self.tr("Восстановление"))
         self.recovery_form.code_input.setPlaceholderText(self.tr("Код восставновления"))
         self.recovery_form.new_password_input.setPlaceholderText(self.tr("Новый пароль"))
@@ -400,7 +397,6 @@ class LoginWindow(QDialog):
         )
         self.recovery_form.change_btn.setText(self.tr("Восстановить"))
         self.recovery_form.to_login.setText(self.tr("Вход"))
-
         self.setWindowTitle(self.tr("Авторизация"))
         self.language_combo.setItemText(0, self.tr("Русский"))
         self.language_combo.setItemText(1, self.tr("Английский"))

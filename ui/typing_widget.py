@@ -26,9 +26,10 @@ from ui.other_widgets import (
 from ui.statistics_widget import SessionChart, SessionStatistics
 from utils import resource_path
 
+# виджет(вкладка) тренировки
 class TypingWidget(QFrame):
     key_theme_switch = Signal()
-    difficulty_change = Signal(str)
+    difficulty_change = Signal(str) # сигналы изменения параметров тренировки
     language_change = Signal(str)
     mod_change = Signal(str)
 
@@ -36,8 +37,6 @@ class TypingWidget(QFrame):
         super().__init__()
 
         self.is_keyboard_visible = True
-
-        self.setStyleSheet("width: 100%")
         # self.setWindowIcon(QIcon("resources/keyIc (2).ico"))
 
         # self.setCentralWidget(QWidget())
@@ -63,20 +62,20 @@ class TypingWidget(QFrame):
         )
         # self.progress_bar.setTextVisible(False)
 
-        # поле текста
+        # перключатель между полем с текстом и статистикой тренировки
         self.stack = QStackedWidget()
 
         self.train_display = QWidget()
-        self.train_layout = QGridLayout(self.train_display)
+        self.train_layout = QGridLayout(self.train_display) 
 
-        self.text_display = KeyTextEdit()
+        self.text_display = KeyTextEdit() # кастомное текстовое поле
         self.text_display.setMinimumHeight(330)
         self.text_display.setMaximumHeight(500)
         self.text_display.setSizePolicy(
             QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding
         )
         self.train_layout.addWidget(self.text_display, 0, 0, 1, 2, Qt.AlignmentFlag.AlignTop)
-
+        # кастомный виджет клавиатуры
         self.keyboard_widget = KeyboardWidget("english")
         print(self.keyboard_widget.size().height(), self.keyboard_widget.size().width())
         self.key_theme_switch.connect(self.keyboard_widget.on_key_theme_switch)
@@ -87,7 +86,7 @@ class TypingWidget(QFrame):
             20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum
         )
         self.train_layout.addItem(self.vert_spacer_3, 1, 0, 1, 2)
-
+        # кастомный виджет вывода статистики
         self.session_stats = SessionStatistics()
         self.session_stats.expand_button.hide()
         self.session_stats.set_chart_visible(True)
@@ -108,9 +107,9 @@ class TypingWidget(QFrame):
         self.central_layout.addItem(self.vert_spacer_2, 1, 0, 1, 2)
 
         # self.central_layout.addItem(self.vert_spacer_3, 9, 0, 1, 2)
-        print(self.central_layout.rowCount())
-        print(self.central_layout.columnCount())
-        print(self.central_layout.itemAt(0))
+        # print(self.central_layout.rowCount())
+        # print(self.central_layout.columnCount())
+        # print(self.central_layout.itemAt(0))
 
         # self.theme_switch_button = QPushButton("Поменять тему")
         # self.theme_switch_button.setObjectName("themes")
@@ -136,7 +135,7 @@ class TypingWidget(QFrame):
         )
         self.tool_layout.addWidget(self.tb_spacer1)
 
-        self.lang_combo = QComboBox()
+        self.lang_combo = QComboBox() # переключатель языка тренировки
         self.lang_combo.setObjectName("langComboBox")
         self.lang_combo.addItem(self.tr("Russian"), "russian")
         self.lang_combo.addItem(self.tr("English"), "english")
@@ -150,16 +149,6 @@ class TypingWidget(QFrame):
         self.lang_combo.setCurrentIndex(1)
         self.tool_layout.addWidget(self.lang_combo)
 
-        # self.rus_action = QtWidgets.QWidgetAction(self.tool_layout)
-        # self.rus_action.setText("Russian")
-        # self.tool_layout.addAction(self.rus_action)
-        # self.rus_action.triggered.connect(self.on_rus_released)
-
-        # self.eng_action = QtWidgets.QWidgetAction(self.tool_layout)
-        # self.eng_action.setText("English")
-        # self.tool_layout.addAction(self.eng_action)
-        # self.eng_action.triggered.connect(self.on_eng_released)
-
         self.tb_spacer2 = QWidget()
         self.tb_spacer2.setSizePolicy(
             QSizePolicy.Policy.MinimumExpanding,
@@ -167,7 +156,7 @@ class TypingWidget(QFrame):
         )
         self.tool_layout.addWidget(self.tb_spacer2)
 
-        self.mode_list = RadioList()
+        self.mode_list = RadioList() # переключение режима тренировки
         self.mode_list.setObjectName("modeList")
         self.mode_list.add_items([self.tr("Words"), self.tr("Text")])
         self.mode_list.button_group.button(0).clicked.connect(
@@ -184,7 +173,7 @@ class TypingWidget(QFrame):
             QSizePolicy.Policy.MinimumExpanding,
         )
         self.tool_layout.addWidget(self.tb_spacer3)
-        self.diff_list.setObjectName("diffList")
+        self.diff_list.setObjectName("diffList")  # переключение сложности тренировки
         self.diff_list.add_items([self.tr("Easy"), self.tr("Normal"), self.tr("Hard")])
         self.diff_list.button_group.button(0).clicked.connect(
             lambda: self.difficulty_change.emit("easy")
@@ -196,7 +185,6 @@ class TypingWidget(QFrame):
             lambda: self.difficulty_change.emit("hard")
         )
         self.tool_layout.addWidget(self.diff_list)
-
         self.tool_layout.addWidget(self.reset_button)
 
         self.tb_spacer4 = QWidget()
@@ -213,17 +201,17 @@ class TypingWidget(QFrame):
         self.central_layout.addWidget(self.tool_layout,0, 0, 1, 2)
         self.finish = QMessageBox()
 
-        for i in range(self.central_layout.count()):
-            item = self.central_layout.itemAt(i)
-            widget = item.widget()
-            row, col, row_span, col_span = self.central_layout.getItemPosition(i)
+        # for i in range(self.central_layout.count()):
+        #     item = self.central_layout.itemAt(i)
+        #     widget = item.widget()
+        #     row, col, row_span, col_span = self.central_layout.getItemPosition(i)
 
-            if widget:
-                print(
-                    f"  Cell [{row}, {col}] (span: {row_span}x{col_span}): {widget.objectName() or widget.__class__.__name__}"
-                )
-            else:
-                print(f"  Cell [{row}, {col}]: Empty or spacer")
+        #     if widget:
+        #         print(
+        #             f"  Cell [{row}, {col}] (span: {row_span}x{col_span}): {widget.objectName() or widget.__class__.__name__}"
+        #         )
+        #     else:
+        #         print(f"  Cell [{row}, {col}]: Empty or spacer")
 
     def set_keyboard_visible(self, is_visible):
         self.is_keyboard_visible = is_visible
@@ -235,7 +223,7 @@ class TypingWidget(QFrame):
         self.text_display.setHtmlText()
         super().setStyleSheet(style[0])
         # print(styleSheet)
-
+    # отображение статистики тренировки
     def set_statistics_mode(self, state: bool):
         if state:
             self.stack.setCurrentIndex(1)
@@ -253,7 +241,7 @@ class TypingWidget(QFrame):
         )
         # speed_lb = QLabel(f'CPM - {speed}', finish)
         self.finish.resize(500, 500)
-        self.finish.exec()
+        # self.finish.exec()
 
     @Slot()
     def on_exit_released(self):
@@ -288,17 +276,6 @@ class TypingWidget(QFrame):
     def on_hard_released(self):
         self.difficulty_change.emit("hard")
 
-    @Slot()
-    def toolbutton_activate(self, name, isactive):
-        pass
-        # tb = self.toolbar.findChild(QtWidgets.QToolButton, name)
-
-        # tb.setProperty("isactive", isactive)
-
-        # tb.style().unpolish(tb)  # Обновляем стиль
-        # tb.style().polish(tb)
-        # tb.update()
-
     def on_key_theme_switch(self, style):
         self.key_theme_switch.emit()
         self.text_display.setFocus()
@@ -307,7 +284,7 @@ class TypingWidget(QFrame):
         if event.type() == QEvent.Type.LanguageChange:
             self.retranslate()
         return super().event(event)
-
+    # обновление надписей после смены языка
     def retranslate(self):
         self.lang_combo.setItemText(0, self.tr("Russian"))
         self.lang_combo.setItemText(1, self.tr("English"))

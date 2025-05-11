@@ -38,7 +38,6 @@ class LoginChangeForm(QWidget):
             self.correct_login_icon.update()
 
     def on_change_login(self):
-        """Обработчик создания пользователя."""
         username = self.login_input.text().strip()
         warning0 = self.login_input.warning
 
@@ -136,6 +135,7 @@ class PasswordChangeForm(QWidget):
         else:
             QMessageBox.warning(self, self.tr('Ошибка'), self.tr('Неправильный пароль'))
 
+# виджет(вкладка) настроек
 class SettingsWidget(QFrame):
     user_leaved = Signal()
     user_deleted = Signal()
@@ -162,9 +162,7 @@ class SettingsWidget(QFrame):
         self.stats_reset.clicked.connect(self.on_clear_data)
         self.main_layout.addWidget(self.stats_reset, 2, 0, 1, 2)
 
-        spacer1 = QSpacerItem(
-            20, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
+        spacer1 = QSpacerItem(20, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.main_layout.addItem(spacer1, 3, 0, 1, 2)
         self.language_change_label = QLabel(self.tr('Язык интерфейса'))
         self.main_layout.addWidget(self.language_change_label, 5, 0)

@@ -1,17 +1,11 @@
-import sys
-import os
-
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
-
 from PySide6 import QtCore
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QWidget
 
-
+# контроллер настроек
 class SettingControl(QtCore.QObject):
-    theme_changed = Signal(list)
-    language_changed = Signal(str)
+    theme_changed = Signal(list)  # сигнал смены стиля
+    language_changed = Signal(str)  # сигнал смены языка
 
     def __init__(self, settings_model, main_window, start_window):
         super().__init__()
@@ -55,21 +49,21 @@ class SettingControl(QtCore.QObject):
         self.main_window.settings_widget.password_change_form.new_password_input.switch_icon_theme(theme)
         self.main_window.settings_widget.password_change_form.password_input.switch_icon_theme(theme)
         self.main_window.settings_widget.password_change_form.password_verify_input.switch_icon_theme(theme)
-
+    # обработчик смены языка приложения
     def on_language_change(self, language):
         self.model.set_language(language)
         self.start_window.set_lang_combo(self.model.get_language())
         self.main_window.settings_widget.set_lang_combo(self.model.get_language())
         self.language_changed.emit(self.model.get_language())
-
+    # установка базовых стилей
     def set_base_style(self, wid: QWidget):
         wid.setStyleSheet(self.model.get_base_style())
-
+    # установка текущего стиля приложения
     def set_curr_style(self, wid: QWidget):
         wid.setStyleSheet(self.model.get_theme_style()[0])
 
-    def get_icon(self):
-        return self.model.icon
+    # def get_icon(self):
+    #     return self.model.icon
 
     # def set_light_style(self, wid: QWidget):
     #     wid.setStyleSheet(self.model.get_light_style())

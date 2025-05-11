@@ -17,9 +17,9 @@ from PySide6 import QtCore, QtGui, QtWidgets
 # from control.settings_control import SettingControl
 # import time, os, sys
 from html import escape
-
 from utils import resource_path
 
+# различные небольшие виджеты
 
 class LoginInput(QLineEdit):
     def __init__(self, parent=None, placeholderText=None):
@@ -505,7 +505,6 @@ class RadioList(QFrame):
         # self.setStyleSheet('background: black;')
 
     def add_items(self, items):
-        """Добавляем элементы в список"""
         for i, text in enumerate(items):
             btn = QRadioButton(text)
             self.button_group.addButton(btn, i)
@@ -570,7 +569,6 @@ class KeyTextEdit(QTextEdit):
 
 
     def adjust_position(self, original_text, position):
-        """Пересчитывает позицию курсора после экранирования."""
         escaped_part = escape(original_text[:position])
         return len(escaped_part)  # Новая позиция в экранированном тексте
     
@@ -659,6 +657,7 @@ class KeyTextEdit(QTextEdit):
 
         return super().keyPressEvent(event) if event.key() != QtCore.Qt.Key.Key_Space else None
 
+    # отключение событий поля
     def mousePressEvent(self, e):
         pass
         # return super().mousePressEvent(e)

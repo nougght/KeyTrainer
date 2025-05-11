@@ -1,9 +1,10 @@
 from PySide6.QtCore import QSettings
 import os, sys
-
+# модель настроек
 class settingsModel:
     def __init__(self):
-        self.settings = QSettings("pyKey", "KeyTrainer0.3")
+        # инициализация парметров
+        self.settings = QSettings("KeyTrainer", "v1.0")
         self.settings.setValue("icon_path", "data/keyIc.ico")
         # self.settings.remove("theme")
         if self.settings.value("theme") not in ["defaultDark", "defaultLight"]:
@@ -11,7 +12,7 @@ class settingsModel:
         if self.settings.value("language") not in ["ru", "en"]:
             self.settings.setValue("language", "en")
 
-        print(self.settings.allKeys())
+        # print(self.settings.allKeys())
 
         self.styles = {}
         with open(self.resource_path("styles/baseStyle.qss"), "r") as f:
@@ -46,7 +47,8 @@ class settingsModel:
     def get_last_user(self):
         id = self.settings.value("user_id")
         return id if id else 0
-
+    
+    # загрузка стилей из файлов
     def load_style(self, name):
         lst = []
         with open(self.resource_path(f"styles/{name}/widgetStyle.qss"), "r") as f:
@@ -55,8 +57,8 @@ class settingsModel:
             lst.append(f.read())
         self.styles[name] = lst
 
+    # функция получения пути к файлу в собранном проекте
     def resource_path(self, relative_path):
-        """Get the absolute path to the resource, works for dev and for PyInstaller"""
         if hasattr(sys, "_MEIPASS"):
             # Если приложение запущено из собранного exe
             base_path = sys._MEIPASS

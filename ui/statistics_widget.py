@@ -13,6 +13,7 @@ from PySide6.QtCore import Qt, QDate
 from PySide6.QtGui import QColor, QPainter, QPen
 import random
 
+# виджет - основная статистика пользователя
 class GeneralStatistics(QFrame):
     def __init__(self):
         super().__init__()
@@ -34,7 +35,7 @@ class GeneralStatistics(QFrame):
         self.left_layout = QVBoxLayout(self.left_frame)
         self.left_layout.setSpacing(5)
         self.left_layout.setContentsMargins(25, 25, 25, 25)
-        self.left_layout.addWidget(QLabel(self.username), 0)
+        self.left_layout.addWidget(QLabel(self.username), 0, alignment=Qt.AlignmentFlag.AlignCenter)
         self.left_frame.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.left_layout.itemAt(0).widget().setObjectName('uname_label')
         for i in range(len(self.l_titles)):
@@ -94,9 +95,10 @@ class GeneralStatistics(QFrame):
             self.r_down_values[2] = round(self.r_down_values[2]*100, 2)
 
             from datetime import timedelta
-
+            print(data["total_time"])
             td = timedelta(seconds=data["total_time"])
-            self.r_up_values[0] = str(td) #time(second=int(user_data['total_time'])).isoformat()
+
+            self.r_up_values[0] = str(td).split('.')[0] #time(second=int(user_data['total_time'])).isoformat()
 
             self.left_layout.itemAt(0).widget().setText(data[0])
             for i in range(len(self.l_values)):
@@ -106,7 +108,7 @@ class GeneralStatistics(QFrame):
             for i in range(len(self.r_down_values)):
                 self.right_down_layout.itemAt(i).layout().itemAt(1).widget().setText(str(self.r_down_values[i]))
 
-
+# статистика одной тренировки
 class SessionStatistics(QFrame):
     chart_hide = Signal()
     def __init__(self, parent=None):
@@ -183,7 +185,7 @@ class SessionStatistics(QFrame):
 
         self.down_row_values[0] = round(session_data["avg_cpm"], 2)
         self.down_row_values[1] = round(session_data["max_cpm"], 2)
-        self.down_row_values[2] = round(session_data["avg_cpm"] * 5, 2)
+        self.down_row_values[2] = round(session_data["avg_cpm"] / 5, 2)
         self.down_row_values[3] = f"{round(session_data["accuracy"]*100, 2)}% / {session_data['total_errors']}"
 
         self.up_row_values[2] = round(self.up_row_values[2], 2)
@@ -210,6 +212,7 @@ class SessionStatistics(QFrame):
             self.frame_layout.itemAt(1).widget().layout().itemAt(i).layout().itemAt(0).widget().setText(self.down_row_titles[i])
         self.expand_button.setText(self.tr("Показать график"))
 
+# список последних тренировок со статистикой
 class ListWithPages(QFrame):
     to_page = Signal(int)
     def __init__(self, parent=None):
@@ -269,17 +272,11 @@ class ListWithPages(QFrame):
                 self.list_layout.itemAt(i).widget().setVisible(False)
         self.update_label()
 
+# календарь активности
 class ActivityCalendar(QFrame):
     def __init__(self):
         super().__init__()
         self.setWindowTitle(self.tr("Календарь активности"))
-        # self.setFixedSize(800, 200)  # Фиксированный размер (можно менять)
-
-        # Основной layout
-
-        # Создаем сетку для календаря
-        # with open("styles/defaultLight/widgetStyle.qss") as f:
-        #     self.setStyleSheet(f.read())
         self.grid = None
         self.cs_label = None
         self.cs_text = None
@@ -309,7 +306,6 @@ class ActivityCalendar(QFrame):
 
         self.layout().addLayout(labels, 0)
 
-        """Создает сетку календаря (53 недели x 7 дней)."""
         self.grid = QGridLayout()
         self.grid.setSpacing(4)  # Аналог border-spacing в CSS!
         self.grid.setContentsMargins(5, 5, 5, 5)
@@ -380,7 +376,6 @@ class ActivityCalendar(QFrame):
         self.add_month_labels(self.grid)
 
     def add_month_labels(self, grid):
-        """Добавляет подписи месяцев над календарём."""
         self.months = [self.tr("Янв"),self.tr("Фев"),self.tr("Мар"),self.tr("Апр"),self.tr("Май"),self.tr("Июн"),self.tr("Июл"),self.tr("Авг"),self.tr("Сен"),self.tr("Окт"),self.tr("Ноя"),self.tr("Дек"),
         ]
 
@@ -437,30 +432,7 @@ class ActivityCalendar(QFrame):
         for month, pos in zip(self.months, self.month_positions):
             self.grid.itemAtPosition(9, pos).widget().setText(month)
 
-
-# from ui.other_widgets import (
-#     KeyWidget,
-#     KeyTextEdit,
-#     KeyProgressDisplay,
-#     KeyboardWidget,
-#     RadioList,
-# )
-
-# class chart(QChart):
-#     def __init__(self, cpm, parent=None):
-#         super().__init__(parent=parent)
-#         self.setTitle('График')
-#         prod_series = QLineSeries()
-#         prod_series.setName("Производительность (%)")
-#         pen = QPen(Qt.black)
-#         pen.setWidth(3)
-#         pen.setStyle(Qt.SolidLine)
-#         prod_series.setPen(pen)
-
-#         for i in range(len(cpm)):
-#             prod_series.append(i, cpm[i])
-
-
+# график - распределение тренировок по скорости
 class DistributionChart(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -538,9 +510,7 @@ class DistributionChart(QFrame):
         self.axis_y.setGridLineVisible(True)
         # self.axis_x.setLabelsVisible(False)
 
-
     def update_data(self, cpm_data):
-        """Обновляет график новыми данными CPM"""
         self.tests.clear()
         mx = int(max(cpm_data) // 50) + 1 if cpm_data else 0
         distribution = [0] * mx
@@ -550,7 +520,7 @@ class DistributionChart(QFrame):
 
         self.bset = QBarSet(self.tr("Тренировки"))
         self.bset.append(distribution)
-        self.bset.setColor(QColor("#328936"))
+        self.bset.setColor(QColor("#379f3c"))
         self.bset.setBorderColor(QColor("#429721"))
         self.tests.setBarWidth(0.75)
         self.tests.append(self.bset)
@@ -562,6 +532,7 @@ class DistributionChart(QFrame):
         self.axis_y.setLabelFormat("%d")
         # self.axis_x.setRange(1, len(distribution))
 
+# график скорости печати
 class SessionChart(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -662,7 +633,6 @@ class SessionChart(QFrame):
         self.bset = None
 
     def update_data(self, cpm_data: list):
-        """Обновляет график новыми данными CPM"""
         self.prseries.clear()
         self.series.clear()
         self.smseries.clear()
@@ -711,7 +681,6 @@ class SessionChart(QFrame):
         self.axis_y.setLabelFormat("%d")
 
     def show_overlay(self):
-        """Показывает оверлей с анимацией"""
         parent_window = self.parent()
         width = int(parent_window.width() * 0.3)
         height = int(parent_window.height() * 0.2)
@@ -745,6 +714,7 @@ class SessionChart(QFrame):
         if self.bset is not None:
             self.bset.setLabel(self.tr("Ошибки"))
 
+# виджет(вкладка) статистики
 class StatisticsWidget(QWidget):
     def __init__(self):
         super().__init__()

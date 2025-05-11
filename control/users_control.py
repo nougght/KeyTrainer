@@ -3,6 +3,7 @@ from model import UserRepository
 from argon2 import PasswordHasher, exceptions
 from PySide6.QtCore import QObject, Signal
 
+# контроллер пользователей
 class UserController(QObject):
     user_created = Signal(int)
     successful_login = Signal(int)
@@ -29,7 +30,6 @@ class UserController(QObject):
 
         self.login_window.update_user.connect(lambda: self.login_window.show_users(self.get_all_users()))
     def get_all_users(self):
-        """Возвращает список пользователей в удобном для View формате."""
         users = self.user_repo.get_all_users()
         return [{"id": u[0], "username": u[1], "avatar": u[2]} for u in users]
 

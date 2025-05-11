@@ -1,9 +1,12 @@
+# модель хранилища текстов
 class TextRepository:
     def __init__(self, db):
         self.db = db
     # источники:
     # oxford 3000 - https://github.com/jnoodle/English-Vocabulary-Word-List/tree/master
-    # нкря (первые 6000) - https://ru.wiktionary.org/wiki/%D0%9F%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5:%D0%A1%D0%BF%D0%B8%D1%81%D0%BE%D0%BA_%D1%87%D0%B0%D1%81%D1%82%D0%BE%D1%82%D0%BD%D0%BE%D1%81%D1%82%D0%B8_%D0%BF%D0%BE_%D0%9D%D0%9A%D0%A0%D0%AF:_%D0%A3%D1%81%D1%82%D0%BD%D0%B0%D1%8F_%D1%80%D0%B5%D1%87%D1%8C_1%E2%80%941000
+    # НКРЯ (первые 6000) - https://ru.wiktionary.org/wiki/%D0%9F%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5:%D0%A1%D0%BF%D0%B8%D1%81%D0%BE%D0%BA_%D1%87%D0%B0%D1%81%D1%82%D0%BE%D1%82%D0%BD%D0%BE%D1%81%D1%82%D0%B8_%D0%BF%D0%BE_%D0%9D%D0%9A%D0%A0%D0%AF:_%D0%A3%D1%81%D1%82%D0%BD%D0%B0%D1%8F_%D1%80%D0%B5%D1%87%D1%8C_1%E2%80%941000
+    
+    # вернуть случайные слова по языку
     def get_random_words(self, language, quantity):
         with self.db.get_connection() as db_connection:
             cursor = db_connection.cursor()
@@ -17,11 +20,12 @@ class TextRepository:
                 (language, quantity),
             )
             return [row["word"] for row in cursor.fetchall()]
-
+    
     def get_words(self, language, length):
         words_list = self.get_random_words(language, length)
         return " ".join(words_list)
 
+    # вернуть случайный текст по языку и сложности
     def get_text(self, language, difficulty):
         with self.db.get_connection() as db_connection:
             cursor = db_connection.cursor()
@@ -36,7 +40,7 @@ class TextRepository:
             )
             return cursor.fetchall()[0]["content"]
 
-
+# модель хранилища пользователей
 class UserRepository:
     def __init__(self, db):
         self.db = db
@@ -76,7 +80,6 @@ class UserRepository:
             db_connection.commit()
 
     def get_all_users(self):
-        """Возвращает список всех пользователей: (id, username, avatar)."""
         with self.db.get_connection() as db_connection:
             cursor = db_connection.cursor()
             cursor.execute(
@@ -88,7 +91,6 @@ class UserRepository:
             return cursor.fetchall()
 
     def create_user(self, username, password_hash, recovery_hash,avatar=None):
-        """Создает нового пользователя и возвращает его ID."""
         with self.db.get_connection() as db_connection:
             cursor = db_connection.cursor()
             cursor.execute(
@@ -134,7 +136,6 @@ class UserRepository:
             db_connection.commit()
 
     def user_exists(self, username: str) -> bool:
-        """Проверяет, существует ли пользователь с таким именем."""
         with self.db.get_connection() as db_connection:
             cursor = db_connection.cursor()
             cursor.execute("SELECT 1 FROM users WHERE username = ?", (username,))
@@ -286,7 +287,7 @@ class UserRepository:
 
 
 import datetime as dt
-
+# модель хранилища сессий тренировки
 class SessionRepository:
     def __init__(self, db):
         self.db = db
@@ -365,7 +366,7 @@ class SessionRepository:
             )
             db_connection.commit()
 
-
+# модель хранилища посекундной статистики тренировок
 class TimePointsRepository:
     def __init__(self, db):
         self.db = db
@@ -419,7 +420,7 @@ class TimePointsRepository:
     #         )
     #         db_connection.commit()
 
-
+# модель хранилища ежедневной активности
 class DailyActivityRepository:
     def  __init__(self, db):
         self.db = db

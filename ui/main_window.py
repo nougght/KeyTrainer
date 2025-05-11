@@ -6,18 +6,7 @@ from ui.settings_widget import SettingsWidget
 from PySide6.QtCore import Signal, QEvent
 
 
-# from control.settings_control import SettingControl
-
-
-# from ui.my_widgets import (
-#     KeyWidget,
-#     KeyTextEdit,
-#     KeyProgressDisplay,
-#     KeyboardWidget,
-#     RadioList,
-# )
-# from control.settings_control import SettingControl
-
+# основное окно с переключением вкладок
 class MainWindow(QMainWindow):
     change_theme = Signal(str)
     def __init__(self):
@@ -29,13 +18,13 @@ class MainWindow(QMainWindow):
         self.central_layout = QVBoxLayout(self.central_widget)
         self.central_layout.setContentsMargins(0,0,0,0)
         self.central_layout.setSpacing(0)
-
+        # кастомный виджет - верхняя панель с вкладками с кнопками управления окном
         self.tab = TabBarWithControl()
         self.tab.theme_button.theme_changed.connect(lambda t: self.change_theme.emit(t))
 
         self.tab.minimise_btn.clicked.connect(self.showMinimized)
         self.tab.close_btn.clicked.connect(self.on_exit_released)
-
+        # добавление вкладок
         self.tab.tabBar.addTab(self.tr("Тренировка"))
         self.tab.tabBar.addTab(self.tr("Статистика"))
         self.tab.tabBar.addTab(self.tr("Настройки"))
@@ -60,12 +49,12 @@ class MainWindow(QMainWindow):
         # print(styleSheet)
 
     def on_exit_released(self):
-        print("exit")
+        # print("exit")
         self.close()
 
     def keyPressEvent(self, event):
         from PySide6.QtCore import Qt
-        if event.key() == Qt.Key.Key_F11:
+        if event.key() == Qt.Key.Key_F11: # убрать панель задач на F11
             if self.isFullScreen():
                 self.setWindowState(Qt.WindowState.WindowMaximized)  # Плавный переход
             else:
