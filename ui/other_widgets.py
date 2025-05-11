@@ -27,9 +27,9 @@ class LoginInput(QLineEdit):
         self.used_names = None
         self.textChanged.connect(self.check_login)
         self.is_correct = False
-        self.warning = "Логин не может быть пустым"
+        self.warning = self.tr("Логин не может быть пустым")
         self.used_names = []
-        
+
     def set_used_names(self, names):
         self.used_names = names
 
@@ -37,16 +37,27 @@ class LoginInput(QLineEdit):
         import string
         k = [(c in string.ascii_letters.__str__()) for c in login]
         if not login:
-            self.warning = "Логин не может быть пустым"
+            self.warning = self.tr("Логин не может быть пустым")
         elif len(login) < 3:
-            self.warning = "Логин слишком короткий"
+            self.warning = self.tr("Логин слишком короткий")
         elif not all((c in string.ascii_letters + string.digits + '_') for c in login):
-            self.warning = "Логин должен содержать только символы латинского алфавита, цифры и _"
+            self.warning = self.tr("Логин должен содержать только символы латинского алфавита, цифры и _")
         elif login in self.used_names:
-            self.warning = "Пользователь с таким именем уже существует"
+            self.warning = self.tr("Пользователь с таким именем уже существует")
         else:
             self.warning = None
         self.is_correct = self.warning is None
+
+    def event(self, event):
+        from PySide6.QtCore import QEvent
+
+        if event.type() == QEvent.Type.LanguageChange:
+            self.retranslate()
+        return super().event(event)
+
+    def retranslate(self):
+        self.check_login(self.text())
+
 
 class PasswordInput(QLineEdit):
     def __init__(self, parent=None, placeholderText=None):
@@ -55,10 +66,12 @@ class PasswordInput(QLineEdit):
         self.addAction(self.echo_mode_btn, QLineEdit.ActionPosition.TrailingPosition)
         # self.setValidator(QRegularExpressionValidator(QRegularExpression("[a-zA-Z]+")))
         self.echo_mode_btn.triggered.connect(self.switch_echo_mode)
+        self.echo_icon_path = "data/weye.svg"
+        self.echo_icon_slash_path = "data/weye-slash.svg"
         self.switch_echo_mode()
         self.textChanged.connect(self.check_password)
         self.is_correct = False
-        self.warning = "Пароль не может быть пустым"
+        self.warning = self.tr("Пароль не может быть пустым")
 
     # def switch_correct_icon(self):
     #     if self.is_correct is True:
@@ -69,23 +82,48 @@ class PasswordInput(QLineEdit):
     def switch_echo_mode(self):
         if self.echoMode() == QLineEdit.EchoMode.Password:
             self.setEchoMode(QLineEdit.EchoMode.Normal)
-            self.echo_mode_btn.setIcon(QIcon(resource_path("data/eye-slash.svg")))
+            self.echo_mode_btn.setIcon(QIcon(f':/{self.echo_icon_slash_path}'))
         else:
             self.setEchoMode(QLineEdit.EchoMode.Password)
-            self.echo_mode_btn.setIcon(QIcon(resource_path("data/eye.svg")))
+            self.echo_mode_btn.setIcon(QIcon(f":/{self.echo_icon_path}"))
+
+    def switch_icon_theme(self, theme):
+        if theme == 'defaultDark':
+            self.echo_icon_path = 'data/weye.svg'
+            self.echo_icon_slash_path = "data/weye-slash.svg"
+        else:
+            self.echo_icon_path = "data/beye.svg"
+            self.echo_icon_slash_path = "data/beye-slash.svg"
+
+        if self.echoMode() == QLineEdit.EchoMode.Password:
+            self.echo_mode_btn.setIcon(QIcon(f":/{self.echo_icon_path}"))
+        else:
+            self.echo_mode_btn.setIcon(QIcon(f":/{self.echo_icon_slash_path}"))
 
     def check_password(self, password):
         import string
         if len(password) < 8:
-            self.warning = "Пароль слишком короткий"
+            self.warning = self.tr("Пароль слишком короткий")
         elif not all((c in string.ascii_letters + string.digits) for c in password):
-            self.warning = "Допустимы только символы латинского алфавита и цифры"
+            self.warning = self.tr("Допустимы только буквы латинского алфавита и цифры")
         elif not any(c.isdigit() for c in password):
-            self.warning = "Добавьте хотя бы одну цифру"
+            self.warning = self.tr("Добавьте хотя бы одну цифру")
+        elif not any((c in string.ascii_letters) for c in password):
+            self.warning = self.tr("Добавьте хотя бы одну букву")
         else:
             self.warning = None
         self.is_correct = self.warning is None
         # self.switch_correct_icon()
+
+    def event(self, event):
+        from PySide6.QtCore import QEvent
+
+        if event.type() == QEvent.Type.LanguageChange:
+            self.retranslate()
+        return super().event(event)
+
+    def retranslate(self):
+        self.check_password(self.text())
 
 
 class TabBarWithControl(QFrame):
@@ -138,12 +176,12 @@ class ThemeButton(QToolButton):
     def __init__(self):
         super().__init__()
         # self.setText("🎨")
-        self.setIcon(QIcon(resource_path("data/themes.svg")))  # Иконка смены темы
+        # self.setIcon(QIcon(resource_path("data/themes.svg")))  # Иконка смены темы
         self.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)  # Меню по клику
         self._setup_menu()
 
     def _setup_menu(self):
-        self._menu = QMenu()
+        self._menu = QMenu(self)
         themes = ["defaultDark", "defaultLight"]
         for theme in themes:
             action = self._menu.addAction(theme)
@@ -416,28 +454,32 @@ class KeyProgressDisplay(QLabel):
         self.total = total
         self.progress = 0
         self.typos = 0
-        super().__init__(f"{self.progress}/{self.total} ({self.progress / self.total:.1%})\t Ошибок: {self.typos}")
+        self.er_mes = self.tr('Ошибок')
+        super().__init__(self.get_text())
 
+    def get_text(self):
+        return f"{self.progress}/{self.total} ({self.progress / self.total:.1%})\t {self.er_mes}: {self.typos}"
+    
     def reset(self, new_total = 0):
         self.total = new_total
         self.progress = 0
         self.typos = 0
         self.setText(
-            f"{self.progress}/{self.total} ({self.progress / self.total:.1%}) | Ошибок: {self.typos}"
+            f"{self.progress}/{self.total} ({self.progress / self.total:.1%})\t {self.er_mes}: {self.typos}"
         )
 
     @QtCore.Slot()
     def on_inc_progress(self):
         self.progress += 1
         self.setText(
-            f"{self.progress}/{self.total} ({self.progress / self.total:.1%})\t Ошибок: {self.typos}"
+            f"{self.progress}/{self.total} ({self.progress / self.total:.1%})\t {self.er_mes}: {self.typos}"
         )
 
     @QtCore.Slot()
     def on_typo(self):
         self.typos += 1
         self.setText(
-            f"{self.progress}/{self.total} ({self.progress / self.total:.1%})\t Ошибок: {self.typos}"
+            f"{self.progress}/{self.total} ({self.progress / self.total:.1%})\t {self.er_mes}: {self.typos}"
         )
 
 class RadioList(QFrame):
@@ -499,7 +541,7 @@ class KeyTextEdit(QTextEdit):
         self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         # self.text_display.setFixedHeight(150)
         # self.setFixedHeight(200)
-        self.setFont(QtGui.QFont("Consolas", 35, 500))
+        self.setFont(QtGui.QFont("Consolas", 50, 500))
         self.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.cursorForPosition(QtCore.QPoint(0, 0))
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -601,31 +643,14 @@ class KeyTextEdit(QTextEdit):
         )
         self.setTextCursor(cursor)
         self.setHtmlText()
-        # cursor.movePosition(
-        #     QtGui.QTextCursor.MoveOperation.Right,
-        #     QtGui.QTextCursor.MoveMode.KeepAnchor,
-        # )
-        # cursor.setCharFormat(self.passed_format)
-        # cursor.movePosition(QtGui.QTextCursor.MoveOperation.Left)
-        # if len(self.toPlainText()) - 1 == cursor.position():
-        #     self.finished.emit()
-        # else:
-        #     cursor.movePosition(QtGui.QTextCursor.MoveOperation.Right)
-        #     cursor.movePosition(
-        #         QtGui.QTextCursor.MoveOperation.Right,
-        #         QtGui.QTextCursor.MoveMode.KeepAnchor,
-        #     )
-        #     cursor.mergeCharFormat(self.underline_format)
-        #     cursor.movePosition(QtGui.QTextCursor.MoveOperation.Left)
-        #     self.setTextCursor(cursor)
 
-        # format = cursor.charFormat()
-        # format.setUnderlineStyle(QtGui.QTextCharFormat.UnderlineStyle.SingleUnderline)
-        # format.setUnderlineColor("#00c455")  # Подсветка фона
-        # format.setBackground(QtCore.Qt.yellow)
-        # cursor.setCharFormat(format)
-        # self.text_display.setTextCursor(cursor)
-        # self.text_display.setCursorPosition(self.text_display.cursorPosition() + 1)
+        cursor_rect = self.cursorRect()
+        viewport_height = self.viewport().height()
+        margin = cursor_rect.height()  # Пикселей до нижнего края, когда начинаем прокрутку
+        
+        if cursor_rect.bottom() > viewport_height - margin:
+            scrollbar = self.verticalScrollBar()
+            scrollbar.setValue(scrollbar.value() + cursor_rect.height())
 
     def keyReleaseEvent(self, event):
         print(type(event))

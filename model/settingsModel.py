@@ -1,5 +1,4 @@
 from PySide6.QtCore import QSettings
-from PySide6.QtGui import QIcon
 import os, sys
 
 class settingsModel:
@@ -9,17 +8,23 @@ class settingsModel:
         # self.settings.remove("theme")
         if self.settings.value("theme") not in ["defaultDark", "defaultLight"]:
             self.settings.setValue("theme", "defaultDark")
+        if self.settings.value("language") not in ["ru", "en"]:
+            self.settings.setValue("language", "en")
+
         print(self.settings.allKeys())
 
-        self.icon = QIcon(self.resource_path(self.settings.value("icon_path")))
         self.styles = {}
         with open(self.resource_path("styles/baseStyle.qss"), "r") as f:
             self.styles['baseStyle'] = f.read()
 
     def get_theme(self):
         return self.settings.value("theme")
+    def get_language(self):
+        return self.settings.value("language")
+
     def get_icon(self):
         return self.icon
+
     def get_base_style(self):
         return self.styles['baseStyle']
 
@@ -31,7 +36,10 @@ class settingsModel:
     def switch_theme(self, theme):
         # self.settings.setValue("theme", "defaultDark" if self.get_theme() == "defaultLight" else "defaultLight")
         self.settings.setValue("theme", theme)
-        
+
+    def set_language(self, language):
+        self.settings.setValue("language", language)
+
     def set_last_user(self, user_id):
         self.settings.setValue("user_id", user_id)
 

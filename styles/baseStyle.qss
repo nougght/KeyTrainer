@@ -17,6 +17,10 @@ MainWindow QComboBox {
     font-size: 35px;
 }
 
+QMessageBox QLabel, QMessageBox{
+    font-size: 25px;
+    font-weight: 500;
+}
 QLineEdit {
     font-size: 20px;
     placeholder-text-color: #8d8d8d;
@@ -24,7 +28,11 @@ QLineEdit {
 
 QLineEdit:disabled {
     background-color: transparent;
-    placeholder-text-color: #e1e0e0;
+    placeholder-text-color: transparent;
+}
+
+QToolButton {
+    border: none;
 }
 
 QPushButton#to_registration, QPushButton#to_password_recovery, QPushButton#to_login {
@@ -59,19 +67,12 @@ QPushButton {
 
 QToolButton#reset{
     margin: 5px;
-    width: 40px;
-    height: 40px;
-    border-radius: 20px;
+    margin-left: 15px;
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
 }
 
-
-QToolButton#reset:hover{
-    border: 2px solid #707070;
-}
-
-QToolButton#reset:pressed{
-    font-weight: 600;
-}
 
 
 
@@ -102,10 +103,13 @@ KeyWidget {
 }
 
 KeyTextEdit {
-    font: 500 45px 'Consolas';
-    margin: 15% 30%;
-    padding: 15%;
+    font: 500 50px 'Consolas';
+    margin: 10px;
+    padding: 20px;
     border-radius: 8px;
+}
+QProgressBar{
+    margin-right: 30px;
 }
 
 KeyProgressDisplay{
@@ -116,6 +120,21 @@ KeyProgressDisplay{
 
 SettingsWidget > QLabel, SettingsWidget > QCheckBox {
     font-size: 30px;
+
+}
+
+SettingsWidget QCheckBox::indicator {
+    /* Стиль индикатора (квадратика) */
+    width: 35px;
+    height: 35px;
+}
+
+LoginWindow QCheckBox {
+    font-size: 25px;
+}
+LoginWindow QCheckBox::indicator {
+    width: 25px;
+    height: 25px;
 }
 
 QScrollArea {
@@ -126,5 +145,6 @@ QScrollArea {
 QMenu {
     font-size: 22px;
     text-align: center;
-    border: none;
+    /* border: none; */
 }
+

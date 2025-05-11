@@ -11,9 +11,10 @@ from PySide6.QtWidgets import (
     QToolBar,
     QComboBox,
     QMessageBox,
-    QToolButton
+    QToolButton,
+    QStackedWidget
 )
-from PySide6.QtCore import Signal, Slot, Qt
+from PySide6.QtCore import Signal, Slot, Qt, QEvent
 from PySide6.QtGui import QIcon, QAction
 
 from ui.other_widgets import (
@@ -22,7 +23,7 @@ from ui.other_widgets import (
     KeyboardWidget,
     RadioList,
 )
-from ui.statistics_widget import SessionChart
+from ui.statistics_widget import SessionChart, SessionStatistics
 from utils import resource_path
 
 class TypingWidget(QFrame):
@@ -42,61 +43,20 @@ class TypingWidget(QFrame):
         # self.setCentralWidget(QWidget())
         self.setWindowTitle("Key Trainer")
         self.central_layout = QGridLayout(self)
+        self.central_layout.setContentsMargins(30, 30, 30, 10)
         self.setStyleSheet('')
-
-        # панель меню
-        self.mBar = QMenuBar()
-        # self.mBar.setNativeMenuBar(True)
-        self.mBar.addAction("Профиль")
-        self.mBar.addAction("Настройки")
-        self.mBar.addAction("Статистика")
-
-        self.right_widget = QWidget()
-        self.right_widget.setObjectName("Corner")
-        layout = QHBoxLayout(self.right_widget)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
-        self.minimise_btn = QPushButton("—")
-        self.minimise_btn.setObjectName("minimiseButton")
-        self.minimise_btn.pressed.connect(self.showMinimized)
-        self.close_btn = QPushButton("✕")
-        self.close_btn.setObjectName("exitButton")
-        self.close_btn.pressed.connect(self.on_exit_released)
-        layout.addWidget(self.minimise_btn)
-        layout.addWidget(self.close_btn)
-
-        # Добавляем виджет в правый угол меню-бара
-        self.mBar.setCornerWidget(self.right_widget)
-
-        self.mb_spacer1 = QWidget()
-        self.mb_spacer1.setSizePolicy(
-            QSizePolicy.Policy.MinimumExpanding,
-            QSizePolicy.Policy.MinimumExpanding,
-        )
-        # self.setMenuBar(self.mBar)
-
-        # lang_group = QtWidgets.QButtonGroup()
-        # ru_btn = QtWidgets.QRadioButton()
-        # ru_btn.setText('yo')
-        # en_btn = QtWidgets.QRadioButton()
-        # en_btn.setText('oy')
-
-        # lang_group.addButton(ru_btn, id=0)
-        # lang_group.addButton(en_btn, id=1)
-        # self.central_layout.addWidget(ru_btn)
-        # self.central_layout.addWidget(en_btn)
 
         # прогресс + ошибки при наборе
         self.char_pos_label = KeyProgressDisplay(1)
         self.central_layout.addWidget(
-            self.char_pos_label, 1, 0, Qt.AlignmentFlag.AlignCenter
+            self.char_pos_label, 2, 0, Qt.AlignmentFlag.AlignCenter
         )
 
         # прогресс бар в процентах
         self.progress_bar = QProgressBar(minimum=0, maximum=100)
         self.progress_bar.setTextVisible(False)
         self.central_layout.addWidget(
-            self.progress_bar, 1, 1, Qt.AlignmentFlag.AlignVCenter
+            self.progress_bar, 2, 1, Qt.AlignmentFlag.AlignVCenter
         )
         self.progress_bar.setSizePolicy(
             QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding
@@ -104,15 +64,39 @@ class TypingWidget(QFrame):
         # self.progress_bar.setTextVisible(False)
 
         # поле текста
+        self.stack = QStackedWidget()
+
+        self.train_display = QWidget()
+        self.train_layout = QGridLayout(self.train_display)
+
         self.text_display = KeyTextEdit()
+        self.text_display.setMinimumHeight(330)
+        self.text_display.setMaximumHeight(500)
         self.text_display.setSizePolicy(
             QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding
         )
-        self.central_layout.addWidget(self.text_display, 2, 0, 1, 2)
+        self.train_layout.addWidget(self.text_display, 0, 0, 1, 2, Qt.AlignmentFlag.AlignTop)
 
-        self.chart = SessionChart()
-        self.central_layout.addWidget(self.chart, 2, 0, 1, 2)
-        self.chart.hide()
+        self.keyboard_widget = KeyboardWidget("english")
+        print(self.keyboard_widget.size().height(), self.keyboard_widget.size().width())
+        self.key_theme_switch.connect(self.keyboard_widget.on_key_theme_switch)
+        self.train_layout.addWidget(
+            self.keyboard_widget, 2, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter
+        )
+        self.vert_spacer_3 = QSpacerItem(
+            20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum
+        )
+        self.train_layout.addItem(self.vert_spacer_3, 1, 0, 1, 2)
+
+        self.session_stats = SessionStatistics()
+        self.session_stats.expand_button.hide()
+        self.session_stats.set_chart_visible(True)
+
+        self.stack.addWidget(self.train_display)
+        self.stack.addWidget(self.session_stats)
+
+        self.stack.setCurrentIndex(0)
+        self.central_layout.addWidget(self.stack, 3, 0, 1, 2)
 
         self.vert_spacer_1 = QSpacerItem(
             20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding
@@ -120,34 +104,23 @@ class TypingWidget(QFrame):
         self.vert_spacer_2 = QSpacerItem(
             20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum
         )
-        self.vert_spacer_3 = QSpacerItem(
-            20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum
-        )
 
-        self.central_layout.addItem(self.vert_spacer_2, 0, 0, 1, 2)
-        self.central_layout.addItem(self.vert_spacer_3, 3, 0, 1, 2)
+        self.central_layout.addItem(self.vert_spacer_2, 1, 0, 1, 2)
 
         # self.central_layout.addItem(self.vert_spacer_3, 9, 0, 1, 2)
         print(self.central_layout.rowCount())
         print(self.central_layout.columnCount())
         print(self.central_layout.itemAt(0))
 
-        self.keyboard_widget = KeyboardWidget("english")
-        print(self.keyboard_widget.size().height(), self.keyboard_widget.size().width())
-        self.key_theme_switch.connect(self.keyboard_widget.on_key_theme_switch)
-        self.central_layout.addWidget(
-            self.keyboard_widget, 4, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter
-        )
-
-        self.theme_switch_button = QPushButton("Поменять тему")
-        self.theme_switch_button.setObjectName("themes")
+        # self.theme_switch_button = QPushButton("Поменять тему")
+        # self.theme_switch_button.setObjectName("themes")
         # # self.theme_switch_button.setIcon(QtGui.QIcon("data/themes.svg"))
         # self.central_layout.addWidget(
         #     self.theme_switch_button, 1, 0, Qt.AlignmentFlag.AlignLeft
         # )
 
         self.reset_button = QToolButton()
-        self.reset_button.setIcon(QIcon(resource_path('data/reset.png')))
+        # self.reset_button.setIcon(QIcon(resource_path('data/reset.png')))
         self.reset_button.setObjectName("reset")
         self.reset_button.clicked.connect(lambda: self.set_statistics_mode(False))
         # self.central_layout.addWidget(self.reset_button, 6, 1, Qt.AlignmentFlag.AlignRight)
@@ -165,15 +138,16 @@ class TypingWidget(QFrame):
 
         self.lang_combo = QComboBox()
         self.lang_combo.setObjectName("langComboBox")
-        self.lang_combo.addItem("Russian", "russian")
-        self.lang_combo.addItem("English", "english")
-        self.lang_combo.addItem("Python", "python")
-        self.lang_combo.addItem("C++", "cpp")
+        self.lang_combo.addItem(self.tr("Russian"), "russian")
+        self.lang_combo.addItem(self.tr("English"), "english")
+        self.lang_combo.addItem(self.tr("Python"), "python")
+        self.lang_combo.addItem(self.tr("C++"), "cpp")
         self.lang_combo.currentIndexChanged.connect(
-            lambda index: self.language_change.emit(
+            lambda index: (self.language_change.emit(
                 self.lang_combo.itemData(index)
-            )
+            ), self.text_display.setFocus())
         )
+        self.lang_combo.setCurrentIndex(1)
         self.tool_layout.addWidget(self.lang_combo)
 
         # self.rus_action = QtWidgets.QWidgetAction(self.tool_layout)
@@ -193,19 +167,9 @@ class TypingWidget(QFrame):
         )
         self.tool_layout.addWidget(self.tb_spacer2)
 
-        # self.words_action = QtWidgets.QWidgetAction(self.tool_layout)
-        # self.words_action.setText("Words")
-        # self.tool_layout.addAction(self.words_action)
-        # self.words_action.triggered.connect(self.on_words_released)
-
-        # self.text_action = QtWidgets.QWidgetAction(self.tool_layout)
-        # self.text_action.setText("Text")
-        # self.tool_layout.addAction(self.text_action)
-        # self.text_action.triggered.connect(self.on_text_released)
-
         self.mode_list = RadioList()
         self.mode_list.setObjectName("modeList")
-        self.mode_list.add_items(["Words", "Text"])
+        self.mode_list.add_items([self.tr("Words"), self.tr("Text")])
         self.mode_list.button_group.button(0).clicked.connect(
             lambda: self.mod_change.emit("words")
         )
@@ -213,56 +177,27 @@ class TypingWidget(QFrame):
             lambda: self.mod_change.emit("text")
         )
         self.tool_layout.addWidget(self.mode_list)
-        diff_list = RadioList()
+        self.diff_list = RadioList()
         self.tb_spacer3 = QWidget()
         self.tb_spacer3.setSizePolicy(
             QSizePolicy.Policy.MinimumExpanding,
             QSizePolicy.Policy.MinimumExpanding,
         )
         self.tool_layout.addWidget(self.tb_spacer3)
-        diff_list.setObjectName("diffList")
-        diff_list.add_items(["Easy", "Normal", "Hard"])
-        diff_list.button_group.button(0).clicked.connect(
+        self.diff_list.setObjectName("diffList")
+        self.diff_list.add_items([self.tr("Easy"), self.tr("Normal"), self.tr("Hard")])
+        self.diff_list.button_group.button(0).clicked.connect(
             lambda: self.difficulty_change.emit("easy")
         )
-        diff_list.button_group.button(1).clicked.connect(
+        self.diff_list.button_group.button(1).clicked.connect(
             lambda: self.difficulty_change.emit("normal")
         )
-        diff_list.button_group.button(2).clicked.connect(
+        self.diff_list.button_group.button(2).clicked.connect(
             lambda: self.difficulty_change.emit("hard")
         )
-        self.tool_layout.addWidget(diff_list)
+        self.tool_layout.addWidget(self.diff_list)
 
         self.tool_layout.addWidget(self.reset_button)
-        # list_widget = QtWidgets.QListWidget()
-        # list_widget.setFlow(list_widget.Flow.LeftToRight)
-        # list_widget.setWrapping(True)
-        # list_widget.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        # list_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        # list_widget.setSizeAdjustPolicy(QtWidgets.QListWidget.SizeAdjustPolicy.AdjustToContents)
-        # list_widget.addItems(["Easy", "Normal", "Hard"])
-        # list_widget.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
-        # list_widget.adjustSize()
-        # list_widget.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
-        # list_widget.setSizePolicy(
-        #     QtWidgets.QSizePolicy.Policy.Fixed,
-        #     QtWidgets.QSizePolicy.Policy.Fixed,
-        # )
-
-        # self.action1 = QtWidgets.QWidgetAction(self.tool_layout)
-        # self.action1.setText("Easy")
-        # self.tool_layout.addAction(self.action1)
-        # self.action1.triggered.connect(self.on_easy_released)
-
-        # self.action2 = QtWidgets.QWidgetAction(self.tool_layout)
-        # self.action2.setText("Normal")
-        # self.tool_layout.addAction(self.action2)
-        # self.action2.triggered.connect(self.on_mid_released)
-
-        # self.action3 = QtWidgets.QWidgetAction(self.tool_layout)
-        # self.action3.setText("Hard")
-        # self.tool_layout.addAction(self.action3)
-        # self.action3.triggered.connect(self.on_hard_released)
 
         self.tb_spacer4 = QWidget()
         self.tb_spacer4.setSizePolicy(
@@ -274,18 +209,6 @@ class TypingWidget(QFrame):
             QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding
         )
         # self.tool_layout.addWidget(self.tb_spacer5)
-
-        self.tb_spacer1.setObjectName("spacer")
-        self.tb_spacer2.setObjectName("spacer")
-        self.tb_spacer3.setObjectName("spacer")
-        self.tb_spacer4.setObjectName("spacer")
-        self.tb_spacer5.setObjectName("spacer")
-        # btns = self.tool_layout.findChildren(QToolButton)
-        # for bt in btns:
-        #     bt.setObjectName(bt.text().lower())
-        # self.toolbar.setStyleSheet("QToolButton { width: 170%; margin: 5px 10px}")
-        # self.central_layout.addWidget(self.toolbar,3,0,1,2)
-        # self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.toolbar)
 
         self.central_layout.addWidget(self.tool_layout,0, 0, 1, 2)
         self.finish = QMessageBox()
@@ -304,6 +227,7 @@ class TypingWidget(QFrame):
 
     def set_keyboard_visible(self, is_visible):
         self.is_keyboard_visible = is_visible
+        self.text_display.setMinimumHeight(300 if is_visible else 500)
         self.keyboard_widget.setVisible(is_visible)
 
     def setWindowStyle(self, style):
@@ -314,14 +238,12 @@ class TypingWidget(QFrame):
 
     def set_statistics_mode(self, state: bool):
         if state:
-            self.chart.show_overlay()
-            self.text_display.hide()
+            self.stack.setCurrentIndex(1)
         else:
-            self.chart.hide()
-            self.text_display.show()
+            self.stack.setCurrentIndex(0)
 
     def on_show_statistics(self, data):
-        self.chart.update_data(data)
+        self.session_stats.update_data(data[0], data[1])
         self.set_statistics_mode(True)
 
     @Slot()
@@ -380,3 +302,23 @@ class TypingWidget(QFrame):
     def on_key_theme_switch(self, style):
         self.key_theme_switch.emit()
         self.text_display.setFocus()
+
+    def event(self, event):
+        if event.type() == QEvent.Type.LanguageChange:
+            self.retranslate()
+        return super().event(event)
+
+    def retranslate(self):
+        self.lang_combo.setItemText(0, self.tr("Russian"))
+        self.lang_combo.setItemText(1, self.tr("English"))
+        self.lang_combo.setItemText(2, self.tr("Python"))
+        self.lang_combo.setItemText(3, self.tr("C++"))
+
+        self.mode_list.layout.itemAt(0).widget().setText(self.tr("Words"))
+        self.mode_list.layout.itemAt(1).widget().setText(self.tr("Text"))
+
+        self.diff_list.layout.itemAt(0).widget().setText(self.tr("Easy"))
+        self.diff_list.layout.itemAt(1).widget().setText(self.tr("Normal"))
+        self.diff_list.layout.itemAt(2).widget().setText(self.tr("Hard"))
+        self.char_pos_label.er_mes = self.char_pos_label.tr("Ошибок")
+        self.char_pos_label.setText(self.char_pos_label.get_text())

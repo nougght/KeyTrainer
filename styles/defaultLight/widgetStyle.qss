@@ -10,6 +10,10 @@ QWidget {
 LoginWindow {
     background: #f8faf9;
 }
+
+SessionStatistics {
+    background-color: transparent;
+}
 QLabel {
     background: transparent;
 }
@@ -30,12 +34,12 @@ QLabel#streak {
 QComboBox {
     background-color: #0ec771;
     border: 1px solid #2b2e4a;
-    color: #f8faf9;;
+    color: #f8faf9;
     border-radius: 4px;
     padding: 6px 12px;
     min-width: 120px;
 }
-QComboBox::selected {
+QComboBox::selected, ThemeButton > QMenu::selected {
     background: #0ec771;
 }
 QComboBox::drop-down {
@@ -45,15 +49,14 @@ QComboBox::drop-down {
 }
 
 QComboBox::down-arrow {
-    image: url(down_arrow.svg);
     width: 12px;
     height: 12px;
 }
 
-QComboBox QAbstractItemView {
+QComboBox QAbstractItemView, ThemeButton > QMenu {
+    color:  #f8faf9;
     border: 1px solid #cedad2;
     background: #2b2e4a;
-
 }
 
 QComboBox QAbstractItemView::item {
@@ -85,18 +88,17 @@ KeyProgressDisplay
 }
 
 QProgressBar {
-    margin: 0px 10px 0px;
     text-align: center;
     border-radius:5px;
     background: #f0f5ed;
     border: 2px solid #cedad2;
-    height: 30%;
+    height: 30px;
 }
 
 QProgressBar::chunk {
     margin: 2px;
-    width: 17%;
-    border-radius: 6%;
+    width: 17px;
+    border-radius: 6px;
     background-color:#05bc67;
 }
 
@@ -118,11 +120,11 @@ QPushButton {
 }
 
 
-QPushButton:hover {
+QPushButton:hover, QToolButton#reset:hover {
     background-color: #069f58;
 }
 
-QPushButton:pressed {
+QPushButton:pressed, QToolButton#reset:pressed {
     background-color: #f8faf9;
     color: #05bc67;
     border: 2px solid #05bc67;
@@ -214,8 +216,37 @@ KeyTextEdit{
 }
 
 QToolButton#reset{
-    icon-size: 50px;
+    qproperty-icon: url(:/data/breset.svg);
     background: #05bc67;
+}
+
+QToolButton#reg_login_icon[mode="ok"],QToolButton#reg_password_icon[mode="ok"],QToolButton#reg_verify_icon[mode="ok"]{
+    qproperty-icon: url(:/data/bcheckmark.svg);
+}
+QToolButton#reg_login_icon[mode='cross'], QToolButton#reg_password_icon[mode="cross"], QToolButton#reg_verify_icon[mode="cross"]{
+    qproperty-icon: url(:/data/bcross.svg);
+}
+
+QToolButton#rec_password_icon[mode="ok"],QToolButton#rec_verify_icon[mode="ok"]{
+    qproperty-icon: url(:/data/bcheckmark.svg);
+}
+QToolButton#rec_password_icon[mode="cross"], QToolButton#rec_verify_icon[mode="cross"]{
+    qproperty-icon: url(:/data/bcross.svg);
+}
+
+
+QToolButton#login_change_icon[mode="ok"]{
+    qproperty-icon: url(:/data/bcheckmark.svg);
+}
+QToolButton#login_change_icon[mode="cross"]{
+    qproperty-icon: url(:/data/bcross.svg);
+}
+
+QToolButton#change_password_icon[mode="ok"],QToolButton#change_verify_icon[mode="ok"]{
+    qproperty-icon: url(:/data/bcheckmark.svg);
+}
+QToolButton#change_password_icon[mode="cross"], QToolButton#change_verify_icon[mode="cross"]{
+    qproperty-icon: url(:/data/bcross.svg);
 }
 
 
@@ -225,6 +256,7 @@ TabBarWithControl {
 }
 
 ThemeButton {
+    qproperty-icon: url(:/data/bthemes.svg);
     icon-size: 35px;
     background: transparent;
     border: 0;
@@ -264,7 +296,7 @@ QTabBar::tab:selected {
 
 RadioList {
     background-color: #05bc67;
-    border-radius:25px;
+    border-radius:20px;
     margin: 5px 0;
 }
 
@@ -272,7 +304,7 @@ QRadioButton {
     font-size: 30px;
     text-align: center;
     background: transparent;
-    border-radius: 25px;
+    border-radius: 20px;
     padding: 4% 10%;
     margin: 0;
     color:#dbdddb;
@@ -311,6 +343,10 @@ SessionStatistics {
     border: 1px solid #cedad2;
     margin: 7px;
 }
+SessionStatistics > QFrame {
+    background: transparent;
+}
+
 SessionChart {
     background: transparent;
     /* border: 2px solid red; */
@@ -404,5 +440,3 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
     background: none;
 }
 
-
-#888888

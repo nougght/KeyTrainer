@@ -88,10 +88,10 @@ class TypingControl(QObject):
     def change_text(self):
         if len(self.text) > 0 and self.position < len(self.text):
             self.correctPress.emit("key_" + self.text[self.position].lower())
-        if self.mod == "text":
+        if self.mod == "text" and self.language not in ["python", "cpp"]:
             self.text = self.text_repository.get_text(self.language, self.difficulty)
         else:
-            length = 20 if self.difficulty == 'easy' else 40 if self.difficulty == 'normal' else 60
+            length = 15 if self.difficulty == 'easy' else 40 if self.difficulty == 'normal' else 60
             self.text = self.text_repository.get_words(self.language, length)
         self.position = 0
         print(self.text)
@@ -121,7 +121,7 @@ class TypingControl(QObject):
         if self.position == 0:
             self.on_typing_start()
         print(self.position)
-        if len(key) == 1 and self.text[self.position] == (key.upper() if is_shift else key) or key == 'SPACE' and self.text[self.position] == ' ':
+        if key and len(key) == 1 and self.text[self.position] == (key.upper() if is_shift else key) or key == 'SPACE' and self.text[self.position] == ' ':
             self.position += 1
             self.session.add_keystroke(key, True)
             self.correctPress.emit(key_name)
@@ -132,7 +132,7 @@ class TypingControl(QObject):
             self.toNextChar.emit(nextKey)
         elif key == "SHIFT":
             self.is_shift_pressed = True
-        elif key not in ["SHIFT", "CAPS"]:
+        elif key not in ["SHIFT", "CAPS", "ALT"]:
             self.session.add_keystroke(key, False)
             self.typo.emit(key_name)
             self.errors += 1
@@ -145,15 +145,16 @@ class TypingControl(QObject):
         self.release.emit(key_name)
 
     def on_typing_start(self):
+        self.session.reset_stats()
         self.start_time = time.time()
         self.timer.start()
-        self.session.start_session()
+        self.session.start_session(f"{self.language}/{self.mod}")
         print(self.start_time)
 
     def on_typing_finished(self):
         self.timer.stop()
         self.session.finish_session()
-        print(f'----------\n{self.session.stats['duration']}       {self.session.stats['time'][-1]}\n-------------')
+        # print(f'----------\n{self.session.stats['duration']}       {self.session.stats['time'][-1]}\n-------------')
         self.finish_time = time.time()
         typing_time = self.finish_time - self.start_time
 

@@ -43,26 +43,28 @@ class mainControl(QObject):
         self.main_window.settings_widget.name_change_form.change_login.connect(self.user_control.change_username)
         self.main_window.settings_widget.name_change_form.change_login.connect(lambda: self.statistics_control.show_general_stats(self.user_session.get_uid()))
         self.main_window.settings_widget.user_leaved.connect(self.return_to_login)
-        
-        self.main_window.settings_widget.password_change_form.password_change_request.connect(self.user_control.handle_password_change)
-        self.main_window.settings_widget.user_deleted.connect(self.user_control.delete_current_user)
-        self.main_window.settings_widget.user_deleted.connect(self.return_to_login)
 
+        self.main_window.settings_widget.password_change_form.password_change_request.connect(self.user_control.handle_password_change)
+        self.main_window.settings_widget.user_deleted.connect(self.statistics_control.delete_current_user)
+        self.main_window.settings_widget.user_deleted.connect(self.return_to_login)
+        self.start_window.import_user.connect(self.statistics_control.import_user)
+    
     def return_to_login(self):
         self.main_window.close()
         self.start_window.show_users(self.user_control.get_all_users())
         self.show_starter_window()
-    
+
     def show_starter_window(self):
-        if self.user_control.get_all_users() is None:
-            self.start_window.stack.setCurrentIndex(1)
-        else:
+        if self.user_control.get_all_users():
             self.start_window.stack.setCurrentIndex(0)
+        else:
+            self.start_window.stack.setCurrentIndex(1)
         self.start_window.show()
-        if self.start_window.exec() == QDialog.Accepted:
+        if self.start_window.exec() == QDialog.DialogCode.Accepted:
             self.user_repository.recalculate_user_data(
                 self.user_session.get_user()["user_id"]
             )
+
             for i in range(366):
                 self.statistics_control.daily_activity_repository.recalculate_activity(self.user_session.get_uid(), (QDate.currentDate().addDays(-i).toString("yyyy-MM-dd")))
 

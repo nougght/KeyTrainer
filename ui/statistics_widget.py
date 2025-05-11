@@ -16,20 +16,15 @@ import random
 class GeneralStatistics(QFrame):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Календарь активности")
         self.grid_layout = QGridLayout(self)
         self.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Fixed)
         self.grid_layout.setSpacing(10)
         self.grid_layout.setContentsMargins(10, 10, 10, 10)
 
-        self.l_titles = ["Дата регистрации:", "Активных дней", "Всего тренировок:"]
-        self.r_up_titles = ["Общее время:", "Набрано символов:", "Лучший CPM:", "Лучший WPM"]
-        self.r_down_titles = ["Средний CPM:",  "Средний WPM", "Средняя точность:"]
+        self.l_titles = [self.tr("Дата регистрации:"), self.tr("Активных дней"), self.tr("Всего тренировок:")]
+        self.r_up_titles = [self.tr("Общее время:"), self.tr("Набрано символов:"), self.tr("Лучший CPM:"), self.tr("Лучший WPM")]
+        self.r_down_titles = [self.tr("Средний CPM:"),  self.tr("Средний WPM"), self.tr("Средняя точность:")]
 
-        title = [
-            "Дата регистрации:", "Всего тренировок:", "Активных дней", "Общее время:",
-            "Набрано символов:", "Лучший CPM:", "Средний CPM:", "Лучший WPM:", "Средний WPM", "Средняя точность:"
-        ]
         self.username = "username"
         self.l_values = ["2000 00 00", "45", "100"]
         self.r_up_values = ["1d 1h 1m", "3948", "300", "60"]
@@ -83,32 +78,33 @@ class GeneralStatistics(QFrame):
         self.grid_layout.addWidget(self.left_frame, 0, 0, 2, 1)
         self.grid_layout.addWidget(self.right_up_frame, 0, 1, 1, 1, alignment=Qt.AlignmentFlag.AlignCenter)
         self.grid_layout.addWidget(self.right_down_frame, 1, 1, 1, 1, alignment=Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-
+        
         self.created_date_label = QLabel('2000 00 00')
         self.sessions_label = QLabel('')
 
     def update_ui(self, data):
-        self.l_values = [data[i] for i in range(1, 4)]
-        self.r_up_values = [data[i] for i in range(4, 8)]
-        self.r_up_values[2] = round(self.r_up_values[2], 2)
-        self.r_up_values[3] = round(self.r_up_values[3], 2)
-        self.r_down_values = [data[i] for i in range(8, 11)]
-        self.r_down_values[0] = round(self.r_down_values[0], 2)
-        self.r_down_values[1] = round(self.r_down_values[1], 2)
-        self.r_down_values[2] = round(self.r_down_values[2]*100, 2)
+        if data:
+            self.l_values = [data[i] for i in range(1, 4)]
+            self.r_up_values = [data[i] for i in range(4, 8)]
+            self.r_up_values[2] = round(self.r_up_values[2], 2)
+            self.r_up_values[3] = round(self.r_up_values[3], 2)
+            self.r_down_values = [data[i] for i in range(8, 11)]
+            self.r_down_values[0] = round(self.r_down_values[0], 2)
+            self.r_down_values[1] = round(self.r_down_values[1], 2)
+            self.r_down_values[2] = round(self.r_down_values[2]*100, 2)
 
-        from datetime import timedelta
+            from datetime import timedelta
 
-        td = timedelta(seconds=data["total_time"])
-        self.r_up_values[0] = str(td) #time(second=int(user_data['total_time'])).isoformat()
+            td = timedelta(seconds=data["total_time"])
+            self.r_up_values[0] = str(td) #time(second=int(user_data['total_time'])).isoformat()
 
-        self.left_layout.itemAt(0).widget().setText(data[0])
-        for i in range(len(self.l_values)):
-            self.left_layout.itemAt(i + 1).layout().itemAt(1).widget().setText(str(self.l_values[i]))
-        for i in range(len(self.r_up_values)):
-            self.right_up_layout.itemAt(i).layout().itemAt(1).widget().setText(str(self.r_up_values[i]))
-        for i in range(len(self.r_down_values)):
-            self.right_down_layout.itemAt(i).layout().itemAt(1).widget().setText(str(self.r_down_values[i]))
+            self.left_layout.itemAt(0).widget().setText(data[0])
+            for i in range(len(self.l_values)):
+                self.left_layout.itemAt(i + 1).layout().itemAt(1).widget().setText(str(self.l_values[i]))
+            for i in range(len(self.r_up_values)):
+                self.right_up_layout.itemAt(i).layout().itemAt(1).widget().setText(str(self.r_up_values[i]))
+            for i in range(len(self.r_down_values)):
+                self.right_down_layout.itemAt(i).layout().itemAt(1).widget().setText(str(self.r_down_values[i]))
 
 
 class SessionStatistics(QFrame):
@@ -116,15 +112,17 @@ class SessionStatistics(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Fixed)
-        self.up_row_titles = ["Время старта", "Тип тренировки", "Длительность", "Символов"]
+        self.up_row_titles = [self.tr("Время старта"), self.tr("Тип тренировки"), self.tr("Длительность"), self.tr("Символов")]
         self.up_row_values = ["2000 01 01", "Текст/Русский", "100", "150"]
-        self.down_row_titles = ["Средний CPM", "Лучший CPM", "Средний WPM", "Точность/Ошибок"]
+        self.down_row_titles = [self.tr("Средний CPM"), self.tr("Лучший CPM"), self.tr("Средний WPM"), self.tr("Точность/Ошибок")]
         self.down_row_values = ["250", "300", "50", "96% / 5"]
 
         self.frame_layout = QVBoxLayout(self)
         self.frame_layout.setContentsMargins(15, 15, 15, 15)
-        self.up_row_layout = QHBoxLayout()
-        self.down_row_layout = QHBoxLayout()
+        self.up_row_widget = QFrame()
+        self.up_row_layout = QHBoxLayout(self.up_row_widget)
+        self.down_row_widget = QFrame()
+        self.down_row_layout = QHBoxLayout(self.down_row_widget)
         for i in range(len(self.up_row_titles)):
             up_lo = QVBoxLayout()
             up_lo.addWidget(QLabel(self.up_row_titles[i]))
@@ -140,13 +138,13 @@ class SessionStatistics(QFrame):
             down_lo.itemAt(1).widget().setObjectName("session_value_label")
             self.down_row_layout.addLayout(down_lo)
 
-        self.frame_layout.addLayout(self.up_row_layout, 0)
-        self.frame_layout.addLayout(self.down_row_layout, 1)
+        self.frame_layout.addWidget(self.up_row_widget, 0, Qt.AlignmentFlag.AlignTop)
+        self.frame_layout.addWidget(self.down_row_widget, 1, Qt.AlignmentFlag.AlignTop)
 
         self.is_chart_visible = False
 
         self.expand_button = QPushButton()
-        self.expand_button.setText('V Показать график')
+        self.expand_button.setText(self.tr('Показать график'))
         self.frame_layout.addWidget(self.expand_button, 2, alignment=Qt.AlignmentFlag.AlignVCenter)
         self.expand_button.clicked.connect(lambda: self.set_chart_visible(not self.is_chart_visible))
 
@@ -159,18 +157,18 @@ class SessionStatistics(QFrame):
         self.chart = SessionChart()
         self.stack_chart.addWidget(self.empty)
         self.stack_chart.addWidget(self.chart)
-        self.frame_layout.addWidget(self.stack_chart, 3)
+        self.frame_layout.addWidget(self.stack_chart, 3, Qt.AlignmentFlag.AlignTop)
         # self.chart.hide()
 
     def set_chart_visible(self, is_visible):
         from PySide6.QtCore import QTimer
         if is_visible is True:
-            self.expand_button.setText('^ Скрыть график')
+            self.expand_button.setText(self.tr('Скрыть график'))
             self.stack_chart.setCurrentIndex(1)
             self.stack_chart.setMaximumHeight(400)
             # self.chart.show()
         else:
-            self.expand_button.setText("V Показать график")
+            self.expand_button.setText(self.tr("Показать график"))
             self.stack_chart.setCurrentIndex(0)
             self.stack_chart.setMaximumHeight(0)
             # # self.setFixedHeight(self.height() - self.chart.height())
@@ -182,18 +180,35 @@ class SessionStatistics(QFrame):
     def update_data(self, session_data, chart_data):
         for i in range(len(self.up_row_values)):
             self.up_row_values[i] = session_data[i]
-            self.down_row_values[i] = session_data[i + len(self.up_row_values)]
+
+        self.down_row_values[0] = round(session_data["avg_cpm"], 2)
+        self.down_row_values[1] = round(session_data["max_cpm"], 2)
+        self.down_row_values[2] = round(session_data["avg_cpm"] * 5, 2)
+        self.down_row_values[3] = f"{round(session_data["accuracy"]*100, 2)}% / {session_data['total_errors']}"
 
         self.up_row_values[2] = round(self.up_row_values[2], 2)
-        self.down_row_values[0] = round(self.down_row_values[0], 2)
-        self.down_row_values[2] = round(self.down_row_values[2], 2)
 
         for i in range(len(self.up_row_values)):
             self.up_row_layout.itemAt(i).layout().itemAt(1).widget().setText(str(self.up_row_values[i]))
         for i in range(len(self.down_row_values)-1):
             self.down_row_layout.itemAt(i).layout().itemAt(1).widget().setText(str(self.down_row_values[i]))
-        self.down_row_layout.itemAt(3).layout().itemAt(1).widget().setText(f"{round(self.down_row_values[3], 2)}% / {session_data[-1]}")
+        self.down_row_layout.itemAt(3).layout().itemAt(1).widget().setText(self.down_row_values[3])
         self.chart.update_data(chart_data)
+
+    def event(self, event):
+        from PySide6.QtCore import QEvent
+        if event.type() == QEvent.Type.LanguageChange:
+            self.retranslate()
+        return super().event(event)
+
+    def retranslate(self):
+        self.up_row_titles = [self.tr("Время старта"), self.tr("Тип тренировки"), self.tr("Длительность"), self.tr("Символов")]
+        self.down_row_titles = [self.tr("Средний CPM"), self.tr("Лучший CPM"), self.tr("Средний WPM"), self.tr("Точность/Ошибок")]
+
+        for i in range(len(self.up_row_titles)):
+            self.frame_layout.itemAt(0).widget().layout().itemAt(i).layout().itemAt(0).widget().setText(self.up_row_titles[i])
+            self.frame_layout.itemAt(1).widget().layout().itemAt(i).layout().itemAt(0).widget().setText(self.down_row_titles[i])
+        self.expand_button.setText(self.tr("Показать график"))
 
 class ListWithPages(QFrame):
     to_page = Signal(int)
@@ -241,7 +256,7 @@ class ListWithPages(QFrame):
             self.to_page.emit(self.page)
 
     def update_label(self):
-        self.page_label.setText(f"{self.page} из {self.total_pages}")
+        self.page_label.setText(f"{self.page} / {self.total_pages}")
 
     def load_page(self, total_pages, items_data):
         self.total_pages = total_pages
@@ -257,7 +272,7 @@ class ListWithPages(QFrame):
 class ActivityCalendar(QFrame):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Календарь активности")
+        self.setWindowTitle(self.tr("Календарь активности"))
         # self.setFixedSize(800, 200)  # Фиксированный размер (можно менять)
 
         # Основной layout
@@ -265,6 +280,13 @@ class ActivityCalendar(QFrame):
         # Создаем сетку для календаря
         # with open("styles/defaultLight/widgetStyle.qss") as f:
         #     self.setStyleSheet(f.read())
+        self.grid = None
+        self.cs_label = None
+        self.cs_text = None
+        self.mx_text = None
+        self.mx_label = None
+        self.td_text = None
+        self.td_label = None
 
     def create_grid(self, data, current_streak, max_streak, total_days):
         old_lo = self.layout()
@@ -273,21 +295,24 @@ class ActivityCalendar(QFrame):
         self.setLayout(QVBoxLayout())
         labels = QHBoxLayout()
 
-        cs_label = QLabel(f'Дней без перерыва: {current_streak}')
-        cs_label.setObjectName('streak')
-        mx_label = QLabel(f'Максимум дней без перерыва: {max_streak}')
-        td_label = QLabel(f'Всего активных дней: {total_days}')
-        labels.addWidget(cs_label, alignment=Qt.AlignmentFlag.AlignBottom)
-        labels.addWidget(mx_label, alignment=Qt.AlignmentFlag.AlignBottom)
-        labels.addWidget(td_label, alignment=Qt.AlignmentFlag.AlignBottom)
+        self.cs_text = self.tr('Дней без перерыва')
+        self.cs_label = QLabel(f'{self.cs_text}: {current_streak}')
+        self.cs_label.setObjectName("streak")
+        self.mx_text = self.tr("Максимум дней без перерыва")
+        self.mx_label = QLabel(f"{self.mx_text}: {max_streak}")
+        self.td_text = self.tr("Всего активных дней")
+        self.td_label = QLabel(f'{self.td_text}: {total_days}')
+        labels.addWidget(self.cs_label, alignment=Qt.AlignmentFlag.AlignBottom)
+        labels.addWidget(self.mx_label, alignment=Qt.AlignmentFlag.AlignBottom)
+        labels.addWidget(self.td_label, alignment=Qt.AlignmentFlag.AlignBottom)
         labels.addSpacing(4)
 
         self.layout().addLayout(labels, 0)
 
         """Создает сетку календаря (53 недели x 7 дней)."""
-        grid = QGridLayout()
-        grid.setSpacing(4)  # Аналог border-spacing в CSS!
-        grid.setContentsMargins(5, 5, 5, 5)
+        self.grid = QGridLayout()
+        self.grid.setSpacing(4)  # Аналог border-spacing в CSS!
+        self.grid.setContentsMargins(5, 5, 5, 5)
 
         # Настройка цветов активности (как на GitHub)
         self.colors = [
@@ -320,12 +345,12 @@ class ActivityCalendar(QFrame):
                 # Получаем уровень активности (можно заменить на данные из SQLite)
                 activity = data.get(date.toString("yyyy-MM-dd"))
                 if activity is None:
-                    activity = 0
-                cell.setProperty("activity", f"{activity}")
+                    activity = (0, 0)
+                cell.setProperty("activity", f"{activity[0]}")
                 cell.setObjectName("cell")
-                color = self.colors[activity]
-                tooltip_text = f"{date.toString('dd.MM.yyyy')}\nАктивность: {activity}"
-                cell.setToolTip(tooltip_text)
+                self.tooltip_text = self.tr('Тренировок')
+                tooltip = f"{date.toString('dd.MM.yyyy')}\n{self.tooltip_text}: {activity[1]}"
+                cell.setToolTip(tooltip)
 
                 # Устанавливаем цвет
                 # cell.setStyleSheet(f"background-color: {color.name()}; border-radius: 2px;")
@@ -333,12 +358,12 @@ class ActivityCalendar(QFrame):
                 # Добавляем tooltip с датой и активностью
 
                 # Добавляем ячейку в сетку
-                grid.addWidget(cell, day + 1, week, Qt.AlignmentFlag.AlignCenter)
+                self.grid.addWidget(cell, day + 1, week, Qt.AlignmentFlag.AlignCenter)
                 # Переходим к следующему дню
                 date = date.addDays(1)
 
         # Добавляем сетку в основной layout
-        self.layout().addLayout(grid, 1)
+        self.layout().addLayout(self.grid, 1)
 
         for i in range(self.layout().count()):
             item = self.layout().itemAt(i)
@@ -352,23 +377,65 @@ class ActivityCalendar(QFrame):
                 print(f"  Cell [{i}]: Empty or spacer")
 
         # Подпись месяцев (опционально)
-        self.add_month_labels(grid)
+        self.add_month_labels(self.grid)
 
     def add_month_labels(self, grid):
         """Добавляет подписи месяцев над календарём."""
-        months = ["Янв","Фев","Мар","Апр","Май","Июн","Июл","Авг","Сен","Окт","Ноя","Дек",
+        self.months = [self.tr("Янв"),self.tr("Фев"),self.tr("Мар"),self.tr("Апр"),self.tr("Май"),self.tr("Июн"),self.tr("Июл"),self.tr("Авг"),self.tr("Сен"),self.tr("Окт"),self.tr("Ноя"),self.tr("Дек"),
         ]
 
-        month_positions = [0,4,8,12,17,21,26,30,35,39,43,48,
+        self.month_positions = [0,4,8,12,17,21,26,30,35,39,43,48,
         ]  # Примерные позиции
 
-        for month, pos in zip(months, month_positions):
+        for month, pos in zip(self.months, self.month_positions):
             label = QLabel(month)
-            label.setAlignment(Qt.AlignCenter)
+            label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             # self.layout.addWidget(label)
             grid.addWidget(
                 label, 9, pos, 1, 4, Qt.AlignmentFlag.AlignBottom
             )  # Размещаем над календарём
+
+    def event(self, event):
+        from PySide6.QtCore import QEvent
+        if event.type() == QEvent.Type.LanguageChange:
+            self.retranslate()
+        return super().event(event)
+
+    def retranslate(self):
+        if self.grid is None:
+            return
+        self.setWindowTitle(self.tr("Календарь активности"))
+        self.cs_text = self.tr("Дней без перерыва")
+        self.mx_text = self.tr("Максимум дней без перерыва")
+        self.td_text = self.tr("Всего активных дней")
+        self.cs_label.setText(self.cs_text)
+        self.mx_label.setText(self.mx_text)
+        self.td_label.setText(self.td_text)
+
+        current_year = QDate.currentDate().year()
+        date = QDate(current_year, 1, 1)
+        date.dayOfWeek()
+        # Заполняем сетку
+        for week in range(53):  # 53 недели в году (иногда)
+            for day in range(7):  # 7 дней в неделе
+                if date.year() > current_year:  # Если вышли за текущий год
+                    continue
+                if week == 0 and date.dayOfWeek() - 1 > day:
+                    continue
+
+                cell = self.grid.itemAtPosition(day+1, week).widget()
+                self.tooltip_text = self.tr("Тренировок")
+                tooltip = cell.toolTip()
+                spl = tooltip.split('\n')
+                spl[1] = self.tooltip_text + spl[1][spl[1].find(':'):]
+                tooltip = '\n'.join(spl)
+
+                cell.setToolTip(tooltip)
+
+                date = date.addDays(1)
+        self.months = [self.tr("Янв"),self.tr("Фев"),self.tr("Мар"),self.tr("Апр"),self.tr("Май"),self.tr("Июн"),self.tr("Июл"),self.tr("Авг"),self.tr("Сен"),self.tr("Окт"),self.tr("Ноя"),self.tr("Дек"),]
+        for month, pos in zip(self.months, self.month_positions):
+            self.grid.itemAtPosition(9, pos).widget().setText(month)
 
 
 # from ui.other_widgets import (
@@ -430,7 +497,7 @@ class DistributionChart(QFrame):
         self.axis_x = QBarCategoryAxis()
         self.axis_x.setTitleText("CPM")
         self.axis_y = QValueAxis()
-        self.axis_y.setTitleText("Тесты")
+        self.axis_y.setTitleText(self.tr("Тренировки"))
         self.chart.addAxis(self.axis_x, Qt.AlignmentFlag.AlignBottom)
         self.chart.addAxis(self.axis_y, Qt.AlignmentFlag.AlignLeft)
         for axis in self.chart.axes():
@@ -471,6 +538,7 @@ class DistributionChart(QFrame):
         self.axis_y.setGridLineVisible(True)
         # self.axis_x.setLabelsVisible(False)
 
+
     def update_data(self, cpm_data):
         """Обновляет график новыми данными CPM"""
         self.tests.clear()
@@ -480,12 +548,12 @@ class DistributionChart(QFrame):
             r = int(cpm // 50)
             distribution[r] += 1
 
-        bset = QBarSet("Тренировки")
-        bset.append(distribution)
-        bset.setColor(QColor("#328936"))
-        bset.setBorderColor(QColor("#429721"))
+        self.bset = QBarSet(self.tr("Тренировки"))
+        self.bset.append(distribution)
+        self.bset.setColor(QColor("#328936"))
+        self.bset.setBorderColor(QColor("#429721"))
         self.tests.setBarWidth(0.75)
-        self.tests.append(bset)
+        self.tests.append(self.bset)
 
         categories = [f"{i*50}-{(i+1)*50 - 1}" for i in range(mx+1)]
         self.axis_x.append(categories)
@@ -530,18 +598,18 @@ class SessionChart(QFrame):
         self.series.setPointsVisible(True)
         # self.chart.addSeries(self.series)
         self.prseries = QSplineSeries()
-        self.prseries.setName("Средний CPM")
+        self.prseries.setName(self.tr("Средний CPM"))
         self.prseries.setPointsVisible(True)
         self.chart.addSeries(self.prseries)
         self.smseries = QSplineSeries()
-        self.smseries.setName("Моментальный CPM")
+        self.smseries.setName(self.tr("Моментальный CPM"))
         self.smseries.setPointsVisible(True)
         self.chart.addSeries(self.smseries)
 
         self.axis_x = QValueAxis()
-        self.axis_x.setTitleText('Секунды')
+        self.axis_x.setTitleText(self.tr('Секунды'))
         self.axis_y = QValueAxis()
-        self.axis_y.setTitleText("CPM")
+        self.axis_y.setTitleText(self.tr("CPM"))
         self.chart.addAxis(self.axis_x, Qt.AlignmentFlag.AlignBottom)
         self.chart.addAxis(self.axis_y, Qt.AlignmentFlag.AlignLeft)
         for axis in self.chart.axes():
@@ -591,6 +659,7 @@ class SessionChart(QFrame):
         self.axis_x.setGridLineVisible(True)
         self.axis_y.setGridLineVisible(True)
         # self.axis_x.setLabelsVisible(False)
+        self.bset = None
 
     def update_data(self, cpm_data: list):
         """Обновляет график новыми данными CPM"""
@@ -621,19 +690,20 @@ class SessionChart(QFrame):
 
         for i, c in enumerate(smoothed):
             self.smseries.append(i + 1, c)
-        bset = QBarSet('Ошибки')
-        bset_limit = max_cpm * 0.8
+        self.bset_limit = max_cpm * 0.8
         ers = [float(c[5]) for c in cpm_data]
         max_er = max(ers)
 
         if max_er > 0:
-            ers = [int(e / max_er * bset_limit) for e in ers]
+            ers = [int(e / max_er * self.bset_limit) for e in ers]
         else:
             ers = [0 for _ in ers]
         ers.insert(0, 0)
-        bset.append(ers)
-        bset.setColor(QColor("#FF5733"))
-        self.er.append(bset)
+        self.bset = QBarSet(self.tr("Ошибки"))
+        self.bset.append(ers)
+        self.bset.setColor(QColor("#FF5733"))
+        self.er.remove(self.er.barSets()[0] if len(self.er.barSets()) else None)
+        self.er.append(self.bset)
 
         self.axis_x.setRange(1, len(cpm))
         self.axis_x.setTickInterval(1)
@@ -661,66 +731,19 @@ class SessionChart(QFrame):
         self.fade_in_animation.setEndValue(0.9)
         self.fade_in_animation.start()
 
+    def event(self, event):
+        from PySide6.QtCore import QEvent
+        if event.type() == QEvent.Type.LanguageChange:
+            self.retranslate()
+        return super().event(event)
 
-class TimePointsRepository:
-    def __init__(self, db = None):
-        self.db = db
-
-    def save_time_points(self, time_points):
-        query = """
-        INSERT INTO time_points (session_id, second, chars, cpm, errors)
-        VALUES (?, ?, ?, ?, ?)
-        """
-
-        # time_points = [
-        #     (session["time"][i], session["chars"][i], session["cpm"][i], session["errors"][i]) for i in range(len(session["time"]))
-        # ]
-
-        with self.db.get_connection() as db_connection:
-            cursor = db_connection.cursor()
-            cursor.executemany(query, time_points)
-            db_connection.commit()
-            return cursor.lastrowid
-
-    def get_session_points(self, session_id, connection):
-        with self.db.get_connection() if self.db else connection as db_connection:
-            cursor = db_connection.cursor()
-            cursor.execute(
-                """
-                SELECT * FROM time_points
-                WHERE session_id = ?
-                ORDER BY second
-                """,
-                (session_id, )
-            )
-            return cursor.fetchall()
-
-chart_style = """"""
-
-if __name__ == "__main__":
-    from PySide6.QtWidgets import QApplication
-    import sqlite3
-    app = QApplication()
-    c = DistributionChart()
-    c.update_data([34, 1, 55, 99, 65, 495, 101])
-    c.show()
-
-    window = SessionChart()
-    # window.chart_view.setStyleSheet(chart_style)
-    conn = sqlite3.connect("C:\PythonProjects\pyKey\data\data.db")
-    repo = TimePointsRepository()
-    points = repo.get_session_points(27, conn)
-    window.update_data(points)
-    window.show()
-    ac = ActivityCalendar()
-    ac.create_grid({}, 5, 18, 45)
-    ac.show()
-
-    # session_repo = Session
-    session = SessionStatistics()
-    session.show()
-    app.exec()
-
+    def retranslate(self):
+        self.prseries.setName(self.tr("Средний CPM"))
+        self.smseries.setName(self.tr("Моментальный CPM"))
+        self.axis_x.setTitleText(self.tr("Секунды"))
+        self.axis_y.setTitleText(self.tr("CPM"))
+        if self.bset is not None:
+            self.bset.setLabel(self.tr("Ошибки"))
 
 class StatisticsWidget(QWidget):
     def __init__(self):
@@ -729,7 +752,7 @@ class StatisticsWidget(QWidget):
 
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
-        
+
         self.scroll_widget = QWidget()
         self.grid = QGridLayout(self.scroll_widget)
 
@@ -746,3 +769,23 @@ class StatisticsWidget(QWidget):
         self.grid.addWidget(self.distribution_chart, 2, 0)
         self.session_widget = ListWithPages()
         self.grid.addWidget(self.session_widget, 3, 0)
+
+    def event(self, event):
+        from PySide6.QtCore import QEvent
+        if event.type() == QEvent.Type.LanguageChange:
+            self.retranslate()
+        return super().event(event)
+
+    def retranslate(self):
+        self.distribution_chart.axis_y.setTitleText(self.tr("Тренировки"))
+        self.distribution_chart.bset.setLabel(self.tr("Тренировки"))
+
+        self.general_stats.l_titles = [self.tr("Дата регистрации:"), self.tr("Активных дней"), self.tr("Всего тренировок:")]
+        self.general_stats.r_up_titles = [self.tr("Общее время:"), self.tr("Набрано символов:"), self.tr("Лучший CPM:"), self.tr("Лучший WPM")]
+        self.general_stats.r_down_titles = [self.tr("Средний CPM:"),  self.tr("Средний WPM"), self.tr("Средняя точность:")]
+
+        for i in range(len(self.general_stats.l_titles)):
+            self.general_stats.layout().itemAtPosition(0, 0).widget().layout().itemAt(i + 1).layout().itemAt(0).widget().setText(self.general_stats.l_titles[i])
+            self.general_stats.layout().itemAtPosition(0, 1).widget().layout().itemAt(i).layout().itemAt(0).widget().setText(self.general_stats.r_up_titles[i])
+            self.general_stats.layout().itemAtPosition(1, 1).widget().layout().itemAt(i).layout().itemAt(0).widget().setText(self.general_stats.r_down_titles[i])
+        self.general_stats.layout().itemAtPosition(0, 1).widget().layout().itemAt(i+1).layout().itemAt(0).widget().setText(self.general_stats.r_up_titles[i])

@@ -46,7 +46,7 @@ class UserRepository:
             cursor = db_connection.cursor()
             cursor.execute(
                 """
-                SELECT user_id, username, password_hash, avatar FROM users
+                SELECT user_id, username, password_hash, recovery_hash, avatar FROM users
                 WHERE user_id = ?
                 """,
                 (user_id,)
@@ -87,16 +87,17 @@ class UserRepository:
             )
             return cursor.fetchall()
 
-    def create_user(self, username, password_hash, avatar=None):
+    def create_user(self, username, password_hash, recovery_hash,avatar=None):
         """Создает нового пользователя и возвращает его ID."""
         with self.db.get_connection() as db_connection:
             cursor = db_connection.cursor()
             cursor.execute(
-                "INSERT INTO users (username, avatar, password_hash, sync_token) VALUES (?, ?, ?, ?)",
+                "INSERT INTO users (username, avatar, password_hash, recovery_hash, sync_token) VALUES (?, ?, ?, ?, ?)",
                 (
                     username,
                     avatar,
                     password_hash,
+                    recovery_hash,
                     "temp_token",
                 ),  # В реальном приложении генерируйте токен
             )
@@ -315,19 +316,29 @@ class SessionRepository:
         with self.db.get_connection() if self.db else conn as db_connection:
             cursor = db_connection.cursor()
             cursor.execute("""
-                SELECT start_time, test_type, duration_seconds, total_chars, avg_cpm, max_cpm, avg_cpm/5, accuracy*100, total_errors FROM sessions
+                SELECT start_time, test_type, duration_seconds, total_chars, avg_cpm, max_cpm, accuracy, total_errors FROM sessions
                 WHERE user_id = ? AND session_id = ? LIMIT 1;
                 """,
                 (user_id, session_id),
             )
             return cursor.fetchone()
 
+    def delete_session_by_id(self, session_id):
+        with self.db.get_connection() as db_connection:
+            cursor = db_connection.cursor()
+            cursor.execute(
+                """DELETE FROM sessions
+                WHERE session_id = ?""",
+                (session_id,),  # В реальном приложении генерируйте токен
+            )
+            db_connection.commit()
+
     def save_session(self, user_id, session):
         with self.db.get_connection() as db_connection:
             cursor = db_connection.cursor()
             cursor.execute(
                 """INSERT INTO sessions (user_id, start_time, duration_seconds, 
-                total_chars, avg_cpm, max_cpm, accuracy, date, total_errors) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                total_chars, avg_cpm, max_cpm, accuracy, date, total_errors, test_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (
                     user_id,
                     session["start_time"].strftime('%Y-%m-%d %H:%M:%S'),
@@ -337,7 +348,8 @@ class SessionRepository:
                     session["max_cpm"],
                     session["accuracy"],
                     dt.date.today(),
-                    session["total_errors"]
+                    session["total_errors"],
+                    session["test_type"]
                 ),
             )
             db_connection.commit()
@@ -387,6 +399,16 @@ class TimePointsRepository:
             )
             return cursor.fetchall()
 
+    def delete_points_by_id(self, session_id):
+        with self.db.get_connection() as db_connection:
+            cursor = db_connection.cursor()
+            cursor.execute(
+                """DELETE FROM time_points
+                WHERE session_id = ?""",
+                (session_id,),  # В реальном приложении генерируйте токен
+            )
+            db_connection.commit()
+
     # def clear_user_data(self, user_id):
     #     with self.db.get_connection() as db_connection:
     #         cursor = db_connection.cursor()
@@ -411,6 +433,16 @@ class DailyActivityRepository:
                 (user_id, ),
             )
             return cursor.fetchall()
+
+    def delete_activity_by_id(self, user_id):
+        with self.db.get_connection() as db_connection:
+            cursor = db_connection.cursor()
+            cursor.execute(
+                """DELETE FROM daily_activity
+                WHERE user_id = ?""",
+                (user_id,),  # В реальном приложении генерируйте токен
+            )
+            db_connection.commit()
 
     def get_activity_by_uid_date(self, user_id, date):
         with self.db.get_connection() as db_connection:

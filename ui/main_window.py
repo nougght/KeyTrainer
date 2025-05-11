@@ -3,8 +3,7 @@ from ui.other_widgets import TabBarWithControl
 from ui.typing_widget import TypingWidget
 from ui.statistics_widget import StatisticsWidget
 from ui.settings_widget import SettingsWidget
-from PySide6.QtCore import Signal
-
+from PySide6.QtCore import Signal, QEvent
 
 
 # from control.settings_control import SettingControl
@@ -37,9 +36,9 @@ class MainWindow(QMainWindow):
         self.tab.minimise_btn.clicked.connect(self.showMinimized)
         self.tab.close_btn.clicked.connect(self.on_exit_released)
 
-        self.tab.tabBar.addTab("Тренировка")
-        self.tab.tabBar.addTab("Статистика")
-        self.tab.tabBar.addTab("Настройки")
+        self.tab.tabBar.addTab(self.tr("Тренировка"))
+        self.tab.tabBar.addTab(self.tr("Статистика"))
+        self.tab.tabBar.addTab(self.tr("Настройки"))
         self.stacked_widget = QStackedWidget()
         self.typing_widget = TypingWidget()
         self.statistics_widget = StatisticsWidget()
@@ -72,6 +71,17 @@ class MainWindow(QMainWindow):
             else:
                 self.setWindowState(Qt.WindowState.WindowFullScreen)
         return super().keyPressEvent(event)
+
+    def event(self, event):
+        if event.type() == QEvent.Type.LanguageChange:
+            self.retranslate()
+        return super().event(event)
+
+    def retranslate(self):
+        self.tab.tabBar.setTabText(0, self.tr("Тренировка"))
+        self.tab.tabBar.setTabText(1, self.tr("Статистика"))
+        self.tab.tabBar.setTabText(2, self.tr("Настройки"))
+
 
 if __name__ == "__main__":
     app = QApplication()

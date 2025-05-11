@@ -39,10 +39,12 @@ class TypingSession:
             "avg_wpm": 0,
             "max_cpm": 0,
             "max_wpm": 0,
+            "test_type": ''
         }
 
-    def start_session(self):
+    def start_session(self, type):
         self.stats["start_time"] = dt.datetime.now()
+        self.stats['test_type']= type
 
     def add_keystroke(self, char, is_correct):
         self.stats['chars'][-1] += is_correct

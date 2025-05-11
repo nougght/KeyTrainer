@@ -11,3 +11,15 @@ chart.py
 t.py
 test*
 test.qss
+icons.qrc
+*.sql
+*.qm
+*.ts
+*.test
+*.pro
+*.svg
+*.png
+*.ico
+chart.py
+# res.py
+*.spec

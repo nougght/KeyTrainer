@@ -11,6 +11,9 @@ LoginWindow {
     background: #271e41;
 }
 
+SessionStatistics {
+    background-color: transparent;
+}
 QLabel {
     background: transparent;
 }
@@ -36,7 +39,7 @@ QComboBox {
     padding: 6px 12px;
     min-width: 120px;
 }
-QComboBox::selected {
+QComboBox::selected, ThemeButton > QMenu::selected {
     background: #fc8450;
 }
 QComboBox::drop-down {
@@ -46,12 +49,12 @@ QComboBox::drop-down {
 }
 
 QComboBox::down-arrow {
-    image: url(down_arrow.svg);
     width: 12px;
     height: 12px;
 }
 
-QComboBox QAbstractItemView {
+QComboBox QAbstractItemView, ThemeButton > QMenu {
+    color: #271e41;
     border: 1px solid #413269;
     background: #e2d9e1;
 }
@@ -85,18 +88,17 @@ KeyProgressDisplay
 }
 
 QProgressBar {
-    margin: 0px 10px 0px;
     text-align: center;
     border-radius:5px;
     background: #1e1633;
     border: 2px solid #413269;
-    height: 30%;
+    height: 30px;
 }
 
 QProgressBar::chunk {
     margin: 2px;
-    width: 17%;
-    border-radius: 6%;
+    width: 17px;
+    border-radius: 6px;
     background-color:#fc8450;
 }
 
@@ -118,11 +120,11 @@ QPushButton {
 }
 
 
-QPushButton:hover {
+QPushButton:hover, QToolButton#reset:hover {
     background-color: #fc9468;
 }
 
-QPushButton:pressed {
+QPushButton:pressed, QToolButton#reset:pressed {
     background-color: #271e41;
     color: #fc8450;
     border: 2px solid #fc8450;
@@ -214,8 +216,37 @@ KeyTextEdit{
 }
 
 QToolButton#reset{
-    icon-size: 50px;
+    qproperty-icon: url(:/data/wreset.svg);
     background: #fc8450;
+}
+
+QToolButton#reg_login_icon[mode="ok"],QToolButton#reg_password_icon[mode="ok"],QToolButton#reg_verify_icon[mode="ok"]{
+    qproperty-icon: url(:/data/wcheckmark.svg);
+}
+QToolButton#reg_login_icon[mode='cross'], QToolButton#reg_password_icon[mode="cross"], QToolButton#reg_verify_icon[mode="cross"]{
+    qproperty-icon: url(:/data/wcross.svg);
+}
+
+QToolButton#rec_password_icon[mode="ok"],QToolButton#rec_verify_icon[mode="ok"]{
+    qproperty-icon: url(:/data/wcheckmark.svg);
+}
+QToolButton#rec_password_icon[mode="cross"], QToolButton#rec_verify_icon[mode="cross"]{
+    qproperty-icon: url(:/data/wcross.svg);
+}
+
+
+QToolButton#login_change_icon[mode="ok"]{
+    qproperty-icon: url(:/data/wcheckmark.svg);
+}
+QToolButton#login_change_icon[mode="cross"]{
+    qproperty-icon: url(:/data/wcross.svg);
+}
+
+QToolButton#change_password_icon[mode="ok"],QToolButton#change_verify_icon[mode="ok"]{
+    qproperty-icon: url(:/data/wcheckmark.svg);
+}
+QToolButton#change_password_icon[mode="cross"], QToolButton#change_verify_icon[mode="cross"]{
+    qproperty-icon: url(:/data/wcross.svg);
 }
 
 
@@ -225,6 +256,7 @@ TabBarWithControl {
 }
 
 ThemeButton {
+    qproperty-icon: url(:/data/wthemes.svg);
     icon-size: 35px;
     background: transparent;
     border: 0;
@@ -264,7 +296,7 @@ QTabBar::tab:selected {
 
 RadioList {
     background-color: #fc8450;
-    border-radius:25px;
+    border-radius:20px;
     margin: 5px 0;
 }
 
@@ -272,7 +304,7 @@ QRadioButton {
     font-size: 30px;
     text-align: center;
     background: transparent;
-    border-radius: 25px;
+    border-radius: 20px;
     padding: 4% 10%;
     margin: 0;
     color:#454277;
@@ -311,6 +343,10 @@ SessionStatistics {
     border: 1px solid #413269;
     margin: 7px;
 }
+SessionStatistics > QFrame {
+    background: transparent;
+}
+
 SessionChart {
     background: transparent;
     /* border: 2px solid red; */
@@ -403,5 +439,4 @@ QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
     background: none;
 }
-
 

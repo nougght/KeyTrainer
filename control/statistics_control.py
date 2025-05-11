@@ -1,4 +1,5 @@
 from PySide6.QtCore import QObject, Signal, Slot
+from PySide6.QtWidgets import QFileDialog, QMessageBox
 from datetime import datetime, date, timedelta
 
 class StatisticsControl(QObject):
@@ -20,8 +21,11 @@ class StatisticsControl(QObject):
 
         self.main_window.statistics_widget.session_widget.to_page.connect(self.to_sessions_page)
         self.main_window.settings_widget.clear_user_data.connect(self.on_clear_data)
+        self.main_window.settings_widget.export_user.connect(self.export_user)
+        self.main_window.settings_widget.import_user.connect(self.import_user)
     @Slot()
     def on_session_finished(self, session):
+        user_id = self.user_session.get_uid()
         session = session.stats
         session_data = {
             key: value
@@ -46,8 +50,108 @@ class StatisticsControl(QObject):
             (session["duration"], session["avg_cpm"], session["accuracy"]))
         self.user_repository.update_user_data(self.user_session.get_user()["user_id"], 
             (session["duration"], session["total_chars"], session["avg_cpm"]))
-        self.show_statistics.emit(self.time_points_repository.get_session_points(session_id))
+
+        session_stats = (self.session_repository.get_session(user_id, session_id), self.time_points_repository.get_session_points(session_id))
+
+        self.show_statistics.emit(session_stats)
         self.show_general_stats(self.user_session.get_uid())
+
+    def export_user(self):
+        user_id = self.user_session.get_uid()
+
+        if user_id:
+            user = self.user_repository.get_user_by_id(user_id)[0]
+            sessions_id = self.session_repository.get_last_sessions(user_id, 0, 1000000)
+
+            sessions = []
+            points = []
+            for id in sessions_id:
+                sessions.append(self.session_repository.get_session(user_id, id[0]))
+                points.append(self.time_points_repository.get_session_points(id[0]))
+
+        file_path, _ = QFileDialog.getSaveFileName(
+            self.main_window,
+            caption="Сохранить SQL-дамп",
+            dir=f"{user["username"]}",  # Начальная директория (пусто = текущая)
+            filter="SQL Files (*.sql);;All Files (*)"  # Фильтры файлов
+        )
+
+        if file_path:  # Если пользователь не отменил выбор
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write("BEGIN TRANSACTION;\n")
+                q = f"INSERT OR REPLACE INTO users (user_id, username, password_hash, recovery_hash, avatar, sync_token) VALUES {user[0], user[1], user[2], user[3], user[4], 'temp'};\n"
+                q = q.replace('None', 'Null')
+                f.write(q)
+                for i in range(len(sessions)):
+                    session = sessions[i]
+                    q = f"""INSERT OR REPLACE INTO sessions (user_id, session_id, start_time, test_type, duration_seconds, total_chars, avg_cpm, max_cpm, accuracy, total_errors, date) VALUES {
+                    user_id,
+                    sessions_id[i][0],
+                    session["start_time"],
+                    session["test_type"],
+                    session["duration_seconds"],
+                    session["total_chars"],
+                    session["avg_cpm"],
+                    session["max_cpm"],
+                    session["accuracy"],
+                    session["total_errors"],
+                    session["start_time"].split(' ')[0]};\n"""
+                    q = q.replace('None', 'Null')
+                    f.write(q)
+
+                for i in range(len(points)):
+                    pointlist = points[i]
+                    for point in pointlist:
+                        f.write(
+                            f"""INSERT OR REPLACE INTO time_points (point_id, session_id, second, chars, cpm, errors)
+                        VALUES {
+                            point[0],
+                            sessions_id[i][0],
+                            point[2],
+                            point[3],
+                            point[4],
+                            point[5]
+                        };\n"""
+                        )
+                f.write("COMMIT;\n")
+
+    def import_user(self):
+        import_file, _ = QFileDialog.getOpenFileName(
+            self.main_window,
+            "Выберите SQL-файл для импорта",
+            "",  # Начальная директория
+            "SQL Files (*.sql);;All Files (*)",  # Фильтры
+        )
+
+        if not import_file:  # Если пользователь отменил выбор
+            return
+
+        with open(import_file, "r", encoding="utf-8") as f:
+            sql_script = f.read()
+
+        with self.user_repository.db.get_connection() as db_connection:
+            cursor = db_connection.cursor()
+            cursor.executescript(sql_script)
+            db_connection.commit()
+
+        ret = QMessageBox.information(
+            self.main_window,
+            "KeyTrainer",
+            self.tr("Аккаунт успешно импортирован!")
+        )
+
+        # self.main_window.settings_widget.user_leaved.emit()
+
+    def delete_current_user(self, user_id=None):
+        if user_id is None:
+            user_id = self.user_session.get_uid()
+        self.user_repository.delete_user_by_id(user_id)
+        self.daily_activity_repository.delete_activity_by_id(user_id)
+
+        session_ids = self.session_repository.get_last_sessions(user_id, 0, 1000000)
+        for id in session_ids:
+            self.session_repository.delete_session_by_id(id[0])
+            self.time_points_repository.delete_points_by_id(id[0])
 
     def show_general_stats(self, user_id):
         user_data = self.user_repository.get_user_data(user_id)
@@ -57,10 +161,11 @@ class StatisticsControl(QObject):
             if act[3] > mx:
                 mx = act[3]
             print('actttt', act[2])
-        
-        activity = {activity[i][2] : 1 + round(activity[i][3] / mx * 3) for i in range(len(activity)) if mx > 0}
-        
-        td = timedelta(seconds=user_data["total_time"])
+
+        activity = {activity[i][2] : ((1 + round(activity[i][3] / mx * 3)), activity[i][3]) for i in range(len(activity)) if mx > 0}
+
+        if user_data:
+            td = timedelta(seconds=user_data["total_time"])
 
         self.main_window.statistics_widget.general_stats.update_ui(user_data)
         self.main_window.statistics_widget.activity_calendar.create_grid(activity, user_data['current_streak'], user_data['max_streak'], user_data['total_days'])
