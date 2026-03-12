@@ -1,6 +1,9 @@
-# KeyTrainer
+# KeyTrainer | type fast don't waste time
 
-### type fast don't waste time
+### Десктоп приложение для улучшения скорости набора текста на клавиатуре и обучения слепой печати.
+### Написан на PySide6 (официальный Qt для Python) и может быть собран для Windows, Linux и MacOS.
+### Данные для приложения хранятся локально в SQLite.
+
 
 python -m venv new_venv\
 source new_venv/bin/activate\
