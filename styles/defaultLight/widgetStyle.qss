@@ -4,7 +4,7 @@
 QWidget {
     background-color: #f8faf9;
     color: #2b2e4a;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Arial', sans-serif;
 }
 
 LoginWindow {
@@ -18,13 +18,13 @@ QLabel {
     background: transparent;
 }
 
-
 QLabel#title_label, QLabel#session_title_label, ActivityCalendar > QLabel {
     color: #666a7b;
+    font-size: 20px;
 }
 
 QLabel#value_label, QLabel#session_value_label{
-    font-size: 30px;
+    font-size: 40px;
 }
 
 QLabel#streak {
@@ -133,11 +133,13 @@ QPushButton:pressed, QToolButton#reset:pressed {
 QPushButton#to_registration, QPushButton#to_password_recovery, QPushButton#to_login {
     background: transparent;
     color:#2b2e4a;
+    border: 2px transparent;
 }
 
 QPushButton#to_registration:hover, QPushButton#to_password_recovery:hover, QPushButton#to_login:hover {
     background-color: #f8faf9;
     color: #2b2e4a;
+    padding:5px;
     border: 2px solid #05bc67;
 }
 
@@ -272,7 +274,7 @@ ThemeButton {
 
 
 QTabBar {
-    font: 500 24px;
+    font: 500 28px;
     background: transparent;  /* Общий фон с кнопками */
     border: none;
     margin: 0;
@@ -360,8 +362,8 @@ QStackedWidget {
 
 
 SessionStatistics > QPushButton {
-    font-size: 20px;
-    padding: 2px;
+    font-size: 25px;
+    padding: 5px;
 }
 
 ActivityCalendar {

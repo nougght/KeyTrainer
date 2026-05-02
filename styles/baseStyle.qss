@@ -23,12 +23,10 @@ QMessageBox QLabel, QMessageBox{
 }
 QLineEdit {
     font-size: 20px;
-    placeholder-text-color: #8d8d8d;
 }
 
 QLineEdit:disabled {
     background-color: transparent;
-    placeholder-text-color: transparent;
 }
 
 QToolButton {
@@ -39,6 +37,8 @@ QPushButton#to_registration, QPushButton#to_password_recovery, QPushButton#to_lo
     font-size: 17px;
     text-align: right;
     text-decoration: underline;
+    padding: 7px;
+    border: 2px transparent;
 }
 /* 
 ThemeButton -> widgetStyle */
@@ -55,10 +55,12 @@ QPushButton#exitButton,#minimiseButton {
     margin: 0px;
 }
 
-
+QLabel {
+    margin: 5px;
+}
 QPushButton {
-    font-size: 25px;
-    padding: 5px;
+    font-size: 30px;
+    padding: 8px;
     border-radius: 5px;
     /* border: 2px solid transparent; */
     text-align: center;
@@ -83,7 +85,7 @@ QScrollArea {
 
 
 QLabel#uname_label{
-    font-size: 40px;
+    font-size: 50px;
     font-weight: 600;
 }
 
@@ -103,7 +105,7 @@ KeyWidget {
 }
 
 KeyTextEdit {
-    font: 500 50px 'Consolas';
+    font: 500 55px 'Consolas';
     margin: 10px;
     padding: 20px;
     border-radius: 8px;
@@ -143,7 +145,7 @@ QScrollArea {
 
 
 QMenu {
-    font-size: 22px;
+    font-size: 25px;
     text-align: center;
     /* border: none; */
 }

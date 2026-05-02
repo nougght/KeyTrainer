@@ -13,6 +13,6 @@ test*
 test.qss
 
 chart.py
-# res.py
+res.py
 
 *.db
