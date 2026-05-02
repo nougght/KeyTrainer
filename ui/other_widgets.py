@@ -66,8 +66,8 @@ class PasswordInput(QLineEdit):
         self.addAction(self.echo_mode_btn, QLineEdit.ActionPosition.TrailingPosition)
         # self.setValidator(QRegularExpressionValidator(QRegularExpression("[a-zA-Z]+")))
         self.echo_mode_btn.triggered.connect(self.switch_echo_mode)
-        self.echo_icon_path = "data/weye.svg"
-        self.echo_icon_slash_path = "data/weye-slash.svg"
+        self.echo_icon_path = "assets/weye.svg"
+        self.echo_icon_slash_path = "assets/weye-slash.svg"
         self.switch_echo_mode()
         self.textChanged.connect(self.check_password)
         self.is_correct = False
@@ -75,9 +75,9 @@ class PasswordInput(QLineEdit):
 
     # def switch_correct_icon(self):
     #     if self.is_correct is True:
-    #         self.correct_icon.setIcon(QIcon(resource_path("data/checkmark.svg")))
+    #         self.correct_icon.setIcon(QIcon(resource_path("assets/checkmark.svg")))
     #     else:
-    #         self.correct_icon.setIcon(QIcon(resource_path("data/cross.svg")))
+    #         self.correct_icon.setIcon(QIcon(resource_path("assets/cross.svg")))
 
     def switch_echo_mode(self):
         if self.echoMode() == QLineEdit.EchoMode.Password:
@@ -89,11 +89,11 @@ class PasswordInput(QLineEdit):
 
     def switch_icon_theme(self, theme):
         if theme == 'defaultDark':
-            self.echo_icon_path = 'data/weye.svg'
-            self.echo_icon_slash_path = "data/weye-slash.svg"
+            self.echo_icon_path = 'assets/weye.svg'
+            self.echo_icon_slash_path = "assets/weye-slash.svg"
         else:
-            self.echo_icon_path = "data/beye.svg"
-            self.echo_icon_slash_path = "data/beye-slash.svg"
+            self.echo_icon_path = "assets/beye.svg"
+            self.echo_icon_slash_path = "assets/beye-slash.svg"
 
         if self.echoMode() == QLineEdit.EchoMode.Password:
             self.echo_mode_btn.setIcon(QIcon(f":/{self.echo_icon_path}"))
@@ -176,7 +176,7 @@ class ThemeButton(QToolButton):
     def __init__(self):
         super().__init__()
         # self.setText("🎨")
-        # self.setIcon(QIcon(resource_path("data/themes.svg")))  # Иконка смены темы
+        # self.setIcon(QIcon(resource_path("assets/themes.svg")))  # Иконка смены темы
         self.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)  # Меню по клику
         self._setup_menu()
 
@@ -299,17 +299,17 @@ class KeyboardWidget(QtWidgets.QFrame):
     keys_ru = [
         [
             {"name": "key_ё", "def": "ё", "shift": "Ё"},
-            {"name": "key_1", "def": "1", "shift": "1"},
-            {"name": "key_2", "def": "2", "shift": "2"},
-            {"name": "key_3", "def": "3", "shift": "3"},
-            {"name": "key_4", "def": "4", "shift": "4"},
-            {"name": "key_5", "def": "5", "shift": "5"},
-            {"name": "key_6", "def": "6", "shift": "6"},
-            {"name": "key_7", "def": "7", "shift": "7"},
-            {"name": "key_8", "def": "8", "shift": "8"},
-            {"name": "key_9", "def": "9", "shift": "9"},
-            {"name": "key_0", "def": "0", "shift": "0"},
-            {"name": "key_-", "def": "-", "shift": "-"},
+            {"name": "key_1", "def": "1", "shift": "!"},
+            {"name": "key_2", "def": "2", "shift": "\""},
+            {"name": "key_3", "def": "3", "shift": "№"},
+            {"name": "key_4", "def": "4", "shift": ";"},
+            {"name": "key_5", "def": "5", "shift": "%"},
+            {"name": "key_6", "def": "6", "shift": ":"},
+            {"name": "key_7", "def": "7", "shift": "?"},
+            {"name": "key_8", "def": "8", "shift": "*"},
+            {"name": "key_9", "def": "9", "shift": "("},
+            {"name": "key_0", "def": "0", "shift": ")"},
+            {"name": "key_-", "def": "-", "shift": "_"},
             {"name": "key_+", "def": "+", "shift": "+"},
             {"name": "key_BACKSPACE", "def": "BACK", "shift": "BACKSPACE"},
         ],
@@ -327,7 +327,7 @@ class KeyboardWidget(QtWidgets.QFrame):
             {"name": "key_з", "def": "з", "shift": "З"},
             {"name": "key_х", "def": "х", "shift": "Х"},
             {"name": "key_ъ", "def": "ъ", "shift": "Ъ"},
-            {"name": "key_\\", "def": "\\", "shift": "\\"},
+            {"name": "key_\\", "def": "\\", "shift": "/"},
         ],
         [
             {"name": "key_CAPS", "def": "CAPS", "shift": "CAPS"},
@@ -383,7 +383,7 @@ class KeyboardWidget(QtWidgets.QFrame):
             keys_layout.setSpacing(2)
             for k in self.keys[i]:
                 key = KeyWidget(k['def'])
-                print(key.sizePolicy().horizontalPolicy().name)
+                #print(key.sizePolicy().horizontalPolicy().name)
                 key.setObjectName(k['name'])
                 if (k['def'] in ['CTRL', 'SHIFT', 'ALT', 'CAPS', 'ENTER', 'TAB','BACKSPACE']):
 
@@ -415,7 +415,7 @@ class KeyboardWidget(QtWidgets.QFrame):
         # keys_layout.addWidget(key, alignment=QtCore.Qt.AlignmentFlag.AlignCenter)
         # self.vert_layout.addLayout(keys_layout)
         # keys = self.central_widget.findChildren(KeyWidget)
-        # print(len(keys))
+        # #print(len(keys))
         self.setMinimumSize(500, 300)
         # self.key_lang_change()
 
@@ -486,8 +486,8 @@ class RadioList(QFrame):
     def __init__(self):
         super().__init__()
         self.layout = QHBoxLayout(self)
-        self.layout.setSpacing(10)  # Убираем промежутки между кнопками
-        self.layout.setContentsMargins(0, 0, 0, 0)  # Убираем отступы
+        self.layout.setSpacing(10) 
+        self.layout.setContentsMargins(0, 0, 0, 0) 
         
         self.setSizePolicy(
             QtWidgets.QSizePolicy.Policy.Fixed,
@@ -496,13 +496,7 @@ class RadioList(QFrame):
         self.button_group = QButtonGroup(self)
         self.button_group.setExclusive(True)  # Включаем режим "только один выбор"
 
-        # Стиль для скрытия переключателя и стилизации как списка
-        # self.setStyleSheet(
-        #     """
-
-        # """
-        # # )
-        # self.setStyleSheet('background: black;')
+        
 
     def add_items(self, items):
         for i, text in enumerate(items):
@@ -565,7 +559,7 @@ class KeyTextEdit(QTextEdit):
     #     # cursor.movePosition(QtGui.QTextCursor.MoveOperation.Left)
     #     # self.setTextCursor(cursor)
     #     self.textSizeChanged.emit(len(text))
-    #     print(self.textCursor().position(), ' position cursor')
+    #     #print(self.textCursor().position(), ' position cursor')
 
 
     def adjust_position(self, original_text, position):
@@ -594,7 +588,7 @@ class KeyTextEdit(QTextEdit):
         self.setTextCursor(cursor)
 
     def get_progress(self):
-        print(self.textCursor().position(), " position cursor")
+        #print(self.textCursor().position(), " position cursor")
         cursor = self.textCursor()
         return int(cursor.position() / len(self.toPlainText()) * 100)
 
@@ -623,7 +617,7 @@ class KeyTextEdit(QTextEdit):
 
         ch = event.text()
 
-        print(self.textCursor().position(), " position cursor")
+        #print(self.textCursor().position(), " position cursor")
 
         return super().keyPressEvent(event) if event.key() != Qt.Key.Key_Space and event.key() != Qt.Key.Key_Shift else None
 
@@ -632,9 +626,9 @@ class KeyTextEdit(QTextEdit):
         # if cursor.position() == 0:
         #     self.typing_start.emit()
 
-        print(cursor.position(), "pos")
+        #print(cursor.position(), "pos")
 
-        print("perfect")
+        #print("perfect")
 
         cursor.movePosition(
             QtGui.QTextCursor.MoveOperation.Right
@@ -651,7 +645,7 @@ class KeyTextEdit(QTextEdit):
             scrollbar.setValue(scrollbar.value() + cursor_rect.height())
 
     def keyReleaseEvent(self, event):
-        print(type(event))
+        #print(type(event))
         self.key_released.emit(self.keyName(event))
         ch = event.text()
 

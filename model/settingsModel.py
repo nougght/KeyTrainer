@@ -5,14 +5,14 @@ class settingsModel:
     def __init__(self):
         # инициализация парметров
         self.settings = QSettings("KeyTrainer", "v1.0")
-        self.settings.setValue("icon_path", "data/keyIc.ico")
+        self.settings.setValue("icon_path", "assets/keyIc.ico")
         # self.settings.remove("theme")
         if self.settings.value("theme") not in ["defaultDark", "defaultLight"]:
             self.settings.setValue("theme", "defaultDark")
         if self.settings.value("language") not in ["ru", "en"]:
             self.settings.setValue("language", "en")
 
-        # print(self.settings.allKeys())
+        # #print(self.settings.allKeys())
 
         self.styles = {}
         with open(self.resource_path("styles/baseStyle.qss"), "r") as f:

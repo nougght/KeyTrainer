@@ -46,10 +46,10 @@ class MainWindow(QMainWindow):
         self.typing_widget.text_display.document().setDefaultStyleSheet(style[1])
         self.typing_widget.text_display.setHtmlText()
         self.setStyleSheet(style[0])
-        # print(styleSheet)
+        # #print(styleSheet)
 
     def on_exit_released(self):
-        # print("exit")
+        # #print("exit")
         self.close()
 
     def keyPressEvent(self, event):

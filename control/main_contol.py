@@ -7,9 +7,9 @@ from ui.starter_window import LoginWindow
 import sys
 
 # основной контроллер - инициализирует и связывает остальные части приложения
-class mainControl(QObject):
+class MainControl(QObject):
     def __init__(self):
-
+        
         self.data_base = dataBase.Database('data/data.db')
 
         # модели - репозитории для каждой таблицы бд

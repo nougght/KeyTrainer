@@ -166,7 +166,7 @@ class StatisticsControl(QObject):
         for act in activity:
             if act[3] > mx:
                 mx = act[3]
-            print('actttt', act[2])
+            #print('actttt', act[2])
 
         activity = {activity[i][2] : ((1 + round(activity[i][3] / mx * 3)), activity[i][3]) for i in range(len(activity)) if mx > 0}
 

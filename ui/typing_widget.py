@@ -77,7 +77,7 @@ class TypingWidget(QFrame):
         self.train_layout.addWidget(self.text_display, 0, 0, 1, 2, Qt.AlignmentFlag.AlignTop)
         # кастомный виджет клавиатуры
         self.keyboard_widget = KeyboardWidget("english")
-        print(self.keyboard_widget.size().height(), self.keyboard_widget.size().width())
+        #print(self.keyboard_widget.size().height(), self.keyboard_widget.size().width())
         self.key_theme_switch.connect(self.keyboard_widget.on_key_theme_switch)
         self.train_layout.addWidget(
             self.keyboard_widget, 2, 0, 1, 2, alignment=Qt.AlignmentFlag.AlignCenter
@@ -107,19 +107,19 @@ class TypingWidget(QFrame):
         self.central_layout.addItem(self.vert_spacer_2, 1, 0, 1, 2)
 
         # self.central_layout.addItem(self.vert_spacer_3, 9, 0, 1, 2)
-        # print(self.central_layout.rowCount())
-        # print(self.central_layout.columnCount())
-        # print(self.central_layout.itemAt(0))
+        # #print(self.central_layout.rowCount())
+        # #print(self.central_layout.columnCount())
+        # #print(self.central_layout.itemAt(0))
 
         # self.theme_switch_button = QPushButton("Поменять тему")
         # self.theme_switch_button.setObjectName("themes")
-        # # self.theme_switch_button.setIcon(QtGui.QIcon("data/themes.svg"))
+        # # self.theme_switch_button.setIcon(QtGui.QIcon("assets/themes.svg"))
         # self.central_layout.addWidget(
         #     self.theme_switch_button, 1, 0, Qt.AlignmentFlag.AlignLeft
         # )
 
         self.reset_button = QToolButton()
-        # self.reset_button.setIcon(QIcon(resource_path('data/reset.png')))
+        # self.reset_button.setIcon(QIcon(resource_path('assets/reset.png')))
         self.reset_button.setObjectName("reset")
         self.reset_button.clicked.connect(lambda: self.set_statistics_mode(False))
         # self.central_layout.addWidget(self.reset_button, 6, 1, Qt.AlignmentFlag.AlignRight)
@@ -207,11 +207,11 @@ class TypingWidget(QFrame):
         #     row, col, row_span, col_span = self.central_layout.getItemPosition(i)
 
         #     if widget:
-        #         print(
+        #         #print(
         #             f"  Cell [{row}, {col}] (span: {row_span}x{col_span}): {widget.objectName() or widget.__class__.__name__}"
         #         )
         #     else:
-        #         print(f"  Cell [{row}, {col}]: Empty or spacer")
+        #         #print(f"  Cell [{row}, {col}]: Empty or spacer")
 
     def set_keyboard_visible(self, is_visible):
         self.is_keyboard_visible = is_visible
@@ -222,7 +222,7 @@ class TypingWidget(QFrame):
         self.text_display.document().setDefaultStyleSheet(style[1])
         self.text_display.setHtmlText()
         super().setStyleSheet(style[0])
-        # print(styleSheet)
+        # #print(styleSheet)
     # отображение статистики тренировки
     def set_statistics_mode(self, state: bool):
         if state:
@@ -245,7 +245,7 @@ class TypingWidget(QFrame):
 
     @Slot()
     def on_exit_released(self):
-        print("exit")
+        #print("exit")
         self.close()
 
     # @Slot()

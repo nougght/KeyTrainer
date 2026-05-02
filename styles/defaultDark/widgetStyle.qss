@@ -216,37 +216,37 @@ KeyTextEdit{
 }
 
 QToolButton#reset{
-    qproperty-icon: url(:/data/wreset.svg);
+    qproperty-icon: url(:/assets/wreset.svg);
     background: #fc8450;
 }
 
 QToolButton#reg_login_icon[mode="ok"],QToolButton#reg_password_icon[mode="ok"],QToolButton#reg_verify_icon[mode="ok"]{
-    qproperty-icon: url(:/data/wcheckmark.svg);
+    qproperty-icon: url(:/assets/wcheckmark.svg);
 }
 QToolButton#reg_login_icon[mode='cross'], QToolButton#reg_password_icon[mode="cross"], QToolButton#reg_verify_icon[mode="cross"]{
-    qproperty-icon: url(:/data/wcross.svg);
+    qproperty-icon: url(:/assets/wcross.svg);
 }
 
 QToolButton#rec_password_icon[mode="ok"],QToolButton#rec_verify_icon[mode="ok"]{
-    qproperty-icon: url(:/data/wcheckmark.svg);
+    qproperty-icon: url(:/assets/wcheckmark.svg);
 }
 QToolButton#rec_password_icon[mode="cross"], QToolButton#rec_verify_icon[mode="cross"]{
-    qproperty-icon: url(:/data/wcross.svg);
+    qproperty-icon: url(:/assets/wcross.svg);
 }
 
 
 QToolButton#login_change_icon[mode="ok"]{
-    qproperty-icon: url(:/data/wcheckmark.svg);
+    qproperty-icon: url(:/assets/wcheckmark.svg);
 }
 QToolButton#login_change_icon[mode="cross"]{
-    qproperty-icon: url(:/data/wcross.svg);
+    qproperty-icon: url(:/assets/wcross.svg);
 }
 
 QToolButton#change_password_icon[mode="ok"],QToolButton#change_verify_icon[mode="ok"]{
-    qproperty-icon: url(:/data/wcheckmark.svg);
+    qproperty-icon: url(:/assets/wcheckmark.svg);
 }
 QToolButton#change_password_icon[mode="cross"], QToolButton#change_verify_icon[mode="cross"]{
-    qproperty-icon: url(:/data/wcross.svg);
+    qproperty-icon: url(:/assets/wcross.svg);
 }
 
 
@@ -256,7 +256,7 @@ TabBarWithControl {
 }
 
 ThemeButton {
-    qproperty-icon: url(:/data/wthemes.svg);
+    qproperty-icon: url(:/assets/wthemes.svg);
     icon-size: 35px;
     background: transparent;
     border: 0;

@@ -95,7 +95,7 @@ class GeneralStatistics(QFrame):
             self.r_down_values[2] = round(self.r_down_values[2]*100, 2)
 
             from datetime import timedelta
-            print(data["total_time"])
+            #print(data["total_time"])
             td = timedelta(seconds=data["total_time"])
 
             self.r_up_values[0] = str(td).split('.')[0] #time(second=int(user_data['total_time'])).isoformat()
@@ -365,12 +365,12 @@ class ActivityCalendar(QFrame):
             item = self.layout().itemAt(i)
             widget = item.layout()
 
-            if widget:
-                print(
-                    f"  Cell [{i}] (span:): {widget.objectName() or widget.__class__.__name__}"
-                )
-            else:
-                print(f"  Cell [{i}]: Empty or spacer")
+            # if widget:
+            #     #print(
+            #         f"  Cell [{i}] (span:): {widget.objectName() or widget.__class__.__name__}"
+            #     # )
+            # else:
+            #     #print(f"  Cell [{i}]: Empty or spacer")
 
         # Подпись месяцев (опционально)
         self.add_month_labels(self.grid)
@@ -509,6 +509,9 @@ class DistributionChart(QFrame):
         self.axis_x.setGridLineVisible(True)
         self.axis_y.setGridLineVisible(True)
         # self.axis_x.setLabelsVisible(False)
+
+        
+        self.bset = QBarSet(self.tr("Тренировки"))
 
     def update_data(self, cpm_data):
         self.tests.clear()

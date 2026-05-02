@@ -123,13 +123,13 @@ class RegistrationForm(QWidget):
             self.correct_login_icon.style().unpolish(self.correct_login_icon)  # Обновляем стиль
             self.correct_login_icon.style().polish(self.correct_login_icon)
             self.correct_login_icon.update()
-            # self.correct_login_icon.setIcon(QIcon(resource_path("data/checkmark.svg")))
+            # self.correct_login_icon.setIcon(QIcon(resource_path("assets/checkmark.svg")))
         else:
             self.correct_login_icon.setProperty("mode", "cross")
             self.correct_login_icon.style().unpolish(self.correct_login_icon)  # Обновляем стиль
             self.correct_login_icon.style().polish(self.correct_login_icon)
             self.correct_login_icon.update()
-        # self.correct_login_icon.setIcon(QIcon(resource_path("data/cross.svg")))
+        # self.correct_login_icon.setIcon(QIcon(resource_path("assets/cross.svg")))
 
     def switch_password_icon(self):
         if self.password_input.is_correct:
@@ -137,7 +137,7 @@ class RegistrationForm(QWidget):
             self.correct_password_icon.style().unpolish(self.correct_password_icon)  # Обновляем стиль
             self.correct_password_icon.style().polish(self.correct_password_icon)
             self.correct_password_icon.update()
-            # self.correct_password_icon.setIcon(QIcon(resource_path("data/checkmark.svg")))
+            # self.correct_password_icon.setIcon(QIcon(resource_path("assets/checkmark.svg")))
         else:
             self.correct_password_icon.setProperty("mode", "cross")
             self.correct_password_icon.style().unpolish(self.correct_password_icon)  # Обновляем стиль
@@ -187,7 +187,7 @@ class RegistrationForm(QWidget):
         else:
             self.create_new_user.emit(username, password, recovery_code)
             # self.user_combo.setCurrentIndex(self.user_combo.findText(username))
-            # print(self.user_combo.findText(username))
+            # #print(self.user_combo.findText(username))
 
 # форма восстановления пароля
 class PasswordRecoveryForm(QWidget):
@@ -255,7 +255,7 @@ class PasswordRecoveryForm(QWidget):
             self.correct_password_icon.style().unpolish(self.correct_password_icon)  # Обновляем стиль
             self.correct_password_icon.style().polish(self.correct_password_icon)
             self.correct_password_icon.update()
-            # self.correct_password_icon.setIcon(QIcon(resource_path("data/checkmark.svg")))
+            # self.correct_password_icon.setIcon(QIcon(resource_path("assets/checkmark.svg")))
         else:
             self.correct_password_icon.setProperty("mode", "cross")
             self.correct_password_icon.style().unpolish(self.correct_password_icon)  # Обновляем стиль
@@ -268,7 +268,7 @@ class PasswordRecoveryForm(QWidget):
             self.correct_verify_icon.style().unpolish(self.correct_verify_icon)  # Обновляем стиль
             self.correct_verify_icon.style().polish(self.correct_verify_icon)
             self.correct_verify_icon.update()
-            # self.correct_verify_icon.setIcon(QIcon(resource_path("data/checkmark.svg")))
+            # self.correct_verify_icon.setIcon(QIcon(resource_path("assets/checkmark.svg")))
         else:
             self.correct_verify_icon.setProperty("mode", "cross")
             self.correct_verify_icon.style().unpolish(self.correct_verify_icon)  # Обновляем стиль
@@ -291,7 +291,7 @@ class PasswordRecoveryForm(QWidget):
         else:
             self.password_recovery_request.emit(user_id, code, new_password)
             # self.user_combo.setCurrentIndex(self.user_combo.findText(username))
-            # print(self.user_combo.findText(username))
+            # #print(self.user_combo.findText(username))
 
     def on_request_answer(self, is_accepted):
         if is_accepted:

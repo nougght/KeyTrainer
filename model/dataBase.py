@@ -1,13 +1,24 @@
 import sqlite3
 from pathlib import Path
 from utils import resource_path
+import encodings
 
 # модель базы данных
 class Database:
     def __init__(self, db_path):
         self.db_path = Path(resource_path(db_path))
         if not self.db_path.exists():
-            raise FileNotFoundError(f"Database file {db_path} not found")
+            conn = sqlite3.connect(self.db_path)
+            with open(resource_path("data/init.sql"), encoding="utf-8") as f:
+              conn.executescript(f.read())
+            with open(resource_path("data/texts.sql"), encoding="utf-8") as f:
+              conn.executescript(f.read())
+            with open(resource_path("data/words.sql"), encoding="utf-8") as f:
+              conn.executescript(f.read())
+
+            # raise FileNotFoundError(f"Database file {db_path} not found")
+            # sqlite3.connect()
+            
 
 
     def _check_connection(self):

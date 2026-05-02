@@ -170,7 +170,7 @@ class UserRepository:
             elem = cursor.fetchone()
             while elem != None:
                 total_sessions += 1
-                print(elem[0])
+                #print(elem[0])
                 days.add(elem[0])
                 elem = cursor.fetchone()
             days = list(days)
@@ -186,7 +186,7 @@ class UserRepository:
                 # перевод из строки в datetime.date
                 for i in range(len(days)):
                     days[i] = datetime.strptime(days[i], "%Y-%m-%d").date()
-                print(days)
+                #print(days)
                 td = date.today()
                 current_streak = 0
                 # вычисление текущего стрика
@@ -256,7 +256,7 @@ class UserRepository:
         with self.db.get_connection() as db_connection:
             cursor = db_connection.cursor()
             streak = self.calc_user_streak(user_id)
-            print(streak['max_streak'], streak['current_streak'], streak['total_days'])
+            #print(streak['max_streak'], streak['current_streak'], streak['total_days'])
 
             cursor.execute(
                 """UPDATE users SET
@@ -330,7 +330,7 @@ class SessionRepository:
             cursor.execute(
                 """DELETE FROM sessions
                 WHERE session_id = ?""",
-                (session_id,),  # В реальном приложении генерируйте токен
+                (session_id,),  
             )
             db_connection.commit()
 

@@ -30,7 +30,7 @@ class LoginChangeForm(QWidget):
             self.correct_login_icon.style().unpolish(self.correct_login_icon)  # Обновляем стиль
             self.correct_login_icon.style().polish(self.correct_login_icon)
             self.correct_login_icon.update()
-            # self.correct_login_icon.setIcon(QIcon(resource_path("data/checkmark.svg")))
+            # self.correct_login_icon.setIcon(QIcon(resource_path("assets/checkmark.svg")))
         else:
             self.correct_login_icon.setProperty("mode", "cross")
             self.correct_login_icon.style().unpolish(self.correct_login_icon)  # Обновляем стиль
@@ -49,7 +49,7 @@ class LoginChangeForm(QWidget):
             QMessageBox.information(self, "KeyTrainer", self.tr('Имя пользователя успешно изменено'))
 
             # self.user_combo.setCurrentIndex(self.user_combo.findText(username))
-            # print(self.user_combo.findText(username))
+            # #print(self.user_combo.findText(username))
 
 
 class PasswordChangeForm(QWidget):
@@ -88,7 +88,7 @@ class PasswordChangeForm(QWidget):
             self.correct_password_icon.style().unpolish(self.correct_password_icon)  # Обновляем стиль
             self.correct_password_icon.style().polish(self.correct_password_icon)
             self.correct_password_icon.update()
-            # self.correct_password_icon.setIcon(QIcon(resource_path("data/checkmark.svg")))
+            # self.correct_password_icon.setIcon(QIcon(resource_path("assets/checkmark.svg")))
         else:
             self.correct_password_icon.setProperty("mode", "cross")
             self.correct_password_icon.style().unpolish(self.correct_password_icon)  # Обновляем стиль
@@ -102,7 +102,7 @@ class PasswordChangeForm(QWidget):
             self.correct_verify_icon.style().unpolish(self.correct_verify_icon)  # Обновляем стиль
             self.correct_verify_icon.style().polish(self.correct_verify_icon)
             self.correct_verify_icon.update()
-            # self.correct_verify_icon.setIcon(QIcon(resource_path("data/checkmark.svg")))
+            # self.correct_verify_icon.setIcon(QIcon(resource_path("assets/checkmark.svg")))
         else:
             self.correct_verify_icon.setProperty("mode", "cross")
             self.correct_verify_icon.style().unpolish(self.correct_verify_icon)  # Обновляем стиль
@@ -124,7 +124,7 @@ class PasswordChangeForm(QWidget):
         else:
             self.password_change_request.emit(old_password, new_password)
             # self.user_combo.setCurrentIndex(self.user_combo.findText(username))
-            # print(self.user_combo.findText(username))
+            # #print(self.user_combo.findText(username))
 
     def on_request_answer(self, is_accepted):
         if is_accepted:

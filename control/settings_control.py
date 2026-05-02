@@ -34,7 +34,7 @@ class SettingControl(QtCore.QObject):
 
     def on_theme_change(self, theme):
         self.model.switch_theme(theme)
-        print(self.model.get_theme())
+        #print(self.model.get_theme())
         self.theme_changed.emit(self.model.get_theme_style())
 
         # val = 'd' if theme == 'defaultDark' else 'l'

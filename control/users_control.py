@@ -56,7 +56,7 @@ class UserController(QObject):
             self.user_session.set_user(user)
             self.password_change_request_answer.emit(True)
         except (exceptions.VerifyMismatchError, exceptions.VerificationError):
-            print("Неверный пароль!")
+            #print("Неверный пароль!")
             self.password_change_request_answer.emit(False)
 
     def handle_password_recovery(self, user_id, code, new_password):
@@ -70,7 +70,7 @@ class UserController(QObject):
             self.user_session.set_user(user)
             self.password_recovery_request_answer.emit(True)
         except (exceptions.VerifyMismatchError, exceptions.VerificationError, exceptions.InvalidHashError):
-            print("Неверный пароль!")
+            #print("Неверный пароль!")
             self.password_recovery_request_answer.emit(False)
 
     def handle_login(self, user_id, password):
@@ -80,9 +80,9 @@ class UserController(QObject):
             if user["password_hash"] is not None:
                 self.password_hasher.verify(user['password_hash'], password)
             self.user_session.set_user(user)
-            print(f"Пользователь {self.user_session.get_user()} вошел в систему")
+            #print(f"Пользователь {self.user_session.get_user()} вошел в систему")
             self.successful_login.emit(user_id)
         except (exceptions.VerifyMismatchError, exceptions.VerificationError):
-            print("Неверный пароль!")
+            #print("Неверный пароль!")
             self.unsuccessful_login.emit(user_id)
         # Здесь можно передать управление в главный контроллер
